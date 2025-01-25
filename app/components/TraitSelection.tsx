@@ -11,20 +11,20 @@ export function TraitSelection({
 	onTraitToggle,
 }: TraitSelectionProps) {
 	return (
-		<div className="grid gap-4">
+		<div className="grid gap-4 grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3">
 			{traits.map((trait) => (
-				<div
+				<button
 					key={trait.name}
 					className={`
-              p-4 rounded-lg border transition cursor-pointer
-              ${
-								selectedTraits.includes(trait.name)
-									? "bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-700"
-									: selectedTraits.length >= 3
-									? "opacity-50 bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700"
-									: "hover:bg-gray-50 dark:hover:bg-gray-900/20 border-gray-200 dark:border-gray-700"
-							}
-            `}
+						text-left px-3 py-2.5 rounded-lg border transition flex flex-col
+						${
+							selectedTraits.includes(trait.name)
+								? "bg-primary-900/20 border-primary-700"
+								: selectedTraits.length >= 3
+								? "opacity-50 bg-gray-900/20 border-gray-700"
+								: "hover:bg-gray-900/20 hover:border-gray-600 border-gray-700"
+						}
+					`}
 					onClick={() => {
 						if (
 							!selectedTraits.includes(trait.name) &&
@@ -33,23 +33,22 @@ export function TraitSelection({
 							return
 						onTraitToggle(trait.name)
 					}}
+					disabled={
+						!selectedTraits.includes(trait.name) && selectedTraits.length >= 3
+					}
 				>
-					<div className="flex flex-wrap gap-x-8 gap-y-2">
-						<h3 className="font-medium">{trait.name}</h3>
-						<div className="flex-1 grid gap-2 @md:grid-cols-2">
-							{trait.attributes.map(({ attribute, description }) => (
-								<div key={attribute} className="space-y-1">
-									<p className="font-medium text-sm text-primary-600 dark:text-primary-400">
-										{attributes[attribute].name}
-									</p>
-									<p className="text-sm text-gray-600 dark:text-gray-400">
-										{description}
-									</p>
-								</div>
-							))}
-						</div>
+					<h3 className="font-medium mb-2">{trait.name}</h3>
+					<div className="flex flex-col gap-3">
+						{trait.attributes.map(({ attribute, description }) => (
+							<div key={attribute}>
+								<p className="font-medium text-sm text-primary-400">
+									{attributes[attribute].name}
+								</p>
+								<p className="text-sm text-gray-400">{description}</p>
+							</div>
+						))}
 					</div>
-				</div>
+				</button>
 			))}
 		</div>
 	)
