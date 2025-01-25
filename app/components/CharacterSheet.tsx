@@ -125,7 +125,9 @@ export function CharacterSheet() {
 										min="1"
 										max="6"
 										value={character.attributes[attribute]}
-										onChange={() => updateAttribute(attribute, maxResolve)}
+										onChange={(event) =>
+											updateAttribute(attribute, event.target.valueAsNumber)
+										}
 									/>
 								))}
 							</div>
