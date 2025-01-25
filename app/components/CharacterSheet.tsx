@@ -157,7 +157,8 @@ export function CharacterSheet() {
 										type="number"
 										className="flex-1"
 										min={0}
-										max={character.resolve}
+										max={maxResolve}
+										value={character.resolve}
 										onChange={(event) => {
 											setCharacter((prev) => ({
 												...prev,
