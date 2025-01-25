@@ -12,7 +12,7 @@ export function Tooltip({ content, children }: TooltipProps) {
 		<>
 			<Ariakit.TooltipAnchor
 				store={tooltip}
-				className="inline-block rounded-md focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-indigo-400"
+				className="inline-block rounded-md focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-400"
 			>
 				{children}
 			</Ariakit.TooltipAnchor>

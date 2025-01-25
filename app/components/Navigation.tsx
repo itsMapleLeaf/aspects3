@@ -19,7 +19,7 @@ export function Navigation() {
 								to={link.to}
 								className={`inline-flex items-center px-1 pt-1 text-sm font-medium ${
 									location.pathname === link.to
-										? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400"
+										? "text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400"
 										: "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
 								}`}
 							>

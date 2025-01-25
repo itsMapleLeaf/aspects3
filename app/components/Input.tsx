@@ -17,7 +17,7 @@ export function Input({
 	...props
 }: InputProps) {
 	const baseInputClasses =
-		"px-3 py-2 border bg-gray-900 w-full rounded-md focus:outline-none transition focus:ring-2 focus:ring-indigo-500"
+		"px-3 py-2 border bg-gray-900 w-full rounded-md focus:outline-none transition focus:ring-2 focus:ring-primary-500"
 	const stateClasses = readOnly
 		? "border-gray-300 dark:border-gray-600"
 		: error
