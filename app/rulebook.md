@@ -44,6 +44,7 @@ Other values:
 
 - Hits: starts at 0
 - Toughness: equals strength + agility
+- Fatigue: starts at 0
 - Resolve: equals sense + intellect + wit
 - Comeback: starts at 0
 
@@ -121,11 +122,13 @@ Claws
 - While down, you can’t make any actions.
 - Your hits cannot exceed your toughness.
 
-## Resolve
+## Fatigue & Resolve
 
-- Spend 1 resolve for aspect art
-- Spend 2 resolve to reroll a die (only once)
-- Spend 2 resolve for an additional combat action (once per round)
+- Aspect art and other special actions require taking fatigue
+- You can only take up to your resolve, then you can no longer use abilities that require taking fatigue
+- 1 fatigue: for aspect art
+- 2 fatigue: to reroll a die (only once)
+- 2 fatigue: for an additional combat action (once per round)
 
 ## Actions
 
@@ -231,7 +234,7 @@ Water
 - action: shield - target may not take more than 1 hit
 - action: protect - if any two targets take any hits, prevent them and take a hit
 - action: castle - prevent all hits on allies this round, skip your next round
-- action: foresight - before combat round, reveal any action, then you may spend 1 extra resolve to let another target character change their action
+- action: foresight - before combat round, reveal any action, then you may take 1 additional fatigue (once) to let another target character change their action
 
 Wind
 

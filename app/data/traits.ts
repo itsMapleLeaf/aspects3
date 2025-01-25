@@ -1,13 +1,13 @@
-import type { Attribute } from "~/data/attributes"
-
-export type TraitAttribute = {
-	attribute: Attribute
-	description: string
-}
+import type { AttributeName } from "~/data/attributes"
 
 export type Trait = {
 	name: string
 	attributes: [TraitAttribute, TraitAttribute]
+}
+
+export type TraitAttribute = {
+	attribute: AttributeName
+	description: string
 }
 
 export const traits: Trait[] = [

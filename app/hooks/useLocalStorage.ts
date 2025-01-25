@@ -1,3 +1,4 @@
+import { type } from "arktype"
 import { useEffect, useState } from "react"
 
 function loadFromStorage<T>(key: string): T | null {
@@ -20,13 +21,22 @@ function saveToStorage<T>(key: string, value: T) {
 	}
 }
 
-export function useLocalStorage<T>(key: string, defaultValue: T) {
+const JsonFromString = type("string.json.parse")
+
+export function useLocalStorage<T>(
+	key: string,
+	defaultValue: T,
+	validate: (input: unknown) => T,
+) {
 	const [value, setValue] = useState<T>(defaultValue)
 
 	useEffect(() => {
-		const saved = loadFromStorage<T>(key)
-		if (saved !== null) {
-			setValue(saved)
+		try {
+			const saved = window.localStorage.getItem(key)
+			const parsed = JsonFromString.assert(saved)
+			setValue(validate(parsed))
+		} catch (error) {
+			console.warn("failed to parse", error)
 		}
 	}, [key])
 

@@ -1,21 +1,24 @@
+import { type } from "arktype"
+import { clamp } from "es-toolkit"
 import type { ReactNode } from "react"
 import { Input } from "~/components/Input"
 import {
-	type Attribute,
-	attributeDetails,
 	attributeNames,
+	attributes,
+	type AttributeName,
 } from "~/data/attributes"
 import { useLocalStorage } from "~/hooks/useLocalStorage"
 import { TraitSelection } from "./TraitSelection"
 
-type CharacterData = {
-	name: string
-	attributes: Record<Attribute, number>
-	hits: number
-	resolve: number
-	comeback: number
-	traits: string[]
-}
+type CharacterData = typeof CharacterData.infer
+const CharacterData = type({
+	name: "string < 256 = ''",
+	attributes: type(`Record<string, number>`).default(() => ({})),
+	hits: "number >= 0 = 0",
+	fatigue: "number >= 0 = 0",
+	comeback: "number >= 0 = 0",
+	traits: type("string[]").default(() => []),
+})
 
 const defaultCharacter: CharacterData = {
 	name: "",
@@ -27,30 +30,36 @@ const defaultCharacter: CharacterData = {
 		wit: 1,
 	},
 	hits: 0,
-	resolve: 0,
+	fatigue: 0,
 	comeback: 0,
 	traits: [],
+}
+
+function getAttribute(name: AttributeName, character: CharacterData) {
+	return clamp(Math.floor(character.attributes[name] ?? 1), 1, 6)
 }
 
 export function CharacterSheet() {
 	const [character, setCharacter] = useLocalStorage(
 		"aspects-character",
 		defaultCharacter,
+		CharacterData.assert,
 	)
 
 	const attributeTotal = Object.values(character.attributes).reduce(
-		(sum, val) => sum + val,
+		(sum, val = 1) => sum + val,
 		0,
 	)
 
-	const toughness = character.attributes.strength + character.attributes.agility
+	const toughness =
+		getAttribute("strength", character) + getAttribute("agility", character)
 
-	const maxResolve =
-		character.attributes.sense +
-		character.attributes.intellect +
-		character.attributes.wit
+	const resolve =
+		getAttribute("sense", character) +
+		getAttribute("intellect", character) +
+		getAttribute("wit", character)
 
-	function updateAttribute(attr: Attribute, value: number) {
+	function updateAttribute(attr: AttributeName & string, value: number) {
 		const newValue = Math.max(1, Math.min(6, value))
 		setCharacter((prev) => ({
 			...prev,
@@ -94,8 +103,8 @@ export function CharacterSheet() {
 						{attributeNames.map((attribute) => (
 							<Input
 								key={attribute}
-								label={attributeDetails[attribute].name}
-								hint={attributeDetails[attribute].description}
+								label={attributes[attribute].name}
+								hint={attributes[attribute].description}
 								type="number"
 								min="1"
 								max="6"
@@ -127,18 +136,18 @@ export function CharacterSheet() {
 							/>
 						</OutOf>
 
-						<OutOf value={maxResolve}>
+						<OutOf value={resolve}>
 							<Input
-								label="Resolve"
+								label="Fatigue"
 								type="number"
 								className="flex-1"
 								min={0}
-								max={maxResolve}
-								value={character.resolve}
+								max={resolve}
+								value={character.fatigue}
 								onChange={(event) => {
 									setCharacter((prev) => ({
 										...prev,
-										resolve: Math.min(maxResolve, event.target.valueAsNumber),
+										fatigue: Math.min(resolve, event.target.valueAsNumber),
 									}))
 								}}
 							/>
@@ -171,10 +180,10 @@ export function CharacterSheet() {
 					{attributeNames.map((attribute) => (
 						<div key={attribute} className="space-y-2">
 							<h3 className="font-medium capitalize">
-								{attributeDetails[attribute].name}
+								{attributes[attribute].name}
 							</h3>
 							<ul className="space-y-1">
-								{attributeDetails[attribute].skills.map((skill) => (
+								{attributes[attribute].skills.map((skill) => (
 									<li key={skill} className="flex justify-between">
 										<span>{skill}</span>
 										<span>{character.attributes[attribute]}</span>

@@ -1,4 +1,4 @@
-import { attributeDetails } from "~/data/attributes"
+import { attributes } from "~/data/attributes"
 import { traits } from "~/data/traits"
 
 type TraitSelectionProps = {
@@ -40,7 +40,7 @@ export function TraitSelection({
 							{trait.attributes.map(({ attribute, description }) => (
 								<div key={attribute} className="space-y-1">
 									<p className="font-medium text-sm text-primary-600 dark:text-primary-400">
-										{attributeDetails[attribute].name}
+										{attributes[attribute].name}
 									</p>
 									<p className="text-sm text-gray-600 dark:text-gray-400">
 										{description}

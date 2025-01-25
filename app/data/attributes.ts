@@ -1,3 +1,4 @@
+export type AttributeName = (typeof attributeNames)[number]
 export const attributeNames = [
 	"intellect",
 	"sense",
@@ -6,15 +7,13 @@ export const attributeNames = [
 	"wit",
 ] as const
 
-export type Attribute = (typeof attributeNames)[number]
-
-export type AttributeDetails = {
+export type AttributeInfo = {
 	name: string
 	description: string
 	skills: string[]
 }
 
-export const attributeDetails: Record<Attribute, AttributeDetails> = {
+export const attributes: Record<AttributeName, AttributeInfo> = {
 	intellect: {
 		name: "Intellect",
 		description: "breadth of knowledge and how to apply it",
