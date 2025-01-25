@@ -1,9 +1,9 @@
-import { type ComponentPropsWithoutRef } from "react"
+import { type ComponentProps } from "react"
 
-type CardProps = {
+interface CardProps extends ComponentProps<"div"> {
 	title?: string
 	subtitle?: string
-} & ComponentPropsWithoutRef<"div">
+}
 
 export function Card({
 	title,
@@ -13,25 +13,16 @@ export function Card({
 	...props
 }: CardProps) {
 	return (
-		<div
-			className={`bg-white dark:bg-gray-800 shadow rounded-lg ${className}`}
-			{...props}
-		>
+		<div className={`shadow overflow-clip rounded-lg ${className}`} {...props}>
 			{(title || subtitle) && (
-				<div className="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
+				<div className="">
 					{title && (
-						<h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
-							{title}
-						</h3>
+						<h3 className="text-3xl font-light mb-3 text-gray-100">{title}</h3>
 					)}
-					{subtitle && (
-						<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-							{subtitle}
-						</p>
-					)}
+					{subtitle && <p className="mt-1 text-sm text-gray-400">{subtitle}</p>}
 				</div>
 			)}
-			<div className="px-4 py-5 sm:p-6">{children}</div>
+			<div className="">{children}</div>
 		</div>
 	)
 }

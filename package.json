@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ariakit/react": "^0.4.15",
+    "@fontsource-variable/quicksand": "^5.1.1",
     "@iconify/react": "^5.2.0",
     "@react-router/node": "^7.1.3",
     "@react-router/serve": "^7.1.3",

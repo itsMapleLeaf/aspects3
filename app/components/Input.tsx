@@ -29,19 +29,17 @@ export function Input({
 	return (
 		<div className={className}>
 			{label && (
-				<label className="block mb-1 text-sm text-gray-700 dark:text-gray-300">
-					<div className="flex items-center gap-1">
-						<p className="font-medium">{label}</p>
-						{hint && (
-							<Tooltip content={hint}>
-								<Icon
-									icon="mingcute:information-line"
-									className="w-4 h-4 text-gray-400 hover:text-gray-100 transition"
-									aria-hidden
-								/>
-							</Tooltip>
-						)}
-					</div>
+				<label className="flex items-center gap-1 mb-0.5 text-sm text-gray-700 dark:text-gray-300">
+					<p className="font-semibold">{label}</p>
+					{hint && (
+						<Tooltip content={hint}>
+							<Icon
+								icon="mingcute:information-line"
+								className="w-4 h-4 text-gray-400 hover:text-gray-100 transition"
+								aria-hidden
+							/>
+						</Tooltip>
+					)}
 				</label>
 			)}
 			<input className={combinedInputClasses} readOnly={readOnly} {...props} />

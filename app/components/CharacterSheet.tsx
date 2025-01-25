@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
-import { Card } from "~/components/Card"
 import { Input } from "~/components/Input"
 import { useLocalStorage } from "~/hooks/useLocalStorage"
+import { TraitSelection } from "./TraitSelection"
 
 const attributeNames = [
 	"intellect",
@@ -11,7 +11,7 @@ const attributeNames = [
 	"wit",
 ] as const
 
-type Attribute = (typeof attributeNames)[number]
+export type Attribute = (typeof attributeNames)[number]
 
 type CharacterData = {
 	name: string
@@ -19,6 +19,7 @@ type CharacterData = {
 	hits: number
 	resolve: number
 	comeback: number
+	traits: string[]
 }
 
 const defaultCharacter: CharacterData = {
@@ -33,9 +34,10 @@ const defaultCharacter: CharacterData = {
 	hits: 0,
 	resolve: 0,
 	comeback: 0,
+	traits: [],
 }
 
-const attributeLabels: Record<
+export const attributeLabels: Record<
 	Attribute,
 	{ name: string; description: string }
 > = {
@@ -98,99 +100,112 @@ export function CharacterSheet() {
 		}))
 	}
 
+	function toggleTrait(traitName: string) {
+		setCharacter((prev) => ({
+			...prev,
+			traits: prev.traits.includes(traitName)
+				? prev.traits.filter((t) => t !== traitName)
+				: [...prev.traits, traitName],
+		}))
+	}
+
+	const remainingTraits = 3 - character.traits.length
+	const traitsDescription =
+		remainingTraits > 0 ? `Choose ${remainingTraits} more` : undefined
+
 	return (
-		<div className="max-w-4xl mx-auto p-6 space-y-8">
-			<Card title="Character Sheet">
-				<div className="@container grid gap-4">
-					<Input
-						label="Name"
-						value={character.name}
-						onChange={(e) =>
-							setCharacter((prev) => ({ ...prev, name: e.target.value }))
-						}
-					/>
+		<div className="max-w-4xl mx-auto py-6 px-4 @container">
+			<h2 className="text-3xl font-light text-gray-100 mb-4">
+				Character Sheet
+			</h2>
 
-					<div className="grid gap-4 @md:grid-flow-col auto-cols-fr">
-						<section>
-							<h3 className="text-lg font-medium mb-4">
-								Attributes (Total: {attributeTotal}/18)
-							</h3>
-							<div className="grid gap-4 md:grid-cols-2">
-								{attributeNames.map((attribute) => (
-									<Input
-										key={attribute}
-										label={attributeLabels[attribute].name}
-										hint={attributeLabels[attribute].description}
-										type="number"
-										min="1"
-										max="6"
-										value={character.attributes[attribute]}
-										onChange={(event) =>
-											updateAttribute(attribute, event.target.valueAsNumber)
-										}
-									/>
-								))}
-							</div>
-						</section>
+			<Input
+				label="Name"
+				value={character.name}
+				onChange={(e) =>
+					setCharacter((prev) => ({ ...prev, name: e.target.value }))
+				}
+			/>
 
-						<section>
-							<h3 className="text-lg font-medium mb-4">Status</h3>
-							<div className="grid gap-4 md:grid-cols-2 content-start">
-								<OutOf value={toughness}>
-									<Input
-										label="Hits"
-										type="number"
-										className="flex-1"
-										min="0"
-										max={toughness}
-										value={character.hits}
-										onChange={(event) =>
-											setCharacter((prev) => ({
-												...prev,
-												hits: Math.min(toughness, event.target.valueAsNumber),
-											}))
-										}
-									/>
-								</OutOf>
-
-								<OutOf value={maxResolve}>
-									<Input
-										label="Resolve"
-										type="number"
-										className="flex-1"
-										min={0}
-										max={maxResolve}
-										value={character.resolve}
-										onChange={(event) => {
-											setCharacter((prev) => ({
-												...prev,
-												resolve: Math.min(
-													maxResolve,
-													event.target.valueAsNumber,
-												),
-											}))
-										}}
-									/>
-								</OutOf>
-								<Input
-									label="Comeback"
-									type="number"
-									min="0"
-									value={character.comeback}
-									onChange={(event) =>
-										setCharacter((prev) => ({
-											...prev,
-											comeback: Math.max(0, event.target.valueAsNumber),
-										}))
-									}
-								/>
-							</div>
-						</section>
+			<div className="grid gap-4 @md:grid-flow-col auto-cols-fr">
+				<Section title="Attributes" description={`Total: ${attributeTotal}/18`}>
+					<div className="grid gap-4 md:grid-cols-2">
+						{attributeNames.map((attribute) => (
+							<Input
+								key={attribute}
+								label={attributeLabels[attribute].name}
+								hint={attributeLabels[attribute].description}
+								type="number"
+								min="1"
+								max="6"
+								value={character.attributes[attribute]}
+								onChange={(event) =>
+									updateAttribute(attribute, event.target.valueAsNumber)
+								}
+							/>
+						))}
 					</div>
-				</div>
-			</Card>
+				</Section>
 
-			<Card title="Skills">
+				<Section title="Status">
+					<div className="grid gap-4 md:grid-cols-2 content-start">
+						<OutOf value={toughness}>
+							<Input
+								label="Hits"
+								type="number"
+								className="flex-1"
+								min="0"
+								max={toughness}
+								value={character.hits}
+								onChange={(event) =>
+									setCharacter((prev) => ({
+										...prev,
+										hits: Math.min(toughness, event.target.valueAsNumber),
+									}))
+								}
+							/>
+						</OutOf>
+
+						<OutOf value={maxResolve}>
+							<Input
+								label="Resolve"
+								type="number"
+								className="flex-1"
+								min={0}
+								max={maxResolve}
+								value={character.resolve}
+								onChange={(event) => {
+									setCharacter((prev) => ({
+										...prev,
+										resolve: Math.min(maxResolve, event.target.valueAsNumber),
+									}))
+								}}
+							/>
+						</OutOf>
+						<Input
+							label="Comeback"
+							type="number"
+							min="0"
+							value={character.comeback}
+							onChange={(event) =>
+								setCharacter((prev) => ({
+									...prev,
+									comeback: Math.max(0, event.target.valueAsNumber),
+								}))
+							}
+						/>
+					</div>
+				</Section>
+			</div>
+
+			<Section title="Traits" description={traitsDescription}>
+				<TraitSelection
+					selectedTraits={character.traits}
+					onTraitToggle={toggleTrait}
+				/>
+			</Section>
+
+			<Section title="Skills">
 				<div className="grid gap-8 md:grid-cols-3">
 					{attributeNames.map((attribute) => (
 						<div key={attribute} className="space-y-2">
@@ -208,11 +223,34 @@ export function CharacterSheet() {
 						</div>
 					))}
 				</div>
-			</Card>
+			</Section>
 		</div>
 	)
 }
 
+type SectionProps = {
+	title: string
+	description?: string
+	children: ReactNode
+	className?: string
+}
+
+function Section({
+	title,
+	description,
+	children,
+	className = "",
+}: SectionProps) {
+	return (
+		<section className={`mt-6 ${className}`}>
+			<header className="mb-3 flex items-baseline justify-between gap-4 flex-wrap">
+				<h3 className="text-2xl font-light">{title}</h3>
+				{description && <p className="text-gray-400">{description}</p>}
+			</header>
+			{children}
+		</section>
+	)
+}
 function OutOf({ value, children }: { value: ReactNode; children: ReactNode }) {
 	return (
 		<div className="flex items-end gap-2">

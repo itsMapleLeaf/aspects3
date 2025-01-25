@@ -1,3 +1,4 @@
+import font from "@fontsource-variable/quicksand?url"
 import {
 	isRouteErrorResponse,
 	Links,
@@ -6,7 +7,6 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from "react-router"
-
 import { Navigation } from "~/components/Navigation"
 import type { Route } from "./+types/root"
 import stylesheet from "./app.css?url"
@@ -22,6 +22,7 @@ export const links: Route.LinksFunction = () => [
 		rel: "stylesheet",
 		href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
 	},
+	{ rel: "stylesheet", href: font },
 	{ rel: "stylesheet", href: stylesheet },
 ]
 
