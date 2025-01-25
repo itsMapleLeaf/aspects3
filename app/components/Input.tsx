@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react"
 import { type ComponentPropsWithoutRef } from "react"
-import { Tooltip } from "./ui/Tooltip"
+import { Tooltip } from "./Tooltip"
 
 type InputProps = {
 	label?: string
