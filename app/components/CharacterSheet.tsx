@@ -1,6 +1,6 @@
-import { useState } from "react"
 import { Card } from "~/components/Card"
 import { Input } from "~/components/Input"
+import { useLocalStorage } from "~/hooks/useLocalStorage"
 
 type Attribute = "intellect" | "sense" | "agility" | "strength" | "wit"
 
@@ -9,6 +9,19 @@ type CharacterData = {
 	attributes: Record<Attribute, number>
 	hits: number
 	comeback: number
+}
+
+const defaultCharacter: CharacterData = {
+	name: "",
+	attributes: {
+		intellect: 1,
+		sense: 1,
+		agility: 1,
+		strength: 1,
+		wit: 1,
+	},
+	hits: 0,
+	comeback: 0,
 }
 
 const attributeLabels: Record<
@@ -46,18 +59,10 @@ const skillsByAttribute: Record<Attribute, string[]> = {
 }
 
 export function CharacterSheet() {
-	const [character, setCharacter] = useState<CharacterData>({
-		name: "",
-		attributes: {
-			intellect: 1,
-			sense: 1,
-			agility: 1,
-			strength: 1,
-			wit: 1,
-		},
-		hits: 0,
-		comeback: 0,
-	})
+	const [character, setCharacter] = useLocalStorage(
+		"aspects-character",
+		defaultCharacter,
+	)
 
 	const attributeTotal = Object.values(character.attributes).reduce(
 		(sum, val) => sum + val,
@@ -103,20 +108,20 @@ export function CharacterSheet() {
 							{Object.entries(attributeLabels).map(
 								([attr, { name, description }]) => (
 									<div key={attr} className="space-y-1">
-										<Input
-											label={name}
-											hint={description}
-											type="number"
-											min="1"
-											max="6"
-											value={character.attributes[attr as Attribute]}
-											onChange={(e) =>
-												updateAttribute(
-													attr as Attribute,
-													parseInt(e.target.value),
-												)
-											}
-										/>
+									<Input
+										label={name}
+										hint={description}
+										type="number"
+										min="1"
+										max="6"
+										value={character.attributes[attr as Attribute]}
+										onChange={(e) =>
+											updateAttribute(
+												attr as Attribute,
+												parseInt(e.target.value),
+											)
+										}
+									/>
 									</div>
 								),
 							)}
