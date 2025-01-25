@@ -1,13 +1,23 @@
+import type { ReactNode } from "react"
 import { Card } from "~/components/Card"
 import { Input } from "~/components/Input"
 import { useLocalStorage } from "~/hooks/useLocalStorage"
 
-type Attribute = "intellect" | "sense" | "agility" | "strength" | "wit"
+const attributeNames = [
+	"intellect",
+	"sense",
+	"agility",
+	"strength",
+	"wit",
+] as const
+
+type Attribute = (typeof attributeNames)[number]
 
 type CharacterData = {
 	name: string
 	attributes: Record<Attribute, number>
 	hits: number
+	resolve: number
 	comeback: number
 }
 
@@ -21,6 +31,7 @@ const defaultCharacter: CharacterData = {
 		wit: 1,
 	},
 	hits: 0,
+	resolve: 0,
 	comeback: 0,
 }
 
@@ -71,7 +82,7 @@ export function CharacterSheet() {
 
 	const toughness = character.attributes.strength + character.attributes.agility
 
-	const resolve =
+	const maxResolve =
 		character.attributes.sense +
 		character.attributes.intellect +
 		character.attributes.wit
@@ -90,88 +101,104 @@ export function CharacterSheet() {
 	return (
 		<div className="max-w-4xl mx-auto p-6 space-y-8">
 			<Card title="Character Sheet">
-				<div className="space-y-6">
+				<div className="@container grid gap-4">
 					<Input
 						label="Name"
 						value={character.name}
 						onChange={(e) =>
 							setCharacter((prev) => ({ ...prev, name: e.target.value }))
 						}
-						fullWidth
 					/>
 
-					<div>
-						<h3 className="text-lg font-medium mb-4">
-							Attributes (Total: {attributeTotal}/18)
-						</h3>
-						<div className="grid gap-4 md:grid-cols-2">
-							{Object.entries(attributeLabels).map(
-								([attr, { name, description }]) => (
+					<div className="grid gap-4 @md:grid-flow-col auto-cols-fr">
+						<section>
+							<h3 className="text-lg font-medium mb-4">
+								Attributes (Total: {attributeTotal}/18)
+							</h3>
+							<div className="grid gap-4 md:grid-cols-2">
+								{attributeNames.map((attribute) => (
 									<Input
-										key={attr}
-										label={name}
-										hint={description}
+										key={attribute}
+										label={attributeLabels[attribute].name}
+										hint={attributeLabels[attribute].description}
 										type="number"
 										min="1"
 										max="6"
-										value={character.attributes[attr as Attribute]}
-										onChange={(e) =>
-											updateAttribute(
-												attr as Attribute,
-												parseInt(e.target.value),
-											)
+										value={character.attributes[attribute]}
+										onChange={() => updateAttribute(attribute, maxResolve)}
+									/>
+								))}
+							</div>
+						</section>
+
+						<section>
+							<h3 className="text-lg font-medium mb-4">Status</h3>
+							<div className="grid gap-4 md:grid-cols-2 content-start">
+								<OutOf value={toughness}>
+									<Input
+										label="Hits"
+										type="number"
+										className="flex-1"
+										min="0"
+										max={toughness}
+										value={character.hits}
+										onChange={(event) =>
+											setCharacter((prev) => ({
+												...prev,
+												hits: Math.min(toughness, event.target.valueAsNumber),
+											}))
 										}
 									/>
-								),
-							)}
-						</div>
-					</div>
+								</OutOf>
 
-					<div className="grid gap-4 md:grid-cols-3">
-						<Input
-							label="Hits"
-							type="number"
-							min="0"
-							max={toughness}
-							value={character.hits}
-							onChange={(e) =>
-								setCharacter((prev) => ({
-									...prev,
-									hits: Math.min(toughness, parseInt(e.target.value) || 0),
-								}))
-							}
-						/>
-						<Input label="Toughness" type="number" value={toughness} readOnly />
-						<Input label="Resolve" type="number" value={resolve} readOnly />
+								<OutOf value={maxResolve}>
+									<Input
+										label="Resolve"
+										type="number"
+										className="flex-1"
+										min={0}
+										max={character.resolve}
+										onChange={(event) => {
+											setCharacter((prev) => ({
+												...prev,
+												resolve: Math.min(
+													maxResolve,
+													event.target.valueAsNumber,
+												),
+											}))
+										}}
+									/>
+								</OutOf>
+								<Input
+									label="Comeback"
+									type="number"
+									min="0"
+									value={character.comeback}
+									onChange={(event) =>
+										setCharacter((prev) => ({
+											...prev,
+											comeback: Math.max(0, event.target.valueAsNumber),
+										}))
+									}
+								/>
+							</div>
+						</section>
 					</div>
-
-					<Input
-						label="Comeback"
-						type="number"
-						min="0"
-						value={character.comeback}
-						onChange={(e) =>
-							setCharacter((prev) => ({
-								...prev,
-								comeback: Math.max(0, parseInt(e.target.value) || 0),
-							}))
-						}
-					/>
 				</div>
 			</Card>
 
 			<Card title="Skills">
 				<div className="grid gap-8 md:grid-cols-3">
-					{Object.entries(skillsByAttribute).map(([attr, skills]) => (
-						<div key={attr} className="space-y-2">
+					{attributeNames.map((attribute) => (
+						<div key={attribute} className="space-y-2">
 							<h3 className="font-medium capitalize">
-								{attributeLabels[attr as Attribute].name}
+								{attributeLabels[attribute].name}
 							</h3>
 							<ul className="space-y-1">
-								{skills.map((skill) => (
+								{skillsByAttribute[attribute].map((skill) => (
 									<li key={skill} className="flex justify-between">
 										<span>{skill}</span>
-										<span>{character.attributes[attr as Attribute]}</span>
+										<span>{character.attributes[attribute]}</span>
 									</li>
 								))}
 							</ul>
@@ -179,6 +206,18 @@ export function CharacterSheet() {
 					))}
 				</div>
 			</Card>
+		</div>
+	)
+}
+
+function OutOf({ value, children }: { value: ReactNode; children: ReactNode }) {
+	return (
+		<div className="flex items-end gap-2">
+			{children}
+			<p className="py-2 my-px">
+				<span aria-hidden>/</span> <span className="sr-only">out of</span>{" "}
+				<span className="py-3">{value}</span>
+			</p>
 		</div>
 	)
 }
