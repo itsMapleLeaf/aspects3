@@ -1,17 +1,12 @@
 import type { ReactNode } from "react"
 import { Input } from "~/components/Input"
+import {
+	type Attribute,
+	attributeDetails,
+	attributeNames,
+} from "~/data/attributes"
 import { useLocalStorage } from "~/hooks/useLocalStorage"
 import { TraitSelection } from "./TraitSelection"
-
-const attributeNames = [
-	"intellect",
-	"sense",
-	"agility",
-	"strength",
-	"wit",
-] as const
-
-export type Attribute = (typeof attributeNames)[number]
 
 type CharacterData = {
 	name: string
@@ -35,40 +30,6 @@ const defaultCharacter: CharacterData = {
 	resolve: 0,
 	comeback: 0,
 	traits: [],
-}
-
-export const attributeLabels: Record<
-	Attribute,
-	{ name: string; description: string }
-> = {
-	intellect: {
-		name: "Intellect",
-		description: "breadth of knowledge and how to apply it",
-	},
-	sense: {
-		name: "Sense",
-		description: "strength of mind, ability to focus and perceive",
-	},
-	agility: {
-		name: "Agility",
-		description: "nimbleness, adaptability, swiftness",
-	},
-	strength: {
-		name: "Strength",
-		description: "physical prowess, strength of body",
-	},
-	wit: {
-		name: "Wit",
-		description: "social skills, insight, manipulation",
-	},
-}
-
-const skillsByAttribute: Record<Attribute, string[]> = {
-	strength: ["Strike", "Block", "Throw", "Lift", "Endure"],
-	intellect: ["Intuit", "Recall", "Aid", "Operate", "Tinker"],
-	agility: ["Dash", "Jump", "Climb", "Dodge", "Maneuver"],
-	wit: ["Charm", "Intimidate", "Deceive", "Read", "Sneak"],
-	sense: ["Spy", "Listen", "Feel", "Shoot", "Focus"],
 }
 
 export function CharacterSheet() {
@@ -133,8 +94,8 @@ export function CharacterSheet() {
 						{attributeNames.map((attribute) => (
 							<Input
 								key={attribute}
-								label={attributeLabels[attribute].name}
-								hint={attributeLabels[attribute].description}
+								label={attributeDetails[attribute].name}
+								hint={attributeDetails[attribute].description}
 								type="number"
 								min="1"
 								max="6"
@@ -210,10 +171,10 @@ export function CharacterSheet() {
 					{attributeNames.map((attribute) => (
 						<div key={attribute} className="space-y-2">
 							<h3 className="font-medium capitalize">
-								{attributeLabels[attribute].name}
+								{attributeDetails[attribute].name}
 							</h3>
 							<ul className="space-y-1">
-								{skillsByAttribute[attribute].map((skill) => (
+								{attributeDetails[attribute].skills.map((skill) => (
 									<li key={skill} className="flex justify-between">
 										<span>{skill}</span>
 										<span>{character.attributes[attribute]}</span>
@@ -251,6 +212,7 @@ function Section({
 		</section>
 	)
 }
+
 function OutOf({ value, children }: { value: ReactNode; children: ReactNode }) {
 	return (
 		<div className="flex items-end gap-2">

@@ -1,4 +1,4 @@
-import type { Attribute } from "~/components/CharacterSheet"
+import type { Attribute } from "~/data/attributes"
 
 export type TraitAttribute = {
 	attribute: Attribute
@@ -7,7 +7,7 @@ export type TraitAttribute = {
 
 export type Trait = {
 	name: string
-	attributes: TraitAttribute[]
+	attributes: [TraitAttribute, TraitAttribute]
 }
 
 export const traits: Trait[] = [
