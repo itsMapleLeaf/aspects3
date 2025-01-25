@@ -1,10 +1,11 @@
+import { Icon } from "@iconify/react"
 import { type ComponentPropsWithoutRef } from "react"
+import { Tooltip } from "./ui/Tooltip"
 
 type InputProps = {
 	label?: string
 	error?: string
 	hint?: string
-	readOnly?: boolean
 } & ComponentPropsWithoutRef<"input">
 
 export function Input({
@@ -23,16 +24,24 @@ export function Input({
 		? "border-red-300 focus:border-red-500 focus:ring-red-500"
 		: "border-gray-300 dark:border-gray-600"
 
-	const combinedInputClasses = `${baseInputClasses}  ${stateClasses}`
+	const combinedInputClasses = `${baseInputClasses} ${stateClasses}`
 
 	return (
 		<div className={className}>
 			{label && (
-				<label className="block mb-1  text-sm  text-gray-700 dark:text-gray-300">
-					<p className="font-medium">{label}</p>
-					{hint && !error && (
-						<p className="text-sm text-gray-500 dark:text-gray-400">{hint}</p>
-					)}
+				<label className="block mb-1 text-sm text-gray-700 dark:text-gray-300">
+					<div className="flex items-center gap-1">
+						<p className="font-medium">{label}</p>
+						{hint && (
+							<Tooltip content={hint}>
+								<Icon
+									icon="mingcute:information-line"
+									className="w-4 h-4 text-gray-400 hover:text-gray-100 transition"
+									aria-hidden
+								/>
+							</Tooltip>
+						)}
+					</div>
 				</label>
 			)}
 			<input className={combinedInputClasses} readOnly={readOnly} {...props} />

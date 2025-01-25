@@ -14,7 +14,7 @@ export function Card({
 }: CardProps) {
 	return (
 		<div
-			className={`bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden ${className}`}
+			className={`bg-white dark:bg-gray-800 shadow rounded-lg ${className}`}
 			{...props}
 		>
 			{(title || subtitle) && (
