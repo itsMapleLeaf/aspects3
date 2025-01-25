@@ -107,8 +107,8 @@ export function CharacterSheet() {
 						<div className="grid gap-4 md:grid-cols-2">
 							{Object.entries(attributeLabels).map(
 								([attr, { name, description }]) => (
-									<div key={attr} className="space-y-1">
 									<Input
+										key={attr}
 										label={name}
 										hint={description}
 										type="number"
@@ -122,7 +122,6 @@ export function CharacterSheet() {
 											)
 										}
 									/>
-									</div>
 								),
 							)}
 						</div>
