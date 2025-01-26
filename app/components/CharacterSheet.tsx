@@ -1,6 +1,7 @@
 import { Icon } from "@iconify/react"
 import { type ReactNode } from "react"
 import { AttributeInput } from "~/components/AttributeInput.tsx"
+import { Button } from "~/components/Button.tsx"
 import {
 	attributeNames,
 	attributes,
@@ -18,17 +19,30 @@ import {
 	getToughness,
 } from "~/data/characters.ts"
 import { traits } from "~/data/traits.ts"
+import { useFileHandle } from "~/hooks/useFileHandle.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { DotBar } from "./DotBar.tsx"
 import { Input } from "./Input.tsx"
 import { TraitSelection } from "./TraitSelection.tsx"
 
 export function CharacterSheet() {
-	const [character, setCharacter] = useLocalStorage(
-		"aspects-character",
-		defaultCharacter,
-		Character.assert,
-	)
+	const {
+		data: character,
+		setData: setCharacter,
+		hasFile,
+		createNew,
+		open,
+	} = useFileHandle(defaultCharacter, {
+		suggestedName: "character.json",
+		validator: (data): data is Character => {
+			try {
+				Character.assert(data)
+				return true
+			} catch {
+				return false
+			}
+		},
+	})
 
 	function updateAttribute(attr: AttributeName & string, value: string) {
 		setCharacter((prev) => ({
@@ -47,6 +61,37 @@ export function CharacterSheet() {
 				? prev.traits.filter((t) => t !== traitName)
 				: [...prev.traits, traitName],
 		}))
+	}
+
+	if (!hasFile) {
+		return (
+			<div className="h-[80vh] flex flex-col items-center justify-center gap-8">
+				<div className="text-center">
+					<Icon
+						icon="mingcute:book-6-line"
+						className="size-24 mx-auto mb-4 text-primary-400"
+					/>
+					<h1 className="text-4xl font-light">Character Sheet</h1>
+				</div>
+
+				<div className="flex gap-4">
+					<Button
+						onClick={createNew}
+						icon={<Icon icon="mingcute:add-line" />}
+						size="lg"
+					>
+						New...
+					</Button>
+					<Button
+						onClick={open}
+						icon={<Icon icon="mingcute:folder-open-line" />}
+						size="lg"
+					>
+						Open...
+					</Button>
+				</div>
+			</div>
+		)
 	}
 
 	const selectedTraits = traits
@@ -89,8 +134,25 @@ export function CharacterSheet() {
 					</div>
 				</div>
 
-				<div className="w-80 h-80 border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center">
-					<p className="text-center text-gray-400">character image here</p>
+				<div className="w-80 space-y-4">
+					<div className="flex gap-2 justify-end">
+						<Button
+							onClick={createNew}
+							icon={<Icon icon="mingcute:add-line" />}
+						>
+							New...
+						</Button>
+						<Button
+							onClick={open}
+							icon={<Icon icon="mingcute:folder-open-line" />}
+						>
+							Open...
+						</Button>
+					</div>
+
+					<div className="h-80 border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center">
+						<p className="text-center text-gray-400">character image here</p>
+					</div>
 				</div>
 			</div>
 
