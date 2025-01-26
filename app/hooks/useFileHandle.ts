@@ -88,6 +88,6 @@ export function useFileHandle<T>(
 		fileHandle,
 		createNew,
 		open,
-		hasFile: fileHandle !== null,
+		hasFile: fileHandle != null,
 	}
 }
