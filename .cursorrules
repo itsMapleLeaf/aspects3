@@ -1,1 +1,16 @@
+# Tailwind CSS
+
 - Don't use `dark:` variants for styling; this app is dark mode only
+- Include `transition` for classes with hover/active/focus states
+
+# React component files
+
+For files with multiple components, put the exported components first before the internal children components. For example:
+
+```ts
+export function Parent() {}
+
+function Child() {}
+
+function OtherChild() {}
+```
