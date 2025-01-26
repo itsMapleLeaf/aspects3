@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react"
-import { type ReactNode } from "react"
+import { useEffect, type ReactNode } from "react"
 import { AttributeInput } from "~/components/AttributeInput.tsx"
 import { Button } from "~/components/Button.tsx"
 import {
@@ -25,24 +25,29 @@ import { DotBar } from "./DotBar.tsx"
 import { Input } from "./Input.tsx"
 import { TraitSelection } from "./TraitSelection.tsx"
 
+let lastFileHandle: FileSystemFileHandle | undefined
+let lastCharacter = defaultCharacter
+
 export function CharacterSheet() {
 	const {
 		data: character,
 		setData: setCharacter,
+		fileHandle,
 		hasFile,
 		createNew,
 		open,
-	} = useFileHandle(defaultCharacter, {
-		suggestedName: "character.json",
-		validator: (data): data is Character => {
-			try {
-				Character.assert(data)
-				return true
-			} catch {
-				return false
-			}
-		},
+	} = useFileHandle(lastCharacter, Character.assert, {
+		suggestedName: "character.aspects.json",
+		initialHandle: lastFileHandle,
 	})
+
+	useEffect(() => {
+		lastFileHandle = fileHandle
+	}, [fileHandle])
+
+	useEffect(() => {
+		lastCharacter = character
+	}, [character])
 
 	function updateAttribute(attr: AttributeName & string, value: string) {
 		setCharacter((prev) => ({
@@ -65,13 +70,17 @@ export function CharacterSheet() {
 
 	if (!hasFile) {
 		return (
-			<div className="h-[80vh] flex flex-col items-center justify-center gap-8">
+			<div className="h-[80vh] flex flex-col items-center justify-center gap-6">
 				<div className="text-center">
 					<Icon
-						icon="mingcute:book-6-line"
-						className="size-24 mx-auto mb-4 text-primary-400"
+						icon="mingcute:document-line"
+						className="size-24 mx-auto mb-4 text-primary-400/30"
+						strokeWidth={0.5}
 					/>
-					<h1 className="text-4xl font-light">Character Sheet</h1>
+					<h2 className="text-4xl mb-2 font-light">Character Editor</h2>
+					<p className="text-2xl font-light opacity-75">
+						Create or open a character sheet to continue
+					</p>
 				</div>
 
 				<div className="flex gap-4">

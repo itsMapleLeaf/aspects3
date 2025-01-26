@@ -1,17 +1,16 @@
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
 import { ensure } from "~/utils.ts"
 
 export function useFileHandle<T>(
 	defaultData: T,
+	validate: (data: unknown) => T,
 	options: {
 		suggestedName?: string
-		validator?: (data: unknown) => data is T
+		initialHandle?: FileSystemFileHandle
 	} = {},
 ) {
-	const [fileHandle, setFileHandle] = useState<FileSystemFileHandle | null>(
-		null,
-	)
+	const [fileHandle, setFileHandle] = useState(options.initialHandle)
 	const [data, setData] = useState<T>(defaultData)
 
 	const saveToFile = useDebouncedCallback(
@@ -29,7 +28,7 @@ export function useFileHandle<T>(
 		}
 	}, [data, fileHandle, saveToFile])
 
-	const createNew = useCallback(async () => {
+	async function createNew() {
 		try {
 			const handle = await window.showSaveFilePicker({
 				suggestedName: options.suggestedName,
@@ -50,9 +49,16 @@ export function useFileHandle<T>(
 			}
 			throw error
 		}
-	}, [defaultData, options.suggestedName])
+	}
 
-	const open = useCallback(async () => {
+	async function load(handle: FileSystemFileHandle) {
+		const file = await ensure(handle).getFile()
+		const content = await file.text()
+		const parsed = JSON.parse(content)
+		return validate(parsed)
+	}
+
+	async function open() {
 		try {
 			const [handle] = await window.showOpenFilePicker({
 				multiple: false,
@@ -64,16 +70,9 @@ export function useFileHandle<T>(
 				],
 			})
 
-			const file = await ensure(handle).getFile()
-			const content = await file.text()
-			const parsed = JSON.parse(content)
-
-			if (options.validator && !options.validator(parsed)) {
-				throw new Error("Invalid file format")
-			}
-
+			const data = await load(ensure(handle))
 			setFileHandle(ensure(handle))
-			setData(parsed as T)
+			setData(data)
 			return true
 		} catch (error) {
 			if (error instanceof Error && error.name === "AbortError") {
@@ -81,7 +80,7 @@ export function useFileHandle<T>(
 			}
 			throw error
 		}
-	}, [options.validator])
+	}
 
 	return {
 		data,
