@@ -1,27 +1,4 @@
-import { type } from "arktype"
 import { useEffect, useLayoutEffect, useState } from "react"
-
-function loadFromStorage<T>(key: string): T | null {
-	try {
-		if (typeof window === "undefined") return null
-		const saved = window.localStorage.getItem(key)
-		if (!saved) return null
-		return JSON.parse(saved)
-	} catch {
-		return null
-	}
-}
-
-function saveToStorage<T>(key: string, value: T) {
-	try {
-		if (typeof window === "undefined") return
-		window.localStorage.setItem(key, JSON.stringify(value))
-	} catch (error) {
-		console.warn("[saveToStorage]", error)
-	}
-}
-
-const JsonFromString = type("string.json.parse")
 
 export function useLocalStorage<T>(
 	key: string,
@@ -29,22 +6,25 @@ export function useLocalStorage<T>(
 	validate: (input: unknown) => T,
 ) {
 	const [value, setValue] = useState<T>(defaultValue)
+	const [loaded, setLoaded] = useState(false)
 
 	useLayoutEffect(() => {
+		if (loaded) return
 		try {
 			const saved = window.localStorage.getItem(key)
-			const parsed = JsonFromString.assert(saved)
-			setValue(validate(parsed))
+			if (saved) {
+				setValue(validate(JSON.parse(saved)))
+			}
+			setLoaded(true)
 		} catch (error) {
 			console.warn("failed to parse", error)
 		}
-	}, [key])
+	}, [key, validate, loaded])
 
 	useEffect(() => {
-		if (value !== defaultValue) {
-			saveToStorage(key, value)
-		}
-	}, [key, value, defaultValue])
+		if (!loaded) return
+		window.localStorage.setItem(key, JSON.stringify(value))
+	}, [key, value, loaded])
 
 	return [value, setValue] as const
 }
