@@ -1,7 +1,9 @@
 import { Icon } from "@iconify/react"
 import { useEffect, type ReactNode } from "react"
+import { AspectInput } from "~/components/AspectInput.tsx"
 import { AttributeInput } from "~/components/AttributeInput.tsx"
 import { Button } from "~/components/Button.tsx"
+import { aspectNames } from "~/data/aspects.ts"
 import {
 	attributeNames,
 	attributes,
@@ -11,6 +13,7 @@ import {
 	Character,
 	defaultCharacter,
 	formatTraitList,
+	getAspectTotal,
 	getAttributeTotal,
 	getAttributeValue,
 	getAvailableProficiencies,
@@ -55,6 +58,16 @@ export function CharacterSheet() {
 			attributes: {
 				...prev.attributes,
 				[attr]: value,
+			},
+		}))
+	}
+
+	function updateAspect(aspect: string, value: string) {
+		setCharacter((prev) => ({
+			...prev,
+			aspects: {
+				...prev.aspects,
+				[aspect]: value,
 			},
 		}))
 	}
@@ -128,6 +141,8 @@ export function CharacterSheet() {
 						attributes={character.attributes}
 						onChange={updateAttribute}
 					/>
+
+					<AspectInputList character={character} onChange={updateAspect} />
 
 					<div className="space-y-4">
 						<HitsBar
@@ -292,6 +307,31 @@ function AttributeInputList({
 						label={attributes[attribute].name}
 						value={characterAttributes[attribute] ?? "1"}
 						onChange={(value) => onChange(attribute, value.toString())}
+					/>
+				))}
+			</div>
+		</section>
+	)
+}
+
+type AspectInputListProps = {
+	character: Character
+	onChange: (aspect: string, value: string) => void
+}
+
+function AspectInputList({ character, onChange }: AspectInputListProps) {
+	const aspectTotal = getAspectTotal(character.aspects)
+
+	return (
+		<section>
+			<h3 className="text-lg font-light mb-1">Aspects ({aspectTotal}/6)</h3>
+			<div className="grid gap-2 grid-cols-1 @-[12rem]:grid-cols-2 @xs:grid-cols-3 @md:grid-cols-5">
+				{aspectNames.map((aspect) => (
+					<AspectInput
+						key={aspect}
+						aspect={aspect}
+						character={character}
+						onChange={(value) => onChange(aspect, value)}
 					/>
 				))}
 			</div>

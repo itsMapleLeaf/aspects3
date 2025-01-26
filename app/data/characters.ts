@@ -1,4 +1,5 @@
 import { type } from "arktype"
+import { aspects, type AspectName } from "./aspects.ts"
 import { type AttributeName } from "./attributes"
 import { traits } from "./traits"
 
@@ -11,6 +12,7 @@ export const Character = type({
 	comeback: "string = ''",
 	traits: type("string[]").default(() => []),
 	proficientSkills: type("string[]").default(() => []),
+	aspects: type(`Record<string, string>`).default(() => ({})),
 })
 
 export const defaultCharacter: Character = {
@@ -27,6 +29,7 @@ export const defaultCharacter: Character = {
 	comeback: "",
 	traits: [],
 	proficientSkills: [],
+	aspects: {},
 }
 
 export function getAttributeValue(name: AttributeName, character: Character) {
@@ -89,6 +92,20 @@ export function getAttributeTotal(attributes: Record<string, string>) {
 		(sum, val = "1") => sum + parseNumber(val, 1, 6),
 		0,
 	)
+}
+
+export function getAspectTotal(aspects: Record<string, string>) {
+	return Object.values(aspects).reduce(
+		(sum, val = "0") => sum + parseNumber(val, 0, 6),
+		0,
+	)
+}
+
+export function getAspectValue(name: string, character: Character) {
+	const baseValue = parseNumber(character.aspects[name] ?? "0", 0, 6)
+	const aspect = aspects[name as AspectName]
+	if (!aspect) return baseValue
+	return baseValue + getAttributeValue(aspect.attribute, character)
 }
 
 export function formatTraitList(selectedTraits: string[]) {

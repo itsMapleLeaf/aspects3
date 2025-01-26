@@ -1,5 +1,6 @@
 import { type ComponentProps } from "react"
-import { type AttributeName } from "~/data/attributes"
+import { type AttributeName, attributes } from "~/data/attributes"
+import { StatInput } from "./StatInput.tsx"
 
 const ATTRIBUTE_COLORS: Record<AttributeName, string> = {
 	intellect: "border-orange-900 bg-orange-800/20 ring-orange-500/50",
@@ -22,30 +23,15 @@ export function AttributeInput({
 	value,
 	onChange,
 	className = "",
-	...props
 }: AttributeInputProps) {
 	return (
-		<div className="flex flex-col items-center gap-1">
-			<input
-				type="text"
-				inputMode="numeric"
-				pattern="[0-9]*"
-				value={value}
-				onChange={(event) => {
-					const newValue = event.target.value
-					if (newValue === "" || !isNaN(parseInt(newValue))) {
-						onChange(newValue)
-					}
-				}}
-				className={`transition w-full h-12 text-center text-2xl border rounded-lg bg-black/20 focus:outline-none focus:ring-2 ${ATTRIBUTE_COLORS[attribute]} ${className}`}
-				{...props}
-			/>
-			<span
-				className="text-sm font-semibold"
-				style={{ color: `rgb(var(--${attribute}-color))` }}
-			>
-				{label}
-			</span>
-		</div>
+		<StatInput
+			value={value}
+			onChange={onChange}
+			label={label}
+			description={attributes[attribute].description}
+			min={1}
+			className={`${ATTRIBUTE_COLORS[attribute]} ${className}`}
+		/>
 	)
 }
