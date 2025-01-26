@@ -1,11 +1,9 @@
-import { NavLink, useLocation } from "react-router"
+import { NavLink } from "react-router"
 
 export function Navigation() {
-	const location = useLocation()
-
 	const links = [
-		{ to: "/", label: "Home" },
-		{ to: "/character-sheet", label: "Character Sheet" },
+		{ to: "/", label: "Rulebook" },
+		{ to: "/character-sheet", label: "Characters" },
 	]
 
 	return (

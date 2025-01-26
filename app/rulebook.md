@@ -271,7 +271,7 @@ Darkness
 ## Combat
 
 - combat starts when a character acts adversarially against another (such as, but not limited to, making an attack)
-- everyone rolls either agility (moving quick) or wit (thinking quick) to determine
+- everyone rolls either agility (moving quick) or wit (thinking quick) to determine action order
 - one action per round
 - every round, every participant chooses their action in secret
 - reveal all actions at once
