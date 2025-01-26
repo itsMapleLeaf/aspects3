@@ -44,3 +44,7 @@
 		}
 	}
 }
+
+@utility page-container {
+	@apply max-w-page-body px-4 w-full mx-auto;
+}

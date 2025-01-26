@@ -2,7 +2,7 @@ import Rulebook from "../rulebook.md"
 
 export default function HomePage() {
 	return (
-		<div className="max-w-page-body prose prose-invert mx-auto py-8">
+		<div className="page-container max-w-page-body prose prose-invert pt-8 pb-12 text-gray-50 text-lg prose-headings:font-light">
 			<Rulebook />
 		</div>
 	)
