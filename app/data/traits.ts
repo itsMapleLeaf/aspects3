@@ -12,7 +12,7 @@ export type TraitAttribute = {
 
 export const traits: Trait[] = [
 	{
-		name: "Long Tail",
+		name: "Long tail",
 		attributes: [
 			{
 				attribute: "sense",
@@ -45,7 +45,7 @@ export const traits: Trait[] = [
 		],
 	},
 	{
-		name: "Horns/Antlers",
+		name: "Horns / antlers",
 		attributes: [
 			{
 				attribute: "strength",
@@ -71,7 +71,7 @@ export const traits: Trait[] = [
 		],
 	},
 	{
-		name: "Furred Ears",
+		name: "Furred ears",
 		attributes: [
 			{
 				attribute: "sense",
@@ -81,7 +81,7 @@ export const traits: Trait[] = [
 		],
 	},
 	{
-		name: "Sharp Teeth/Fangs",
+		name: "Sharp teeth / fangs",
 		attributes: [
 			{ attribute: "strength", description: "natural weapons" },
 			{
