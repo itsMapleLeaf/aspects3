@@ -1,6 +1,5 @@
 import { Icon } from "@iconify/react"
 import { type } from "arktype"
-import { clamp } from "es-toolkit"
 import { type ReactNode } from "react"
 import { AttributeInput } from "~/components/AttributeInput"
 import {
@@ -10,6 +9,7 @@ import {
 } from "~/data/attributes"
 import { traits } from "~/data/traits"
 import { useLocalStorage } from "~/hooks/useLocalStorage"
+import { parseNumber } from "~/utils.js"
 import { DotBar } from "./DotBar.js"
 import { Input } from "./Input.js"
 import { TraitSelection } from "./TraitSelection"
@@ -39,11 +39,6 @@ const defaultCharacter: CharacterData = {
 	comeback: "",
 	traits: [],
 	proficientSkills: [],
-}
-
-export function parseNumber(value: string, min = 0, max = Infinity) {
-	const parsed = parseInt(value)
-	return isNaN(parsed) ? min : clamp(parsed, min, max)
 }
 
 function getAttributeValue(name: AttributeName, character: CharacterData) {
@@ -81,13 +76,6 @@ function getAvailableProficiencies(
 			count + (trait.attributes.some((a) => a.attribute === attribute) ? 1 : 0)
 		)
 	}, 0)
-}
-
-function startCase(str: string) {
-	return str
-		.split(" ")
-		.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-		.join(" ")
 }
 
 export function CharacterSheet() {

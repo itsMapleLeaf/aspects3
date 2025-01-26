@@ -1,4 +1,4 @@
-import { parseNumber } from "./CharacterSheet.js"
+import { parseNumber } from "~/utils.js"
 
 export function DotBar({
 	value,
@@ -26,19 +26,29 @@ export function DotBar({
 			<div className="flex-1 space-y-1">
 				<div className="text-sm font-semibold">{label}</div>
 				<div className="flex items-center gap-1 flex-wrap">
-					{Array.from({ length: max }, (_, i) => (
-						<button
-							key={i}
-							type="button"
-							onClick={() => onChange((i + 1).toString())}
-							className={`w-5 h-5 rounded-full border transition ${
-								i < parseNumber(value, 0, max)
-									? colorClasses[color]
-									: "border-gray-700 hover:border-gray-600"
-							}`}
-							aria-label={`Set ${label} to ${i + 1}`}
-						/>
-					))}
+					{Array.from({ length: max }, (_, i) => {
+						const current = parseNumber(value, 0, max)
+						const active = i < current
+						return (
+							<button
+								key={i}
+								type="button"
+								onClick={() => {
+									if (i === current - 1) {
+										onChange(i.toString())
+									} else {
+										onChange((i + 1).toString())
+									}
+								}}
+								className={`w-5 h-5 rounded-full border transition ${
+									active
+										? colorClasses[color]
+										: "border-gray-700 hover:border-gray-600"
+								}`}
+								aria-label={`Set ${label} to ${i + 1}`}
+							/>
+						)
+					})}
 				</div>
 			</div>
 
