@@ -60,9 +60,14 @@ Characters have a number in each attribute from 1 to 6, all adding to 18
 
 ## Traits
 
-The following is a list of traits you can add to your character. Each trait gives attribute bonuses. For each trait attribute, you may also choose a proficient skill in that attribute. For example: if your character has a long tail, which boosts Sense and Agility, you can pick a proficient Sense skill and a proficient Agility skill.
+Each player character picks three traits for their character to have, and each trait specifies two related attributes which:
 
-The traits can come in whatever form you choose. For example, a tail could be long and thick like a lizard’s, or thin with a spaded tip, like that of a devil. You can add any number of additional traits beyond the first three for narrative flavor, even ones from this list, but you have to choose which give your character their mechanical benefit.
+- Adds a power die to rolls made with that attribute
+- Lets you pick a proficient skill for that attribute
+
+For example: giving your character a long tail lets you pick proficient Sense and Agility skills.
+
+The traits can come in whatever form you choose. For example, a tail could be long and thick like a lizard’s, or thin with a spaded tip like a devil's. You can add any number of additional traits beyond the first three for narrative flavor, even ones from this list, while specifying the ones that apply their attribute buffs.
 
 Long Tail
 
@@ -165,7 +170,7 @@ Power & risk dice:
 Proficient skills:
 
 - Determined by your trait attributes
-- Adds +1 to the skill
+- Gives +1 power die for skill checks made with that skill
 - Proficient skills must be unique; cannot make a skill proficient twice
 
 Strength

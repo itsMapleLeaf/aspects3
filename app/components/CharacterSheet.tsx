@@ -43,25 +43,24 @@ function getAttributeValue(name: AttributeName, character: CharacterData) {
 	return clamp(Math.floor(character.attributes[name] ?? 1), 1, 6)
 }
 
-function getAttributeBonus(attribute: AttributeName, selectedTraits: string[]) {
-	return selectedTraits.reduce((bonus, traitName) => {
+function getTraitPowerDice(attribute: AttributeName, selectedTraits: string[]) {
+	return selectedTraits.reduce((count, traitName) => {
 		const trait = traits.find((t) => t.name === traitName)
-		if (!trait) return bonus
+		if (!trait) return count
 		return (
-			bonus + (trait.attributes.some((a) => a.attribute === attribute) ? 1 : 0)
+			count + (trait.attributes.some((a) => a.attribute === attribute) ? 1 : 0)
 		)
 	}, 0)
 }
 
-function getSkillValue(
+function getSkillPowerDice(
 	attribute: AttributeName,
 	skill: string,
 	character: CharacterData,
 ) {
-	const attributeBase = getAttributeValue(attribute, character)
-	const attributeBonus = getAttributeBonus(attribute, character.traits)
-	const proficiencyBonus = character.proficientSkills.includes(skill) ? 1 : 0
-	return attributeBase + attributeBonus + proficiencyBonus
+	const traitDice = getTraitPowerDice(attribute, character.traits)
+	const proficiencyDice = character.proficientSkills.includes(skill) ? 1 : 0
+	return traitDice + proficiencyDice
 }
 
 function getAvailableProficiencies(
@@ -139,31 +138,20 @@ export function CharacterSheet() {
 			<div className="grid gap-4 @md:grid-flow-col auto-cols-fr">
 				<Section title="Attributes" description={`Total: ${attributeTotal}/18`}>
 					<div className="grid gap-4 md:grid-cols-2">
-						{attributeNames.map((attribute) => {
-							const bonus = getAttributeBonus(attribute, character.traits)
-							const base = getAttributeValue(attribute, character)
-							return (
-								<Input
-									key={attribute}
-									label={attributes[attribute].name}
-									hint={attributes[attribute].description}
-									type="number"
-									min="1"
-									max="6"
-									value={base}
-									onChange={(event) =>
-										updateAttribute(attribute, event.target.valueAsNumber)
-									}
-									suffix={
-										bonus > 0 ? (
-											<span>
-												+ {bonus} = <strong>{base + bonus}</strong>
-											</span>
-										) : undefined
-									}
-								/>
-							)
-						})}
+						{attributeNames.map((attribute) => (
+							<Input
+								key={attribute}
+								label={attributes[attribute].name}
+								hint={attributes[attribute].description}
+								type="number"
+								min="1"
+								max="6"
+								value={getAttributeValue(attribute, character)}
+								onChange={(event) =>
+									updateAttribute(attribute, event.target.valueAsNumber)
+								}
+							/>
+						))}
 					</div>
 				</Section>
 
@@ -224,8 +212,6 @@ export function CharacterSheet() {
 			<Section title="Skills">
 				<div className="grid gap-8 md:grid-cols-3">
 					{attributeNames.map((attribute) => {
-						const bonus = getAttributeBonus(attribute, character.traits)
-						const base = getAttributeValue(attribute, character)
 						const availableProficiencies = getAvailableProficiencies(
 							attribute,
 							character.traits,
@@ -238,24 +224,26 @@ export function CharacterSheet() {
 							<div key={attribute} className="space-y-2">
 								<h3 className="font-medium capitalize">
 									{attributes[attribute].name}
-									{bonus > 0 && (
-										<span className="text-sm text-gray-400 ml-2">
-											({base} + {bonus})
-										</span>
-									)}
-									{availableProficiencies > 0 && (
+									{availableProficiencies - usedProficiencies > 0 && (
 										<span className="text-sm text-gray-400 ml-2">
 											Pick {availableProficiencies - usedProficiencies} skills
 										</span>
 									)}
 								</h3>
+
 								<ul className="space-y-1">
 									{attributes[attribute].skills.map((skill) => {
 										const isProficient =
 											character.proficientSkills.includes(skill)
+
 										const canToggle =
 											isProficient || usedProficiencies < availableProficiencies
-										const value = getSkillValue(attribute, skill, character)
+
+										const powerDice = getSkillPowerDice(
+											attribute,
+											skill,
+											character,
+										)
 
 										return (
 											<li key={skill}>
@@ -290,7 +278,16 @@ export function CharacterSheet() {
 															/>
 														)}
 													</span>
-													<span>{value}</span>
+													<span className="flex items-center">
+														<span className="ml-3">
+															{getAttributeValue(attribute, character)}
+														</span>
+														{powerDice > 0 && (
+															<span className="text-primary-400 ml-1.5">
+																+{powerDice}
+															</span>
+														)}
+													</span>
 												</button>
 											</li>
 										)
