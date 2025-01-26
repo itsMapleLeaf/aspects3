@@ -229,7 +229,7 @@ Light
 - vibe: justice, order, knowledge
 - attribute: intellect
 - action: restore - heal 2 hits
-- action: peacekeeper - before round, a chosen target may not deal more than 1 hit
+- action: peacekeeper - a chosen target may not deal more than 1 hit
 - action: multicast - add two additional targets to your next action
 
 Water
