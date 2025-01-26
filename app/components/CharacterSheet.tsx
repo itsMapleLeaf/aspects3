@@ -1,8 +1,8 @@
 import { Icon } from "@iconify/react"
 import { type } from "arktype"
 import { clamp } from "es-toolkit"
-import type { ReactNode } from "react"
-import { Input } from "~/components/Input"
+import { type ReactNode } from "react"
+import { AttributeInput } from "~/components/AttributeInput"
 import {
 	attributeNames,
 	attributes,
@@ -10,15 +10,17 @@ import {
 } from "~/data/attributes"
 import { traits } from "~/data/traits"
 import { useLocalStorage } from "~/hooks/useLocalStorage"
+import { DotBar } from "./DotBar.js"
+import { Input } from "./Input.js"
 import { TraitSelection } from "./TraitSelection"
 
 type CharacterData = typeof CharacterData.infer
 const CharacterData = type({
 	name: "string < 256 = ''",
-	attributes: type(`Record<string, number>`).default(() => ({})),
-	hits: "number >= 0 = 0",
-	fatigue: "number >= 0 = 0",
-	comeback: "number >= 0 = 0",
+	attributes: type(`Record<string, string>`).default(() => ({})),
+	hits: "string = ''",
+	fatigue: "string = ''",
+	comeback: "string = ''",
 	traits: type("string[]").default(() => []),
 	proficientSkills: type("string[]").default(() => []),
 })
@@ -26,21 +28,26 @@ const CharacterData = type({
 const defaultCharacter: CharacterData = {
 	name: "",
 	attributes: {
-		intellect: 1,
-		sense: 1,
-		agility: 1,
-		strength: 1,
-		wit: 1,
+		intellect: "1",
+		sense: "1",
+		agility: "1",
+		strength: "1",
+		wit: "1",
 	},
-	hits: 0,
-	fatigue: 0,
-	comeback: 0,
+	hits: "",
+	fatigue: "",
+	comeback: "",
 	traits: [],
 	proficientSkills: [],
 }
 
+export function parseNumber(value: string, min = 0, max = Infinity) {
+	const parsed = parseInt(value)
+	return isNaN(parsed) ? min : clamp(parsed, min, max)
+}
+
 function getAttributeValue(name: AttributeName, character: CharacterData) {
-	return clamp(Math.floor(character.attributes[name] ?? 1), 1, 6)
+	return parseNumber(character.attributes[name] ?? "1", 1, 6)
 }
 
 function getTraitPowerDice(attribute: AttributeName, selectedTraits: string[]) {
@@ -76,6 +83,13 @@ function getAvailableProficiencies(
 	}, 0)
 }
 
+function startCase(str: string) {
+	return str
+		.split(" ")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+		.join(" ")
+}
+
 export function CharacterSheet() {
 	const [character, setCharacter] = useLocalStorage(
 		"aspects-character",
@@ -84,7 +98,7 @@ export function CharacterSheet() {
 	)
 
 	const attributeTotal = Object.values(character.attributes).reduce(
-		(sum, val = 1) => sum + val,
+		(sum, val = "1") => sum + parseNumber(val, 1, 6),
 		0,
 	)
 
@@ -97,13 +111,12 @@ export function CharacterSheet() {
 		getAttributeValue("intellect", character) +
 		getAttributeValue("wit", character)
 
-	function updateAttribute(attr: AttributeName & string, value: number) {
-		const newValue = Math.max(1, Math.min(6, value))
+	function updateAttribute(attr: AttributeName & string, value: string) {
 		setCharacter((prev) => ({
 			...prev,
 			attributes: {
 				...prev.attributes,
-				[attr]: newValue,
+				[attr]: value,
 			},
 		}))
 	}
@@ -121,85 +134,86 @@ export function CharacterSheet() {
 	const traitsDescription =
 		remainingTraits > 0 ? `Choose ${remainingTraits} more` : undefined
 
+	const traitList = character.traits
+		.map((t) => traits.find((trait) => trait.name === t))
+		.filter((trait): trait is NonNullable<typeof trait> => Boolean(trait))
+		.map((trait) => trait.name)
+
+	const formattedTraits =
+		traitList.length > 0
+			? new Intl.ListFormat("en", {
+					style: "long",
+					type: "conjunction",
+			  })
+					.format(traitList)
+					.toLocaleLowerCase()
+			: ""
+
 	return (
 		<div className="max-w-4xl mx-auto py-6 px-4 @container">
-			<h2 className="text-3xl font-light text-gray-100 mb-4">
-				Character Sheet
-			</h2>
-
-			<Input
-				label="Name"
-				value={character.name}
-				onChange={(e) =>
-					setCharacter((prev) => ({ ...prev, name: e.target.value }))
-				}
-			/>
-
-			<div className="grid gap-4 @md:grid-flow-col auto-cols-fr">
-				<Section title="Attributes" description={`Total: ${attributeTotal}/18`}>
-					<div className="grid gap-4 md:grid-cols-2">
-						{attributeNames.map((attribute) => (
-							<Input
-								key={attribute}
-								label={attributes[attribute].name}
-								hint={attributes[attribute].description}
-								type="number"
-								min="1"
-								max="6"
-								value={getAttributeValue(attribute, character)}
-								onChange={(event) =>
-									updateAttribute(attribute, event.target.valueAsNumber)
-								}
-							/>
-						))}
-					</div>
-				</Section>
-
-				<Section title="Status">
-					<div className="grid gap-4 md:grid-cols-2 content-start">
+			<div className="grid gap-8 grid-cols-1 @lg:grid-cols-[1fr_auto]">
+				<div className="space-y-6 min-w-0 @container">
+					<div>
 						<Input
+							type="text"
+							value={character.name}
+							onChange={(e) =>
+								setCharacter((prev) => ({ ...prev, name: e.target.value }))
+							}
+							placeholder="Unnamed Character"
+							className="text-xl"
+						/>
+						{traitList.length > 0 && (
+							<p className="mt-1 text-gray-400">{formattedTraits}</p>
+						)}
+					</div>
+
+					<section>
+						<h3 className="text-sm font-semibold">
+							Attributes ({attributeTotal}/18)
+						</h3>
+						<div className="grid gap-2 grid-cols-1 @-[12rem]:grid-cols-2 @xs:grid-cols-3 @md:grid-cols-5">
+							{attributeNames.map((attribute) => (
+								<AttributeInput
+									key={attribute}
+									attribute={attribute}
+									label={attributes[attribute].name}
+									value={character.attributes[attribute] ?? "1"}
+									onChange={(value) =>
+										updateAttribute(attribute, value.toString())
+									}
+								/>
+							))}
+						</div>
+					</section>
+
+					<div className="space-y-4">
+						<DotBar
 							label="Hits"
-							type="number"
-							min="0"
-							max={toughness}
 							value={character.hits}
-							onChange={(event) =>
-								setCharacter((prev) => ({
-									...prev,
-									hits: Math.min(toughness, event.target.valueAsNumber),
-								}))
+							placeholder="0"
+							max={toughness}
+							onChange={(value) =>
+								setCharacter((prev) => ({ ...prev, hits: value }))
 							}
-							suffix={`/ ${toughness}`}
+							color="red"
 						/>
-
-						<Input
+						<DotBar
 							label="Fatigue"
-							type="number"
-							min={0}
-							max={resolve}
 							value={character.fatigue}
-							onChange={(event) => {
-								setCharacter((prev) => ({
-									...prev,
-									fatigue: Math.min(resolve, event.target.valueAsNumber),
-								}))
-							}}
-							suffix={`/ ${resolve}`}
-						/>
-						<Input
-							label="Comeback"
-							type="number"
-							min="0"
-							value={character.comeback}
-							onChange={(event) =>
-								setCharacter((prev) => ({
-									...prev,
-									comeback: Math.max(0, event.target.valueAsNumber),
-								}))
+							placeholder="0"
+							max={resolve}
+							onChange={(value) =>
+								setCharacter((prev) => ({ ...prev, fatigue: value }))
 							}
+							color="purple"
 						/>
 					</div>
-				</Section>
+				</div>
+
+				<div className="w-80 h-80 border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center">
+					<p className="text-center text-gray-400">character image here</p>
+				</div>
 			</div>
 
 			<Section title="Traits" description={traitsDescription}>
@@ -220,13 +234,17 @@ export function CharacterSheet() {
 							(skill) => character.proficientSkills.includes(skill),
 						).length
 
+						const neededProficiencies =
+							availableProficiencies - usedProficiencies
+
 						return (
 							<div key={attribute} className="space-y-2">
-								<h3 className="font-medium capitalize">
+								<h3 className="font-medium">
 									{attributes[attribute].name}
-									{availableProficiencies - usedProficiencies > 0 && (
+									{neededProficiencies > 0 && (
 										<span className="text-sm text-gray-400 ml-2">
-											Pick {availableProficiencies - usedProficiencies} skills
+											Pick {neededProficiencies} skill
+											{neededProficiencies === 1 ? "" : "s"}
 										</span>
 									)}
 								</h3>
@@ -260,7 +278,7 @@ export function CharacterSheet() {
 																: [...prev.proficientSkills, skill],
 														}))
 													}}
-													className={`w-full flex justify-between items-center px-2 py-1 rounded transition ${
+													className={`w-full flex justify-between items-center -mx-2 px-2 py-1 rounded transition ${
 														isProficient
 															? "bg-primary-500/20 hover:bg-primary-500/30"
 															: canToggle
