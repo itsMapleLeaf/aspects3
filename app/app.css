@@ -31,7 +31,8 @@
 @layer base {
 	html,
 	body {
-		@apply bg-white dark:bg-gray-950;
+		@apply bg-white dark:bg-gray-950 overflow-x-clip;
+		scrollbar-color: var(--color-gray-700) var(--color-gray-950);
 
 		@media (prefers-color-scheme: dark) {
 			color-scheme: dark;
