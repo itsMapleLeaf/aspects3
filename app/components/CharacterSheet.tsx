@@ -17,6 +17,7 @@ import {
 	getSkillPowerDice,
 	getToughness,
 } from "~/data/characters.ts"
+import { traits } from "~/data/traits.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { DotBar } from "./DotBar.tsx"
 import { Input } from "./Input.tsx"
@@ -48,7 +49,14 @@ export function CharacterSheet() {
 		}))
 	}
 
-	const remainingTraits = 3 - character.traits.length
+	const selectedTraits = traits
+		.filter((trait) =>
+			character.traits.some((selected) => selected === trait.name),
+		)
+		.map((trait) => trait.name)
+
+	const remainingTraits = 3 - selectedTraits.length
+
 	const traitsDescription =
 		remainingTraits > 0 ? `Choose ${remainingTraits} more` : undefined
 
@@ -58,7 +66,7 @@ export function CharacterSheet() {
 				<div className="space-y-6 min-w-0 @container">
 					<NameInput
 						name={character.name}
-						traits={character.traits}
+						traits={selectedTraits}
 						onChange={(name) => setCharacter((prev) => ({ ...prev, name }))}
 					/>
 

@@ -7,12 +7,9 @@ type TraitSelectionProps = {
 }
 
 export function TraitSelection({
-	selectedTraits: selectedTraitsProp,
+	selectedTraits,
 	onTraitToggle,
 }: TraitSelectionProps) {
-	const selectedTraits = traits.filter((trait) =>
-		selectedTraitsProp.some((selected) => selected === trait.name),
-	)
 	return (
 		<div className="grid gap-4 grid-cols-1 @md:grid-cols-2 @3xl:grid-cols-3">
 			{traits.map((trait) => (
@@ -21,7 +18,7 @@ export function TraitSelection({
 					className={`
 						text-left px-3 py-2.5 rounded-lg border transition flex flex-col
 						${
-							selectedTraits.includes(trait)
+							selectedTraits.includes(trait.name)
 								? "bg-primary-900/20 border-primary-700"
 								: selectedTraits.length >= 3
 								? "opacity-50 bg-gray-900/20 border-gray-700"
@@ -29,12 +26,15 @@ export function TraitSelection({
 						}
 					`}
 					onClick={() => {
-						if (!selectedTraits.includes(trait) && selectedTraits.length >= 3)
+						if (
+							!selectedTraits.includes(trait.name) &&
+							selectedTraits.length >= 3
+						)
 							return
 						onTraitToggle(trait.name)
 					}}
 					disabled={
-						!selectedTraits.includes(trait) && selectedTraits.length >= 3
+						!selectedTraits.includes(trait.name) && selectedTraits.length >= 3
 					}
 				>
 					<h3 className="font-medium mb-2">{trait.name}</h3>
