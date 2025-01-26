@@ -1,3 +1,7 @@
+# TypeScript / JavaScript
+
+Always include the file extension in imports, e.g. `import { a } from './a.ts` (or `tsx` if it's a tsx file)
+
 # Tailwind CSS
 
 - Don't use `dark:` variants for styling; this app is dark mode only
