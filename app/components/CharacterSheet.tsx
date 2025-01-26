@@ -86,14 +86,14 @@ export function CharacterSheet() {
 				</div>
 			</div>
 
-			<Section title="Traits" description={traitsDescription}>
+			<ToggleSection title="Traits" description={traitsDescription}>
 				<TraitSelection
-					selectedTraits={character.traits}
+					selectedTraits={selectedTraits}
 					onTraitToggle={toggleTrait}
 				/>
-			</Section>
+			</ToggleSection>
 
-			<Section title="Skills">
+			<ToggleSection title="Skills">
 				<div className="grid gap-8 md:grid-cols-3">
 					{attributeNames.map((attribute) => (
 						<SkillList
@@ -111,32 +111,56 @@ export function CharacterSheet() {
 						/>
 					))}
 				</div>
-			</Section>
+			</ToggleSection>
 		</div>
 	)
 }
 
-type SectionProps = {
+type ToggleSectionProps = {
 	title: string
 	description?: string
 	children: ReactNode
 	className?: string
 }
 
-function Section({
+function ToggleSection({
 	title,
 	description,
 	children,
 	className = "",
-}: SectionProps) {
+}: ToggleSectionProps) {
+	const [visible, setVisible] = useLocalStorage(
+		`ToggleSection:${title}`,
+		true,
+		Boolean,
+	)
+
 	return (
-		<section className={`mt-6 ${className}`}>
-			<header className="mb-3 flex items-baseline justify-between gap-4 flex-wrap">
-				<h3 className="text-2xl font-light">{title}</h3>
+		<details
+			className={`mt-6 group ${className}`}
+			open={visible}
+			onToggle={(event) => setVisible(event.currentTarget.open)}
+		>
+			<summary
+				className="
+					mb-3 flex w-full items-center gap-4 text-start flex-wrap rounded-lg
+					relative isolate
+					before:absolute before:rounded-lg before:bg-primary-800/20 before:-inset-x-3 before:-inset-y-1.5 before:-z-10
+					before:opacity-0
+					hover:before:opacity-100
+					before:transition
+					select-none
+				"
+			>
+				<h3 className="text-2xl font-light flex-1">{title}</h3>
 				{description && <p className="text-gray-400">{description}</p>}
-			</header>
+				<Icon
+					icon="mingcute:up-line"
+					className="size-6 group-open:-rotate-180 transition duration-200"
+				/>
+			</summary>
 			{children}
-		</section>
+		</details>
 	)
 }
 
