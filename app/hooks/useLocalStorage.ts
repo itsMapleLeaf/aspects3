@@ -1,5 +1,5 @@
 import { type } from "arktype"
-import { useEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useState } from "react"
 
 function loadFromStorage<T>(key: string): T | null {
 	try {
@@ -30,7 +30,7 @@ export function useLocalStorage<T>(
 ) {
 	const [value, setValue] = useState<T>(defaultValue)
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		try {
 			const saved = window.localStorage.getItem(key)
 			const parsed = JsonFromString.assert(saved)
