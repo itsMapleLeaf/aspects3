@@ -26,6 +26,8 @@
 	--color-gray-800: var(--color-zinc-800);
 	--color-gray-900: var(--color-zinc-900);
 	--color-gray-950: var(--color-zinc-950);
+
+	--spacing-page-body: 960px;
 }
 
 @layer base {
@@ -33,6 +35,7 @@
 	body {
 		@apply bg-white dark:bg-gray-950 overflow-x-clip;
 		scrollbar-color: var(--color-gray-700) var(--color-gray-950);
+		scrollbar-gutter: stable;
 
 		@media (prefers-color-scheme: dark) {
 			color-scheme: dark;

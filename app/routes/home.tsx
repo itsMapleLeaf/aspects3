@@ -11,7 +11,7 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
 	return (
-		<main className="max-w-4xl mx-auto p-6 space-y-8">
+		<main className="max-w-page-body mx-auto p-6 space-y-8">
 			<div className="text-center space-y-4">
 				<h1 className="text-4xl font-bold">Aspects of Nature</h1>
 				<p className="text-xl text-gray-600 dark:text-gray-400">

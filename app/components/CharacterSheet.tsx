@@ -53,7 +53,7 @@ export function CharacterSheet() {
 		remainingTraits > 0 ? `Choose ${remainingTraits} more` : undefined
 
 	return (
-		<div className="max-w-4xl mx-auto py-6 px-4 @container">
+		<div className="max-w-page-body mx-auto py-6 @container">
 			<div className="grid gap-8 grid-cols-1 @lg:grid-cols-[1fr_auto]">
 				<div className="space-y-6 min-w-0 @container">
 					<NameInput
