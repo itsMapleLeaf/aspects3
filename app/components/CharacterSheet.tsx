@@ -1,3 +1,4 @@
+import { Icon } from "@iconify/react"
 import { type } from "arktype"
 import { clamp } from "es-toolkit"
 import type { ReactNode } from "react"
@@ -7,6 +8,7 @@ import {
 	attributes,
 	type AttributeName,
 } from "~/data/attributes"
+import { traits } from "~/data/traits"
 import { useLocalStorage } from "~/hooks/useLocalStorage"
 import { TraitSelection } from "./TraitSelection"
 
@@ -18,6 +20,7 @@ const CharacterData = type({
 	fatigue: "number >= 0 = 0",
 	comeback: "number >= 0 = 0",
 	traits: type("string[]").default(() => []),
+	proficientSkills: type("string[]").default(() => []),
 })
 
 const defaultCharacter: CharacterData = {
@@ -33,10 +36,45 @@ const defaultCharacter: CharacterData = {
 	fatigue: 0,
 	comeback: 0,
 	traits: [],
+	proficientSkills: [],
 }
 
-function getAttribute(name: AttributeName, character: CharacterData) {
+function getAttributeValue(name: AttributeName, character: CharacterData) {
 	return clamp(Math.floor(character.attributes[name] ?? 1), 1, 6)
+}
+
+function getAttributeBonus(attribute: AttributeName, selectedTraits: string[]) {
+	return selectedTraits.reduce((bonus, traitName) => {
+		const trait = traits.find((t) => t.name === traitName)
+		if (!trait) return bonus
+		return (
+			bonus + (trait.attributes.some((a) => a.attribute === attribute) ? 1 : 0)
+		)
+	}, 0)
+}
+
+function getSkillValue(
+	attribute: AttributeName,
+	skill: string,
+	character: CharacterData,
+) {
+	const attributeBase = getAttributeValue(attribute, character)
+	const attributeBonus = getAttributeBonus(attribute, character.traits)
+	const proficiencyBonus = character.proficientSkills.includes(skill) ? 1 : 0
+	return attributeBase + attributeBonus + proficiencyBonus
+}
+
+function getAvailableProficiencies(
+	attribute: AttributeName,
+	selectedTraits: string[],
+) {
+	return selectedTraits.reduce((count, traitName) => {
+		const trait = traits.find((t) => t.name === traitName)
+		if (!trait) return count
+		return (
+			count + (trait.attributes.some((a) => a.attribute === attribute) ? 1 : 0)
+		)
+	}, 0)
 }
 
 export function CharacterSheet() {
@@ -52,12 +90,13 @@ export function CharacterSheet() {
 	)
 
 	const toughness =
-		getAttribute("strength", character) + getAttribute("agility", character)
+		getAttributeValue("strength", character) +
+		getAttributeValue("agility", character)
 
 	const resolve =
-		getAttribute("sense", character) +
-		getAttribute("intellect", character) +
-		getAttribute("wit", character)
+		getAttributeValue("sense", character) +
+		getAttributeValue("intellect", character) +
+		getAttributeValue("wit", character)
 
 	function updateAttribute(attr: AttributeName & string, value: number) {
 		const newValue = Math.max(1, Math.min(6, value))
@@ -100,58 +139,65 @@ export function CharacterSheet() {
 			<div className="grid gap-4 @md:grid-flow-col auto-cols-fr">
 				<Section title="Attributes" description={`Total: ${attributeTotal}/18`}>
 					<div className="grid gap-4 md:grid-cols-2">
-						{attributeNames.map((attribute) => (
-							<Input
-								key={attribute}
-								label={attributes[attribute].name}
-								hint={attributes[attribute].description}
-								type="number"
-								min="1"
-								max="6"
-								value={character.attributes[attribute]}
-								onChange={(event) =>
-									updateAttribute(attribute, event.target.valueAsNumber)
-								}
-							/>
-						))}
+						{attributeNames.map((attribute) => {
+							const bonus = getAttributeBonus(attribute, character.traits)
+							const base = getAttributeValue(attribute, character)
+							return (
+								<Input
+									key={attribute}
+									label={attributes[attribute].name}
+									hint={attributes[attribute].description}
+									type="number"
+									min="1"
+									max="6"
+									value={base}
+									onChange={(event) =>
+										updateAttribute(attribute, event.target.valueAsNumber)
+									}
+									suffix={
+										bonus > 0 ? (
+											<span>
+												+ {bonus} = <strong>{base + bonus}</strong>
+											</span>
+										) : undefined
+									}
+								/>
+							)
+						})}
 					</div>
 				</Section>
 
 				<Section title="Status">
 					<div className="grid gap-4 md:grid-cols-2 content-start">
-						<OutOf value={toughness}>
-							<Input
-								label="Hits"
-								type="number"
-								className="flex-1"
-								min="0"
-								max={toughness}
-								value={character.hits}
-								onChange={(event) =>
-									setCharacter((prev) => ({
-										...prev,
-										hits: Math.min(toughness, event.target.valueAsNumber),
-									}))
-								}
-							/>
-						</OutOf>
+						<Input
+							label="Hits"
+							type="number"
+							min="0"
+							max={toughness}
+							value={character.hits}
+							onChange={(event) =>
+								setCharacter((prev) => ({
+									...prev,
+									hits: Math.min(toughness, event.target.valueAsNumber),
+								}))
+							}
+							suffix={`/ ${toughness}`}
+						/>
 
-						<OutOf value={resolve}>
-							<Input
-								label="Fatigue"
-								type="number"
-								className="flex-1"
-								min={0}
-								max={resolve}
-								value={character.fatigue}
-								onChange={(event) => {
-									setCharacter((prev) => ({
-										...prev,
-										fatigue: Math.min(resolve, event.target.valueAsNumber),
-									}))
-								}}
-							/>
-						</OutOf>
+						<Input
+							label="Fatigue"
+							type="number"
+							min={0}
+							max={resolve}
+							value={character.fatigue}
+							onChange={(event) => {
+								setCharacter((prev) => ({
+									...prev,
+									fatigue: Math.min(resolve, event.target.valueAsNumber),
+								}))
+							}}
+							suffix={`/ ${resolve}`}
+						/>
 						<Input
 							label="Comeback"
 							type="number"
@@ -177,21 +223,82 @@ export function CharacterSheet() {
 
 			<Section title="Skills">
 				<div className="grid gap-8 md:grid-cols-3">
-					{attributeNames.map((attribute) => (
-						<div key={attribute} className="space-y-2">
-							<h3 className="font-medium capitalize">
-								{attributes[attribute].name}
-							</h3>
-							<ul className="space-y-1">
-								{attributes[attribute].skills.map((skill) => (
-									<li key={skill} className="flex justify-between">
-										<span>{skill}</span>
-										<span>{character.attributes[attribute]}</span>
-									</li>
-								))}
-							</ul>
-						</div>
-					))}
+					{attributeNames.map((attribute) => {
+						const bonus = getAttributeBonus(attribute, character.traits)
+						const base = getAttributeValue(attribute, character)
+						const availableProficiencies = getAvailableProficiencies(
+							attribute,
+							character.traits,
+						)
+						const usedProficiencies = attributes[attribute].skills.filter(
+							(skill) => character.proficientSkills.includes(skill),
+						).length
+
+						return (
+							<div key={attribute} className="space-y-2">
+								<h3 className="font-medium capitalize">
+									{attributes[attribute].name}
+									{bonus > 0 && (
+										<span className="text-sm text-gray-400 ml-2">
+											({base} + {bonus})
+										</span>
+									)}
+									{availableProficiencies > 0 && (
+										<span className="text-sm text-gray-400 ml-2">
+											Pick {availableProficiencies - usedProficiencies} skills
+										</span>
+									)}
+								</h3>
+								<ul className="space-y-1">
+									{attributes[attribute].skills.map((skill) => {
+										const isProficient =
+											character.proficientSkills.includes(skill)
+										const canToggle =
+											isProficient || usedProficiencies < availableProficiencies
+										const value = getSkillValue(attribute, skill, character)
+
+										return (
+											<li key={skill}>
+												<button
+													type="button"
+													disabled={!canToggle && !isProficient}
+													onClick={() => {
+														setCharacter((prev) => ({
+															...prev,
+															proficientSkills: isProficient
+																? prev.proficientSkills.filter(
+																		(s) => s !== skill,
+																  )
+																: [...prev.proficientSkills, skill],
+														}))
+													}}
+													className={`w-full flex justify-between items-center px-2 py-1 rounded transition ${
+														isProficient
+															? "bg-primary-500/20 hover:bg-primary-500/30"
+															: canToggle
+															? "hover:bg-gray-500/20"
+															: ""
+													}`}
+												>
+													<span className="flex items-center gap-2">
+														{skill}
+														{isProficient && (
+															<Icon
+																icon="mingcute:check-fill"
+																className="w-4 h-4 text-primary-400"
+																aria-hidden
+															/>
+														)}
+													</span>
+													<span>{value}</span>
+												</button>
+											</li>
+										)
+									})}
+								</ul>
+							</div>
+						)
+					})}
 				</div>
 			</Section>
 		</div>
@@ -219,17 +326,5 @@ function Section({
 			</header>
 			{children}
 		</section>
-	)
-}
-
-function OutOf({ value, children }: { value: ReactNode; children: ReactNode }) {
-	return (
-		<div className="flex items-end gap-2">
-			{children}
-			<p className="py-2 my-px">
-				<span aria-hidden>/</span> <span className="sr-only">out of</span>{" "}
-				<span className="py-3">{value}</span>
-			</p>
-		</div>
 	)
 }
