@@ -1,15 +1,19 @@
 import type { ComponentProps } from "react"
+import { useId } from "react"
 
 type CheckboxProps = {
 	label: string
-} & ComponentProps<"input">
+} & Omit<ComponentProps<"input">, "type">
 
 export function Checkbox({
 	label,
-	id,
+	id: providedId,
 	className = "",
 	...props
 }: CheckboxProps) {
+	const internalId = useId()
+	const id = providedId ?? internalId
+
 	return (
 		<div className="flex items-center gap-1.5">
 			<input

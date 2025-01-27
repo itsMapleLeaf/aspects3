@@ -117,7 +117,6 @@ export function CharacterSheet() {
 					<div className="flex gap-2 justify-end">
 						{hasFileSystemAccess && hasFile && (
 							<Checkbox
-								id="auto-save"
 								label="Auto-save"
 								checked={autoSave}
 								onChange={(event) => setAutoSave(event.target.checked)}

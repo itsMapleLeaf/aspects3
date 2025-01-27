@@ -18,7 +18,6 @@ export function AspectArts({ character }: AspectArtsProps) {
 		<>
 			<div className="mb-4">
 				<Checkbox
-					id="show-attuned-arts"
 					label="Show attuned arts only"
 					checked={showAttunedOnly}
 					onChange={(event) => setShowAttunedOnly(event.target.checked)}
