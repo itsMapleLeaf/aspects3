@@ -1,8 +1,10 @@
-import type { AttributeName } from "~/data/attributes"
+import type { AspectName } from "~/data/aspects.ts"
+import type { AttributeName } from "~/data/attributes.ts"
 
 export type Trait = {
 	name: string
 	attributes: [TraitAttribute, TraitAttribute]
+	aspect: AspectName
 }
 
 export type TraitAttribute = {
@@ -23,6 +25,7 @@ export const traits: Trait[] = [
 				description: "helps with balance and quick direction changes",
 			},
 		],
+		aspect: "wind",
 	},
 	{
 		name: "Fins",
@@ -33,6 +36,7 @@ export const traits: Trait[] = [
 				description: "sensitive to water pressure and movement",
 			},
 		],
+		aspect: "water",
 	},
 	{
 		name: "Wings",
@@ -43,6 +47,7 @@ export const traits: Trait[] = [
 				description: "complex navigation and wind reading",
 			},
 		],
+		aspect: "wind",
 	},
 	{
 		name: "Horns / antlers",
@@ -56,6 +61,7 @@ export const traits: Trait[] = [
 				description: "enhanced spatial awareness of head space/clearance",
 			},
 		],
+		aspect: "light",
 	},
 	{
 		name: "Antennas",
@@ -69,6 +75,7 @@ export const traits: Trait[] = [
 				description: "detect subtle environmental changes",
 			},
 		],
+		aspect: "darkness",
 	},
 	{
 		name: "Furred ears",
@@ -79,6 +86,7 @@ export const traits: Trait[] = [
 			},
 			{ attribute: "wit", description: "expressive movement for social cues" },
 		],
+		aspect: "light",
 	},
 	{
 		name: "Sharp teeth / fangs",
@@ -90,6 +98,7 @@ export const traits: Trait[] = [
 					"intimidation factor in social situations, but a draw for some",
 			},
 		],
+		aspect: "fire",
 	},
 	{
 		name: "Bioluminescence",
@@ -103,6 +112,7 @@ export const traits: Trait[] = [
 				description: "can make one's appearance more charming or intimidating",
 			},
 		],
+		aspect: "darkness",
 	},
 	{
 		name: "Scales",
@@ -113,6 +123,7 @@ export const traits: Trait[] = [
 				description: "enhanced temperature regulation/awareness",
 			},
 		],
+		aspect: "water",
 	},
 	{
 		name: "Claws",
@@ -120,6 +131,7 @@ export const traits: Trait[] = [
 			{ attribute: "strength", description: "acts as a weapon of its own" },
 			{ attribute: "wit", description: "intimidating display/social presence" },
 		],
+		aspect: "fire",
 	},
 ]
 

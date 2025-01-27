@@ -5,7 +5,7 @@ summary:
 - story & roleplay focused
 - rules lite
 - low math (ideally)
-- flexible
+- flexible character builder based around several elements that link to one another
 - setting: cute anime characters with animal ears who can bend elements, low tech but with a modern day contemporary fantasy vibe
 
 ## Game Flow
@@ -65,7 +65,9 @@ Each player character picks three traits for their character to have, and each t
 - Adds a power die to rolls made with that attribute
 - Lets you pick a proficient skill for that attribute
 
-For example, let's say you give your character a long tail. This means that all Sense skills and all Agility skill checks will receive +1 power die. Then you can pick a proficient skill from each of those categories, let's say Listen from Sense, and Dash from Agility. Your Listen and Dash checks both now have +2 power dice.
+Some aspects also favor certain traits, where said traits will give +1 power die to checks made with that aspect.
+
+For example, let's say you give your character a long tail. This means that all Sense skills and all Agility skill checks will receive +1 power die. Wind aspect checks also receive +1 power die. Then you can pick a proficient skill from each of those categories, let's say Listen from Sense, and Dash from Agility. Your Listen and Dash checks both now have +2 power dice.
 
 The traits can come in whatever form you choose. For example, a tail could be long and thick like a lizard’s, or thin with a spaded tip like a devil's. You can add any number of additional traits beyond the first three for narrative flavor, even ones from this list, while specifying the ones that apply their attribute buffs.
 
@@ -73,51 +75,61 @@ Long Tail
 
 - Sense: an additional appendage for sensory information
 - Agility: helps with balance and quick direction changes
+- Wind
 
 Fins
 
 - Agility: streamlined movement
 - Sense: sensitive to water pressure and movement
+- Water
 
 Wings
 
 - Agility: aerial maneuverability
 - Intellect: complex navigation and wind reading
+- Wind
 
 Horns/antlers
 
 - Strength: natural weapons and structural strength
 - Sense: enhanced spatial awareness of head space/clearance
+- Light
 
 Antennas
 
 - Intellect: process complex sensory information
 - Sense: detect subtle environmental changes
+- Darkness
 
 Furred ears
 
 - Sense: enhanced hearing from the fur's sensitivity
 - Wit: expressive movement for social cues
+- Light
 
 Sharp teeth/fangs
 
 - Strength: natural weapons
 - Wit: intimidation factor in social situations, but a draw for some
+- Fire
 
 Bioluminescence
 
 - Intellect: control over complex biological processes
 - Wit: can make one’s appearance more charming or intimidating
+- Darkness
 
 Scales
 
 - Strength: natural armor
 - Intellect: enhanced temperature regulation/awareness
+- Water
 
 Claws
 
 - Strength: acts as a weapon of its own
 - Wit: intimidating display/social presence
+- Fire
 
 ## Hits & Toughness
 
@@ -222,13 +234,26 @@ Sense
 
 ## Aspects
 
-- Small aspect arts can be used at any time for free, as long as the character is attuned with that aspect. Examples:
+- Aspect art checks: same as skill checks, but with a d12 (power/risk dice are still d6)
+
+- Players can use any aspect art, but the cost depends on whether their character is _attuned_ with (has points in) the aspect.
+
+- If they are attuned:
+
+  - small aspect arts are free
+  - aspect checks cost 1 fatigue
+
+- If they are _not_ attuned:
+
+  - small aspect arts cost 1 fatigue
+  - aspect checks cost 2 fatigue, and receive a risk die
+
+- Examples of small aspect arts:
   - Light: making an orb of light
   - Water: drying someone’s clothes
   - Fire: heating a cup of tea
   - Wind: making a gentle breeze
   - Darkness: send a shiver down someone’s spine
-- Aspect art checks: same as skill checks, but with a d12
 - For each action below, must succeed an aspect check for the primary effect to apply, otherwise the failure case applies
 
 Light
@@ -240,6 +265,7 @@ Light
 - action: multicast - add 2 additional targets to your next action; on failure, 1 additional target
 - action: sacrifice - try to remove any 2 hits, then take 1 hit; on failure, remove any 1 hit
 - action: inspire - add 2 power dice to a target's next roll; on failure, add 1 power die
+- (idea) action: command - make someone do a thing; on failure, requires an additional Wit skill check (whichever is most appropriate)
 
 Water
 
@@ -275,6 +301,7 @@ Darkness
 - action: drain - try to remove any 2 hits, then deal any 2 hits; on failure, remove 1, deal 1
 - action: cancel - prevent a target's next action; on failure, the target is random
 - action: disappear - turn invisible, you cannot take hits until your next action; on failure, you must succeed an Agility check to prevent any hit
+- (idea) action: message - send a msg; on failure, under Wit words
 
 ## Combat
 

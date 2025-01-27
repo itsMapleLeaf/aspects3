@@ -128,3 +128,12 @@ function parseNumber(value: string, min: number, max: number) {
 	const num = parseInt(value)
 	return isNaN(num) ? min : Math.max(min, Math.min(max, num))
 }
+
+export function getAspectPowerDice(
+	aspectName: AspectName,
+	character: Character,
+) {
+	return traits
+		.filter((trait) => character.traits.includes(trait.name))
+		.filter((trait) => trait.aspect === aspectName).length
+}

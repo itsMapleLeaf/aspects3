@@ -1,7 +1,16 @@
 import { Icon } from "@iconify/react"
 import { Tooltip } from "~/components/Tooltip.tsx"
-import { attributes } from "~/data/attributes"
-import { traits } from "~/data/traits"
+import { aspects } from "~/data/aspects.ts"
+import { attributes } from "~/data/attributes.ts"
+import { traits } from "~/data/traits.ts"
+
+const aspectColors = {
+	light: "text-yellow-300",
+	water: "text-blue-300",
+	wind: "text-emerald-300",
+	fire: "text-red-300",
+	darkness: "text-purple-300",
+} as const
 
 type TraitSelectionProps = {
 	selectedTraits: string[]
@@ -34,7 +43,7 @@ export function TraitSelection({
 					>
 						<div>
 							<h3 className="font-medium mb-1">{trait.name}</h3>
-							<div className="flex gap-4">
+							<div className="flex flex-wrap gap-x-2 gap-y-1">
 								{trait.attributes.map(({ attribute, description }) => (
 									<div key={attribute} className="flex items-center gap-1">
 										<span className="text-sm text-primary-400">
@@ -48,6 +57,9 @@ export function TraitSelection({
 										</Tooltip>
 									</div>
 								))}
+								<span className={`text-sm text-primary-400`}>
+									{aspects[trait.aspect].name}
+								</span>
 							</div>
 						</div>
 
