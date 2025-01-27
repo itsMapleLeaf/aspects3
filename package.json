@@ -2,6 +2,7 @@
 	"name": "aspects3",
 	"private": true,
 	"type": "module",
+	"packageManager": "bun@1.1.45",
 	"scripts": {
 		"build": "react-router build",
 		"dev": "react-router dev",
