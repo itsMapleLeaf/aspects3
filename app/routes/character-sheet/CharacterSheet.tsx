@@ -181,6 +181,15 @@ export function CharacterSheet() {
 				</div>
 			</div>
 
+			<ToggleSection title="Traits" description={traitsDescription}>
+				<div className="grid gap-4 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
+					<TraitSelection
+						selectedTraits={selectedTraits}
+						onTraitToggle={toggleTrait}
+					/>
+				</div>
+			</ToggleSection>
+
 			<div className="mt-6 space-y-6">
 				<ToggleSection title="Skills">
 					<div className="grid gap-8 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
@@ -199,15 +208,6 @@ export function CharacterSheet() {
 								}}
 							/>
 						))}
-					</div>
-				</ToggleSection>
-
-				<ToggleSection title="Traits" description={traitsDescription}>
-					<div className="grid gap-4 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
-						<TraitSelection
-							selectedTraits={selectedTraits}
-							onTraitToggle={toggleTrait}
-						/>
 					</div>
 				</ToggleSection>
 
