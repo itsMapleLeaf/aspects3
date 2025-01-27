@@ -22,12 +22,12 @@ const inactiveColors = "text-gray-400 bg-gray-900/20 border-gray-700"
 
 type AspectArtListProps = {
 	character: Character
-	showAvailableOnly: boolean
+	showAttunedOnly: boolean
 }
 
 export function AspectArtList({
 	character,
-	showAvailableOnly,
+	showAttunedOnly,
 }: AspectArtListProps) {
 	return (
 		<>
@@ -44,7 +44,7 @@ export function AspectArtList({
 					character,
 				)
 
-				if (showAvailableOnly && !hasAspect) return null
+				if (showAttunedOnly && !hasAspect) return null
 
 				const modifiers = [
 					hasAspect ? "1 fatigue" : "2 fatigue",
