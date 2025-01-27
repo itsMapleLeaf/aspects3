@@ -1,8 +1,7 @@
 import { Icon } from "@iconify/react"
 import { useEffect, type ReactNode } from "react"
-import { AspectInput } from "~/components/AspectInput.tsx"
-import { AttributeInput } from "~/components/AttributeInput.tsx"
 import { Button } from "~/components/Button.tsx"
+import { Input } from "~/components/Input.tsx"
 import { aspectNames } from "~/data/aspects.ts"
 import {
 	attributeNames,
@@ -24,8 +23,9 @@ import {
 import { traits } from "~/data/traits.ts"
 import { useFileHandle } from "~/hooks/useFileHandle.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
+import { AspectInput } from "./AspectInput.tsx"
+import { AttributeInput } from "./AttributeInput.tsx"
 import { DotBar } from "./DotBar.tsx"
-import { Input } from "./Input.tsx"
 import { TraitSelection } from "./TraitSelection.tsx"
 
 let lastFileHandle: FileSystemFileHandle | undefined
