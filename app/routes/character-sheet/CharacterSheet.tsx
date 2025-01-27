@@ -129,7 +129,7 @@ export function CharacterSheet() {
 
 	return (
 		<div className="page-container py-6 @container">
-			<div className="grid gap-8 grid-cols-1 @lg:grid-cols-[1fr_auto]">
+			<div className="grid gap-8 grid-cols-1 @lg:grid-cols-[1fr_auto] @container">
 				<div className="space-y-6 min-w-0 @container">
 					<NameInput
 						name={character.name}
@@ -180,32 +180,38 @@ export function CharacterSheet() {
 				</div>
 			</div>
 
-			<ToggleSection title="Traits" description={traitsDescription}>
-				<TraitSelection
-					selectedTraits={selectedTraits}
-					onTraitToggle={toggleTrait}
-				/>
-			</ToggleSection>
+			<div className="mt-6 grid gap-6 grid-cols-1 @2xl:grid-cols-[1fr_auto]">
+				<ToggleSection title="Skills">
+					<div className="grid gap-8 grid-cols-1 @lg:grid-cols-2">
+						{attributeNames.map((attribute) => (
+							<SkillList
+								key={attribute}
+								attribute={attribute}
+								character={character}
+								onToggleSkill={(skill) => {
+									setCharacter((prev) => ({
+										...prev,
+										proficientSkills: prev.proficientSkills.includes(skill)
+											? prev.proficientSkills.filter((s) => s !== skill)
+											: [...prev.proficientSkills, skill],
+									}))
+								}}
+							/>
+						))}
+					</div>
+				</ToggleSection>
 
-			<ToggleSection title="Skills">
-				<div className="grid gap-8 md:grid-cols-3">
-					{attributeNames.map((attribute) => (
-						<SkillList
-							key={attribute}
-							attribute={attribute}
-							character={character}
-							onToggleSkill={(skill) => {
-								setCharacter((prev) => ({
-									...prev,
-									proficientSkills: prev.proficientSkills.includes(skill)
-										? prev.proficientSkills.filter((s) => s !== skill)
-										: [...prev.proficientSkills, skill],
-								}))
-							}}
-						/>
-					))}
-				</div>
-			</ToggleSection>
+				<ToggleSection
+					title="Traits"
+					description={traitsDescription}
+					className="w-80"
+				>
+					<TraitSelection
+						selectedTraits={selectedTraits}
+						onTraitToggle={toggleTrait}
+					/>
+				</ToggleSection>
+			</div>
 		</div>
 	)
 }

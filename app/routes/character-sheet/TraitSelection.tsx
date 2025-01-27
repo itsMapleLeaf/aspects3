@@ -1,3 +1,5 @@
+import { Icon } from "@iconify/react"
+import { Tooltip } from "~/components/Tooltip.tsx"
 import { attributes } from "~/data/attributes"
 import { traits } from "~/data/traits"
 
@@ -11,45 +13,54 @@ export function TraitSelection({
 	onTraitToggle,
 }: TraitSelectionProps) {
 	return (
-		<div className="grid gap-4 grid-cols-1 @md:grid-cols-2 @3xl:grid-cols-3">
-			{traits.map((trait) => (
-				<button
-					key={trait.name}
-					className={`
-						text-left px-3 py-2.5 rounded-lg border transition flex flex-col
-						${
-							selectedTraits.includes(trait.name)
-								? "bg-primary-900/20 border-primary-700"
-								: selectedTraits.length >= 3
-								? "opacity-50 bg-gray-900/20 border-gray-700"
-								: "hover:bg-gray-900/20 hover:border-gray-600 border-gray-700"
-						}
-					`}
-					onClick={() => {
-						if (
-							!selectedTraits.includes(trait.name) &&
-							selectedTraits.length >= 3
-						)
-							return
-						onTraitToggle(trait.name)
-					}}
-					disabled={
-						!selectedTraits.includes(trait.name) && selectedTraits.length >= 3
-					}
-				>
-					<h3 className="font-medium mb-2">{trait.name}</h3>
-					<div className="flex flex-col gap-3">
-						{trait.attributes.map(({ attribute, description }) => (
-							<div key={attribute}>
-								<p className="font-medium text-sm text-primary-400">
-									{attributes[attribute].name}
-								</p>
-								<p className="text-sm text-gray-400">{description}</p>
+		<div className="space-y-2">
+			{traits.map((trait) => {
+				const isSelected = selectedTraits.includes(trait.name)
+				const isDisabled = !isSelected && selectedTraits.length >= 3
+
+				return (
+					<div
+						key={trait.name}
+						className={`
+							flex items-center justify-between gap-4 px-3 py-2.5 rounded-lg border transition
+							${
+								isSelected
+									? "bg-primary-900/20 border-primary-700"
+									: isDisabled
+									? "opacity-50 bg-gray-900/20 border-gray-700"
+									: "hover:bg-gray-900/20 hover:border-gray-600 border-gray-700"
+							}
+						`}
+					>
+						<div>
+							<h3 className="font-medium mb-1">{trait.name}</h3>
+							<div className="flex gap-4">
+								{trait.attributes.map(({ attribute, description }) => (
+									<div key={attribute} className="flex items-center gap-1">
+										<span className="text-sm text-primary-400">
+											{attributes[attribute].name}
+										</span>
+										<Tooltip content={description}>
+											<Icon
+												icon="mingcute:information-line"
+												className="size-4 text-gray-500"
+											/>
+										</Tooltip>
+									</div>
+								))}
 							</div>
-						))}
+						</div>
+
+						<input
+							type="checkbox"
+							checked={isSelected}
+							disabled={isDisabled}
+							onChange={() => onTraitToggle(trait.name)}
+							className="size-5 accent-pink-300"
+						/>
 					</div>
-				</button>
-			))}
+				)
+			})}
 		</div>
 	)
 }
