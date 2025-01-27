@@ -3,10 +3,11 @@ import { type ReactNode } from "react"
 
 interface TooltipProps extends Omit<Ariakit.TooltipAnchorProps, "content"> {
 	content: ReactNode
+	placement?: Ariakit.TooltipStoreProps["placement"]
 }
 
-export function Tooltip({ content, children }: TooltipProps) {
-	const tooltip = Ariakit.useTooltipStore()
+export function Tooltip({ placement, content, children }: TooltipProps) {
+	const tooltip = Ariakit.useTooltipStore({ placement })
 
 	return (
 		<>

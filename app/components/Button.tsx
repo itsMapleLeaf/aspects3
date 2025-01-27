@@ -9,13 +9,20 @@ const appearanceClasses = {
 } as const
 
 const sizeClasses = {
+	sm: { button: "px-2 py-1.5 text-sm gap-2", icon: "*:size-3 -mx-0.5" },
 	default: { button: "px-3 py-2 text-sm gap-2.5", icon: "*:size-4 -mx-1" },
 	lg: { button: "px-5 py-2 text-lg gap-3.5", icon: "*:size-5 -mx-1.5" },
 } as const
 
+const shapeClasses = {
+	default: "rounded-md",
+	circle: "rounded-full aspect-square",
+}
+
 type ButtonProps = {
 	appearance?: keyof typeof appearanceClasses
 	size?: keyof typeof sizeClasses
+	shape?: keyof typeof shapeClasses
 	icon?: ReactNode
 	as?: "button" | "link"
 } & (
@@ -26,21 +33,23 @@ type ButtonProps = {
 export function Button({
 	appearance = "primary",
 	size = "default",
+	shape = "default",
 	icon,
 	className = "",
 	children,
 	...props
 }: ButtonProps) {
 	const combinedClasses = `
-		flex items-center transition border border-primary-500 font-medium rounded-md shadow-sm focus:outline-none focus:ring-2
+		flex items-center transition border border-primary-500 font-medium shadow-sm focus:outline-none focus:ring-2
 		${appearanceClasses[appearance]}
 		${sizeClasses[size].button}
+		${shapeClasses[shape]}
 		${className}
 	`
 
 	const content = (
 		<>
-			<div className={sizeClasses[size].icon}>{icon}</div>
+			<div className={`${sizeClasses[size].icon} empty:hidden`}>{icon}</div>
 			{children}
 		</>
 	)

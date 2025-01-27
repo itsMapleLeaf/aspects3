@@ -10,6 +10,7 @@ import {
 import { Navigation } from "~/components/Navigation"
 import type { Route } from "./+types/root"
 import stylesheet from "./app.css?url"
+import { DiceTray } from "./components/DiceTray.tsx"
 
 export const meta: Route.MetaFunction = () => [{ title: "Aspects of Nature" }]
 
@@ -40,6 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			<body>
 				<Navigation />
 				{children}
+				<DiceTray />
 				<ScrollRestoration />
 				<Scripts />
 			</body>
