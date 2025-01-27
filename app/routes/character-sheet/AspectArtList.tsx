@@ -12,7 +12,15 @@ const aspectColors = {
 
 const inactiveColors = "text-gray-400 bg-gray-900/20 border-gray-700"
 
-export function AspectArtList({ character }: { character: Character }) {
+type AspectArtListProps = {
+	character: Character
+	showAvailableOnly: boolean
+}
+
+export function AspectArtList({
+	character,
+	showAvailableOnly,
+}: AspectArtListProps) {
 	return (
 		<>
 			{Object.entries(aspects).map(([aspectName, aspect]) => {
@@ -21,6 +29,8 @@ export function AspectArtList({ character }: { character: Character }) {
 				const total = aspectPoints + attributeValue
 				const hasAspect = aspectPoints > 0
 				const colors = aspectColors[aspectName as keyof typeof aspectColors]
+
+				if (showAvailableOnly && !hasAspect) return null
 
 				return (
 					<div key={aspectName} className="space-y-2">
@@ -45,6 +55,12 @@ export function AspectArtList({ character }: { character: Character }) {
 								>
 									<span className="font-medium capitalize">{action.name}</span>
 									<p className="text-sm opacity-75">{action.description}</p>
+									{action.failure && (
+										<p className="text-sm opacity-75">
+											<span className="text-red-400">failure</span> -{" "}
+											{action.failure}
+										</p>
+									)}
 								</div>
 							))}
 						</div>

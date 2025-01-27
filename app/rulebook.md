@@ -10,7 +10,7 @@ summary:
 
 ## Game Flow
 
-Players should first create their characters, assigning attributes, aspects, and lineages that suit them.
+Players should first create their characters, assigning attributes, aspects, and traits that suit them.
 
 The narrator (called the game master or dungeon master in other systems) should prepare a scenario for the players to play through, whether it’s a single-session one-shot, or a campaign spanning over dozens of sessions. Sessions can last anywhere around 1 to 3 hours, depending on the energy levels, attention span, and/or available time for those playing.
 
@@ -126,6 +126,8 @@ Claws
 - Once your hits reach your toughness, you go down.
 - While down, you can’t make any actions.
 - Your hits cannot exceed your toughness.
+- Once your hits are healed, you are no longer down.
+- After combat, if you are down, you may attempt to succeed a Focus or Endurance skill check to heal 1 hit.
 
 ## Fatigue & Resolve
 
@@ -135,15 +137,23 @@ Claws
 - 2 fatigue: to reroll a die (only once)
 - 2 fatigue: for an additional combat action (once per round)
 
+## Resting
+
+- Resting allows you to heal hits and fatigue, one each per in-game hour.
+
 ## Actions
 
 Actions are the player's primary medium of interaction
 
 Some actions may require a dice roll, such as a skill check or an aspect check, which determines how well you do.
 
+### Attacks
+
+Attacks are a specific kind of action with the intent to damage another character. With the appropriate justification, they can be made with any skill. Successful attack checks will deal either 1 hit or 1 fatigue, depending on the manner of attack. For example, physical attacks like Strike or Shoot would deal 1 hit. Scaring someone into a corner or weakening their morale would deal 1 fatigue.
+
 ## Comeback
 
-Players earn 1 comeback point when failing a roll. They can spend any number of them to reduce a roll’s result. They cannot use a comeback point on the same roll that gave it to them.
+Players earn 1 comeback point when failing a roll. They can spend any number of them to reduce a roll’s result. They cannot use a comeback point on the same roll that gave it to them. Comeback points return to 0 at the end of a session.
 
 ## Skills
 
@@ -219,59 +229,59 @@ Sense
   - Wind: making a gentle breeze
   - Darkness: send a shiver down someone’s spine
 - Aspect art checks: same as skill checks, but with a d12
-- For each action below, must succeed an aspect check for the effect to apply
+- For each action below, must succeed an aspect check for the primary effect to apply, otherwise the failure case applies
 
 Light
 
 - vibe: justice, order, knowledge
 - attribute: intellect
-- action: restore - heal 2 hits
-- action: peacekeeper - a chosen target may not deal more than 1 hit this round
-- action: multicast - add two additional targets to your next action
-- action: sacrifice - try to remove any hit, then take a hit
-- action: inspire - add two power dice to a target's next roll
+- action: restore - heal 2 hits; on failure, 1 hit
+- action: peacekeeper - a chosen target may not deal more than 1 hit until your next action; on failure, 2 hits
+- action: multicast - add 2 additional targets to your next action; on failure, 1 additional target
+- action: sacrifice - try to remove any 2 hits, then take 1 hit; on failure, remove any 1 hit
+- action: inspire - add 2 power dice to a target's next roll; on failure, add 1 power die
 
 Water
 
 - vibe: tranquility, focus, awareness
 - attribute: sense
-- action: shield - a target may not take more than 1 damage this round
-- action: protect - choose two targets, if either of them take hits this round, prevent it, and take a hit
-- action: castle - prevent all allies' hits this round, you have one less action next round
-- action: foresight - reveal any action, then you may take 1 additional fatigue (once) to let another target character change their action
+- action: shield - a target may not take more than 1 damage until your next action; on failure, 2 damage
+- action: protect - choose two targets. until your next action, if either of them take hits this round, prevent it, and take a hit; on failure, choose one target
+- action: castle - prevent all allies' hits until your next action, you must skip your next action; on failure, you must skip your next 2 actions
+- action: foresight - reveal any action, then you may take 1 additional fatigue (once) to let another target character change their action; on failure, you may not allow a character to change their action
 
 Wind
 
 - vibe: swiftness, dexterity, adaptability
 - attribute: agility
-- action: evade - prevent all hits on self this round
-- action: adapt - make another action with two of your attributes swapped
-- action: cyclone - deal a ranged hit to 1 random enemy or 3 random characters
-- action: surge - apply your next action three times
+- action: evade - prevent all hits on self this round; on failure, prevent hits up to your Agility
+- action: adapt - immediately make another action with two of your attributes swapped; on failure, make your next action with two attributes swapped (not immediate)
+- action: cyclone - deal a ranged hit to 2 random enemies or 5 random characters; on failure, you must choose 5 random characters
+- action: surge - apply your next action three times; on failure, two times
 
 Fire
 
 - vibe: power, destruction, force
 - attribute: strength
-- action: flame strike - deal 2 hits to one target
-- action: flame arc - deal a hit to two targets
-- action: inferno - your next action deals 3x hits
+- action: flame strike - deal 3 hits to one target; on failure, 2 hits
+- action: flame arc - deal 1 hit to 3 targets; on failure, 2 targets
+- action: inferno - your next action deals triple the hits; on failure, double the hits
 
 Darkness
 
 - vibe: manipulation, leverage, stealth
 - attribute: wit
-- action: weaken - add two risk dice to a target's next roll
-- action: drain - try to remove a hit, then deal any hit
-- action: cancel - prevent a target's next action
-- action: disappear - turn invisible; you cannot take hits until your next action
+- action: weaken - add 2 risk dice to a target's next roll; on failure, add 1 risk die
+- action: drain - try to remove any 2 hits, then deal any 2 hits; on failure, remove 1, deal 1
+- action: cancel - prevent a target's next action; on failure, the target is random
+- action: disappear - turn invisible, you cannot take hits until your next action; on failure, you must succeed an Agility check to prevent any hit
 
 ## Combat
 
 - combat starts when a character acts adversarially against another (such as, but not limited to, making an attack)
 - to determine action order, everyone rolls a d6 and adds their choice of Agility (moving quick) or Wit (thinking quick), then every round resolves effects from highest to lowest
 - one action per round
-- every round, every participant chooses their action in secret
+- every round, every participant chooses their action and their targets (if any) in secret
 - once everyone has written down their action, reveal actions once by one in initiative order, making any necessary rolls at the time of revealing them
 - a combat round lasts 5 seconds - for actions that specify "this round", they will last for 5 seconds out of combat
 

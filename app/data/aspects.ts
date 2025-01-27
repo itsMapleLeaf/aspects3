@@ -16,6 +16,7 @@ export type AspectInfo = {
 	actions: {
 		name: string
 		description: string
+		failure: string
 	}[]
 }
 
@@ -25,22 +26,31 @@ export const aspects: Record<AspectName, AspectInfo> = {
 		vibe: "justice, order, knowledge",
 		attribute: "intellect",
 		actions: [
-			{ name: "restore", description: "heal 2 hits" },
+			{
+				name: "restore",
+				description: "heal 2 hits",
+				failure: "1 hit",
+			},
 			{
 				name: "peacekeeper",
-				description: "a chosen target may not deal more than 1 hit this round",
+				description:
+					"a chosen target may not deal more than 1 hit until your next action",
+				failure: "2 hits",
 			},
 			{
 				name: "multicast",
-				description: "add two additional targets to your next action",
+				description: "add 2 additional targets to your next action",
+				failure: "1 additional target",
 			},
 			{
 				name: "sacrifice",
-				description: "try to remove any hit, then take a hit",
+				description: "try to remove any 2 hits, then take 1 hit",
+				failure: "remove any 1 hit",
 			},
 			{
 				name: "inspire",
-				description: "add two power dice to a target's next roll",
+				description: "add 2 power dice to a target's next roll",
+				failure: "add 1 power die",
 			},
 		],
 	},
@@ -51,22 +61,27 @@ export const aspects: Record<AspectName, AspectInfo> = {
 		actions: [
 			{
 				name: "shield",
-				description: "a target may not take more than 1 damage this round",
+				description:
+					"a target may not take more than 1 damage until your next action",
+				failure: "2 damage",
 			},
 			{
 				name: "protect",
 				description:
-					"choose two targets, if either of them take hits this round, prevent it, and take a hit",
+					"choose two targets. until your next action, if either of them take hits this round, prevent it, and take a hit",
+				failure: "choose one target",
 			},
 			{
 				name: "castle",
 				description:
-					"prevent all allies' hits this round, you have one less action next round",
+					"prevent all allies' hits until your next action, you must skip your next action",
+				failure: "you must skip your next 2 actions",
 			},
 			{
 				name: "foresight",
 				description:
 					"reveal any action, then you may take 1 additional fatigue (once) to let another target character change their action",
+				failure: "you may not allow a character to change their action",
 			},
 		],
 	},
@@ -78,19 +93,25 @@ export const aspects: Record<AspectName, AspectInfo> = {
 			{
 				name: "evade",
 				description: "prevent all hits on self this round",
+				failure: "prevent hits up to your Agility",
 			},
 			{
 				name: "adapt",
-				description: "make another action with two of your attributes swapped",
+				description:
+					"immediately make another action with two of your attributes swapped",
+				failure:
+					"make your next action with two attributes swapped (not immediate)",
 			},
 			{
 				name: "cyclone",
 				description:
-					"deal a ranged hit to 1 random enemy or 3 random characters",
+					"deal a ranged hit to 2 random enemies or 5 random characters",
+				failure: "you must choose 5 random characters",
 			},
 			{
 				name: "surge",
 				description: "apply your next action three times",
+				failure: "two times",
 			},
 		],
 	},
@@ -101,15 +122,18 @@ export const aspects: Record<AspectName, AspectInfo> = {
 		actions: [
 			{
 				name: "flame strike",
-				description: "deal 2 hits to one target",
+				description: "deal 3 hits to one target",
+				failure: "2 hits",
 			},
 			{
 				name: "flame arc",
-				description: "deal a hit to two targets",
+				description: "deal 1 hit to 3 targets",
+				failure: "2 targets",
 			},
 			{
 				name: "inferno",
-				description: "your next action deals 3x hits",
+				description: "your next action deals triple the hits",
+				failure: "double the hits",
 			},
 		],
 	},
@@ -120,20 +144,24 @@ export const aspects: Record<AspectName, AspectInfo> = {
 		actions: [
 			{
 				name: "weaken",
-				description: "add two risk dice to a target's next roll",
+				description: "add 2 risk dice to a target's next roll",
+				failure: "add 1 risk die",
 			},
 			{
 				name: "drain",
-				description: "try to remove a hit, then deal any hit",
+				description: "try to remove any 2 hits, then deal any 2 hits",
+				failure: "remove 1, deal 1",
 			},
 			{
 				name: "cancel",
 				description: "prevent a target's next action",
+				failure: "the target is random",
 			},
 			{
 				name: "disappear",
 				description:
-					"turn invisible; you cannot take hits until your next action",
+					"turn invisible, you cannot take hits until your next action",
+				failure: "you must succeed an Agility check to prevent any hit",
 			},
 		],
 	},

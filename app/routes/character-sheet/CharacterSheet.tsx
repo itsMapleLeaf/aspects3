@@ -23,7 +23,7 @@ import {
 import { traits } from "~/data/traits.ts"
 import { useFileHandle } from "~/hooks/useFileHandle.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
-import { AspectArtList } from "./AspectArtList.tsx"
+import { AspectArts } from "./AspectArts.tsx"
 import { AspectInput } from "./AspectInput.tsx"
 import { AttributeInput } from "./AttributeInput.tsx"
 import { DotBar } from "./DotBar.tsx"
@@ -212,9 +212,7 @@ export function CharacterSheet() {
 				</ToggleSection>
 
 				<ToggleSection title="Aspect Arts">
-					<div className="grid gap-4 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
-						<AspectArtList character={character} />
-					</div>
+					<AspectArts character={character} />
 				</ToggleSection>
 			</div>
 		</div>
