@@ -288,3 +288,15 @@ Darkness
 ## Talents
 
 > WIP
+
+## Luck
+
+To determine the outcome of things outside of player's control, players or the narrator may make a luck roll. Luck rolls are made with a d12, treating the result as a gradient from one possibility to another.
+
+Example: a character needs to catch a train to work.
+
+- 12: their path is completely clear
+- 9: they got momentarily stopped by a cat along the way
+- 6: construction required them to take a different route, but they know the city well enough for that to not be a problem
+- 3: it seems like the whole world doesn't want you to get to that train! they'll need to pass several skill checks to make it on time
+- 1: the train itself got delayed; they'll be late no matter what
