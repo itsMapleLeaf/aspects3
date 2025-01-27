@@ -23,6 +23,7 @@ import {
 import { traits } from "~/data/traits.ts"
 import { useFileHandle } from "~/hooks/useFileHandle.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
+import { AspectArtList } from "./AspectArtList.tsx"
 import { AspectInput } from "./AspectInput.tsx"
 import { AttributeInput } from "./AttributeInput.tsx"
 import { DotBar } from "./DotBar.tsx"
@@ -129,7 +130,7 @@ export function CharacterSheet() {
 
 	return (
 		<div className="page-container py-6 @container">
-			<div className="grid gap-8 grid-cols-1 @lg:grid-cols-[1fr_auto] @container">
+			<div className="grid gap-8 grid-cols-1 @lg:grid-cols-[1fr_auto]">
 				<div className="space-y-6 min-w-0 @container">
 					<NameInput
 						name={character.name}
@@ -180,9 +181,9 @@ export function CharacterSheet() {
 				</div>
 			</div>
 
-			<div className="mt-6 grid gap-6 grid-cols-1 @2xl:grid-cols-[1fr_auto]">
+			<div className="mt-6 space-y-6">
 				<ToggleSection title="Skills">
-					<div className="grid gap-8 grid-cols-1 @lg:grid-cols-2">
+					<div className="grid gap-8 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
 						{attributeNames.map((attribute) => (
 							<SkillList
 								key={attribute}
@@ -201,15 +202,19 @@ export function CharacterSheet() {
 					</div>
 				</ToggleSection>
 
-				<ToggleSection
-					title="Traits"
-					description={traitsDescription}
-					className="w-80"
-				>
-					<TraitSelection
-						selectedTraits={selectedTraits}
-						onTraitToggle={toggleTrait}
-					/>
+				<ToggleSection title="Traits" description={traitsDescription}>
+					<div className="grid gap-4 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
+						<TraitSelection
+							selectedTraits={selectedTraits}
+							onTraitToggle={toggleTrait}
+						/>
+					</div>
+				</ToggleSection>
+
+				<ToggleSection title="Aspect Arts">
+					<div className="grid gap-4 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
+						<AspectArtList character={character} />
+					</div>
 				</ToggleSection>
 			</div>
 		</div>

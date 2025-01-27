@@ -13,7 +13,7 @@ export function TraitSelection({
 	onTraitToggle,
 }: TraitSelectionProps) {
 	return (
-		<div className="space-y-2">
+		<>
 			{traits.map((trait) => {
 				const isSelected = selectedTraits.includes(trait.name)
 				const isDisabled = !isSelected && selectedTraits.length >= 3
@@ -61,6 +61,6 @@ export function TraitSelection({
 					</div>
 				)
 			})}
-		</div>
+		</>
 	)
 }
