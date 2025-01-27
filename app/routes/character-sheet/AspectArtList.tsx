@@ -1,5 +1,6 @@
 import { aspects } from "~/data/aspects.ts"
 import type { Character } from "~/data/characters.ts"
+import { getAttributeValue } from "~/data/characters.ts"
 
 const aspectColors = {
 	light: "text-yellow-300 bg-yellow-500/5 border-yellow-500/20",
@@ -15,7 +16,10 @@ export function AspectArtList({ character }: { character: Character }) {
 	return (
 		<>
 			{Object.entries(aspects).map(([aspectName, aspect]) => {
-				const hasAspect = Number(character.aspects[aspectName]) > 0
+				const aspectPoints = Number(character.aspects[aspectName])
+				const attributeValue = getAttributeValue(aspect.attribute, character)
+				const total = aspectPoints + attributeValue
+				const hasAspect = aspectPoints > 0
 				const colors = aspectColors[aspectName as keyof typeof aspectColors]
 
 				return (
@@ -27,6 +31,7 @@ export function AspectArtList({ character }: { character: Character }) {
 							`}
 						>
 							{aspect.name}
+							{hasAspect && <span className="ml-2 opacity-75">({total})</span>}
 						</h3>
 						<div className="space-y-1.5">
 							{aspect.actions.map((action) => (
