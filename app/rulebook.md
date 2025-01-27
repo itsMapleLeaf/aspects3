@@ -65,7 +65,7 @@ Each player character picks three traits for their character to have, and each t
 - Adds a power die to rolls made with that attribute
 - Lets you pick a proficient skill for that attribute
 
-For example: giving your character a long tail lets you pick proficient Sense and Agility skills.
+For example, let's say you give your character a long tail. This means that all Sense skills and all Agility skill checks will receive +1 power die. Then you can pick a proficient skill from each of those categories, let's say Listen from Sense, and Dash from Agility. Your Listen and Dash checks both now have +2 power dice.
 
 The traits can come in whatever form you choose. For example, a tail could be long and thick like a lizard’s, or thin with a spaded tip like a devil's. You can add any number of additional traits beyond the first three for narrative flavor, even ones from this list, while specifying the ones that apply their attribute buffs.
 
@@ -143,9 +143,7 @@ Some actions may require a dice roll, such as a skill check or an aspect check, 
 
 ## Comeback
 
-Earned when failing rolls
-
-Spend any number to reduce the roll’s result
+Players earn 1 comeback point when failing a roll. They can spend any number of them to reduce a roll’s result. They cannot use a comeback point on the same roll that gave it to them.
 
 ## Skills
 
@@ -154,23 +152,22 @@ Skill checks:
 - Roll a d6, represents the difficult of the task
 - Success = equal or less than the character’s value in that skill
 - On a failure, you earn one comeback point
-- You can spend any number of comeback points to subtract from a roll result
 
 Power & risk dice:
 
 - Added to skill checks via effects or situationally by the narrator
-- Can add any number of them to a roll
+- Power die: subtracts from the roll
+- Risk die: adds to the roll
 - d6, where:
   - 1-3 = nothing
   - 4-5 = adds or subtracts 1
   - 6 = adds or subtracts 2
-- Power die: subtracts from the roll
-- Risk die: adds to the roll
+- Can add any number of them to a roll
 
 Proficient skills:
 
 - Determined by your trait attributes
-- Gives +1 power die for skill checks made with that skill
+- Gives +1 power die for skill checks made with that skill (_on top of_ trait bonuses)
 - Proficient skills must be unique; cannot make a skill proficient twice
 
 Strength
@@ -229,23 +226,25 @@ Light
 - vibe: justice, order, knowledge
 - attribute: intellect
 - action: restore - heal 2 hits
-- action: peacekeeper - a chosen target may not deal more than 1 hit
+- action: peacekeeper - a chosen target may not deal more than 1 hit this round
 - action: multicast - add two additional targets to your next action
+- action: sacrifice - try to remove any hit, then take a hit
+- action: inspire - add two power dice to a target's next roll
 
 Water
 
 - vibe: tranquility, focus, awareness
 - attribute: sense
-- action: shield - target may not take more than 1 hit
-- action: protect - if any two targets take any hits, prevent them and take a hit
-- action: castle - prevent all hits on allies this round, skip your next round
-- action: foresight - before combat round, reveal any action, then you may take 1 additional fatigue (once) to let another target character change their action
+- action: shield - a target may not take more than 1 damage this round
+- action: protect - choose two targets, if either of them take hits this round, prevent it, and take a hit
+- action: castle - prevent all allies' hits this round, you have one less action next round
+- action: foresight - reveal any action, then you may take 1 additional fatigue (once) to let another target character change their action
 
 Wind
 
 - vibe: swiftness, dexterity, adaptability
 - attribute: agility
-- action: evade - response, prevent all hits to self
+- action: evade - prevent all hits on self this round
 - action: adapt - make another action with two of your attributes swapped
 - action: cyclone - deal a ranged hit to 1 random enemy or 3 random characters
 - action: surge - apply your next action three times
@@ -254,7 +253,7 @@ Fire
 
 - vibe: power, destruction, force
 - attribute: strength
-- action: flame strike - on success, deal 2 hits to one target
+- action: flame strike - deal 2 hits to one target
 - action: flame arc - deal a hit to two targets
 - action: inferno - your next action deals 3x hits
 
@@ -262,16 +261,20 @@ Darkness
 
 - vibe: manipulation, leverage, stealth
 - attribute: wit
-- action: inspire - on success, give advantage
-- action: weaken - on success, give disadvantage
-- action: sacrifice - try to remove any hit, then take a hit
-- action: transfer - try to remove a hit, then deal any hit
-- action: cancel - try to prevent a target's next action
+- action: weaken - add two risk dice to a target's next roll
+- action: drain - try to remove a hit, then deal any hit
+- action: cancel - prevent a target's next action
+- action: disappear - turn invisible; you cannot take hits until your next action
 
 ## Combat
 
 - combat starts when a character acts adversarially against another (such as, but not limited to, making an attack)
-- everyone rolls either agility (moving quick) or wit (thinking quick) to determine action order
+- to determine action order, everyone rolls a d6 and adds their choice of Agility (moving quick) or Wit (thinking quick), then every round resolves effects from highest to lowest
 - one action per round
 - every round, every participant chooses their action in secret
-- reveal all actions at once
+- once everyone has written down their action, reveal actions once by one in initiative order, making any necessary rolls at the time of revealing them
+- a combat round lasts 5 seconds - for actions that specify "this round", they will last for 5 seconds out of combat
+
+## Talents
+
+> WIP
