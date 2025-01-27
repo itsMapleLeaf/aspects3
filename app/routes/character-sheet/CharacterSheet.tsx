@@ -1,6 +1,7 @@
 import { Icon } from "@iconify/react"
-import { useEffect, type ReactNode } from "react"
+import { type ReactNode } from "react"
 import { Button } from "~/components/Button.tsx"
+import { Checkbox } from "~/components/Checkbox.tsx"
 import { Input } from "~/components/Input.tsx"
 import { aspectNames } from "~/data/aspects.ts"
 import {
@@ -21,7 +22,7 @@ import {
 	getToughness,
 } from "~/data/characters.ts"
 import { traits } from "~/data/traits.ts"
-import { useFileHandle } from "~/hooks/useFileHandle.ts"
+import { useCharacterStorage } from "~/hooks/useCharacterStorage.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { AspectArts } from "./AspectArts.tsx"
 import { AspectInput } from "./AspectInput.tsx"
@@ -29,29 +30,17 @@ import { AttributeInput } from "./AttributeInput.tsx"
 import { DotBar } from "./DotBar.tsx"
 import { TraitSelection } from "./TraitSelection.tsx"
 
-let lastFileHandle: FileSystemFileHandle | undefined
-let lastCharacter = defaultCharacter
-
 export function CharacterSheet() {
 	const {
-		data: character,
-		setData: setCharacter,
-		fileHandle,
+		character,
+		setCharacter,
+		hasFileSystemAccess,
 		hasFile,
-		createNew,
+		autoSave,
+		setAutoSave,
+		save,
 		open,
-	} = useFileHandle(lastCharacter, Character.assert, {
-		suggestedName: "character.aspects.json",
-		initialHandle: lastFileHandle,
-	})
-
-	useEffect(() => {
-		lastFileHandle = fileHandle
-	}, [fileHandle])
-
-	useEffect(() => {
-		lastCharacter = character
-	}, [character])
+	} = useCharacterStorage(defaultCharacter)
 
 	function updateAttribute(attr: AttributeName & string, value: string) {
 		setCharacter((prev) => ({
@@ -80,41 +69,6 @@ export function CharacterSheet() {
 				? prev.traits.filter((t) => t !== traitName)
 				: [...prev.traits, traitName],
 		}))
-	}
-
-	if (!hasFile) {
-		return (
-			<div className="h-[80vh] flex flex-col items-center justify-center gap-6">
-				<div className="text-center">
-					<Icon
-						icon="mingcute:document-line"
-						className="size-24 mx-auto mb-4 text-primary-400/30"
-						strokeWidth={0.5}
-					/>
-					<h2 className="text-4xl mb-2 font-light">Character Editor</h2>
-					<p className="text-2xl font-light opacity-75">
-						Create or open a character sheet to continue
-					</p>
-				</div>
-
-				<div className="flex gap-4">
-					<Button
-						onClick={createNew}
-						icon={<Icon icon="mingcute:add-line" />}
-						size="lg"
-					>
-						New...
-					</Button>
-					<Button
-						onClick={open}
-						icon={<Icon icon="mingcute:folder-open-line" />}
-						size="lg"
-					>
-						Open...
-					</Button>
-				</div>
-			</div>
-		)
 	}
 
 	const selectedTraits = traits
@@ -161,11 +115,16 @@ export function CharacterSheet() {
 
 				<div className="w-80 space-y-4">
 					<div className="flex gap-2 justify-end">
-						<Button
-							onClick={createNew}
-							icon={<Icon icon="mingcute:add-line" />}
-						>
-							New...
+						{hasFileSystemAccess && hasFile && (
+							<Checkbox
+								id="auto-save"
+								label="Auto-save"
+								checked={autoSave}
+								onChange={(event) => setAutoSave(event.target.checked)}
+							/>
+						)}
+						<Button onClick={save} icon={<Icon icon="mingcute:save-line" />}>
+							Save...
 						</Button>
 						<Button
 							onClick={open}
