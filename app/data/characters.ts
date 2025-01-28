@@ -13,6 +13,7 @@ export const Character = type({
 	traits: type("string[]").default(() => []),
 	proficientSkills: type("string[]").default(() => []),
 	aspects: type(`Record<string, string>`).default(() => ({})),
+	"imageId?": "string | null",
 })
 
 export const defaultCharacter: Character = {

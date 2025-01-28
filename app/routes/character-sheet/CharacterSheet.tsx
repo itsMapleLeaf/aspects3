@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react"
 import { type ReactNode } from "react"
 import { Button } from "~/components/Button.tsx"
 import { Checkbox } from "~/components/Checkbox.tsx"
+import { ImageUpload } from "~/components/ImageUpload.tsx"
 import { Input } from "~/components/Input.tsx"
 import { StatMeter } from "~/components/StatMeter.tsx"
 import { aspectNames } from "~/data/aspects.ts"
@@ -139,8 +140,13 @@ export function CharacterSheet() {
 						</Button>
 					</div>
 
-					<div className="h-80 border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center">
-						<p className="text-center text-gray-400">character image here</p>
+					<div className="h-80 border border-gray-700 rounded-lg bg-black/20">
+						<ImageUpload
+							imageId={character.imageId}
+							onUpload={(imageId) =>
+								setCharacter((prev) => ({ ...prev, imageId }))
+							}
+						/>
 					</div>
 				</div>
 			</div>
