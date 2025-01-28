@@ -1,6 +1,5 @@
 import { isEqual } from "es-toolkit"
 import { useEffect, useRef, useState } from "react"
-import { useDebouncedCallback } from "use-debounce"
 import { Character } from "~/data/characters.ts"
 import { ensure } from "~/utils.ts"
 import { useLocalStorage } from "./useLocalStorage.ts"
@@ -17,57 +16,62 @@ export function useCharacterStorage(defaultCharacter: Character) {
 		Character.assert,
 	)
 	const fileInputRef = useRef<HTMLInputElement | undefined>(undefined)
-
 	const hasFile = fileHandle != null
 
-	const saveToFile = useDebouncedCallback(
-		async (handle: FileSystemFileHandle, data: Character) => {
-			const writable = await handle.createWritable()
-			await writable.write(JSON.stringify(data, null, 2))
-			await writable.close()
-		},
-		1000,
-	)
-
 	useEffect(() => {
-		if (fileHandle && autoSave) {
-			saveToFile(fileHandle, character)
+		const shouldSave = fileHandle != null && autoSave
+		if (!shouldSave) return
+
+		const timeout = setTimeout(() => {
+			void (async () => {
+				try {
+					await saveToFile(fileHandle, character)
+				} catch (error) {
+					console.error("Failed to save:", error)
+					// TODO: show this in UI
+				}
+			})()
+		}, 500)
+
+		return () => {
+			clearTimeout(timeout)
 		}
-	}, [character, fileHandle, autoSave, saveToFile])
+	}, [character, fileHandle, autoSave])
 
 	async function save() {
-		if (!hasFileSystemAccess) {
-			const blob = new Blob([JSON.stringify(character, null, 2)], {
-				type: "application/json",
-			})
-			const url = URL.createObjectURL(blob)
-			const a = document.createElement("a")
-			a.href = url
-			a.download = "character.aspects.json"
-			a.click()
-			URL.revokeObjectURL(url)
-			return
-		}
-
 		try {
-			const handle =
-				fileHandle ??
-				(await window.showSaveFilePicker({
-					suggestedName: "character.aspects.json",
-					types: [
-						{
-							description: "JSON File",
-							accept: { "application/json": [".json"] },
-						},
-					],
-				}))
+			const [firstName] = character.name.toLowerCase().matchAll(/\S+/g)
+			const suggestedName = firstName?.[0] || "character.json"
+
+			if (!hasFileSystemAccess) {
+				const blob = new Blob([JSON.stringify(character, null, 2)], {
+					type: "application/json",
+				})
+				const url = URL.createObjectURL(blob)
+				const a = document.createElement("a")
+				a.href = url
+				a.download = suggestedName
+				a.click()
+				URL.revokeObjectURL(url)
+				return
+			}
+
+			const handle = await window.showSaveFilePicker({
+				suggestedName,
+				types: [
+					{
+						description: "JSON File",
+						accept: { "application/json": [".json"] },
+					},
+				],
+			})
 
 			setFileHandle(handle)
-			await saveToFile(handle, character)
 		} catch (error) {
 			if (error instanceof Error && error.name === "AbortError") {
 				return
 			}
+			alert(error)
 			throw error
 		}
 	}
@@ -79,8 +83,8 @@ export function useCharacterStorage(defaultCharacter: Character) {
 	}
 
 	async function open() {
-		if (hasFileSystemAccess) {
-			try {
+		try {
+			if (hasFileSystemAccess) {
 				const [handle] = await window.showOpenFilePicker({
 					multiple: false,
 					types: [
@@ -94,35 +98,38 @@ export function useCharacterStorage(defaultCharacter: Character) {
 				const data = await loadFile(await ensure(handle).getFile())
 				setFileHandle(ensure(handle))
 				setCharacter(data)
-			} catch (error) {
-				if (error instanceof Error && error.name === "AbortError") {
-					return
-				}
-				throw error
+
+				return
 			}
-			return
+
+			// create a file input if it doesn't exist
+			if (!fileInputRef.current) {
+				const input = document.createElement("input")
+				input.type = "file"
+				input.accept = ".json,application/json"
+				fileInputRef.current = input
+
+				input.addEventListener("change", async () => {
+					const file = input.files?.[0]
+					if (!file) return
+
+					const data = await loadFile(file)
+					setCharacter(data)
+
+					// reset the input so the same file can be selected again
+					input.value = ""
+				})
+			}
+
+			fileInputRef.current.click()
+		} catch (error) {
+			if (error instanceof Error && error.name === "AbortError") {
+				return
+			}
+			alert(error)
+			throw error
 		}
-
-		// create a file input if it doesn't exist
-		if (!fileInputRef.current) {
-			const input = document.createElement("input")
-			input.type = "file"
-			input.accept = ".json,application/json"
-			fileInputRef.current = input
-
-			input.addEventListener("change", async () => {
-				const file = input.files?.[0]
-				if (!file) return
-
-				const data = await loadFile(file)
-				setCharacter(data)
-
-				// reset the input so the same file can be selected again
-				input.value = ""
-			})
-		}
-
-		fileInputRef.current.click()
+		return
 	}
 
 	function clearFile() {
@@ -154,4 +161,14 @@ export function useCharacterStorage(defaultCharacter: Character) {
 		open,
 		createNew,
 	}
+}
+
+async function saveToFile(
+	fileHandle: FileSystemFileHandle,
+	character: Character,
+) {
+	const writable = await fileHandle.createWritable()
+	await writable.write(JSON.stringify(character, null, 2))
+	await writable.close()
+	console.debug("Saved to", fileHandle.name)
 }
