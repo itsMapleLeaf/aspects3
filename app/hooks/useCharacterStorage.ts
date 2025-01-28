@@ -1,7 +1,7 @@
 import { isEqual } from "es-toolkit"
 import { useEffect, useRef, useState } from "react"
 import { Character } from "~/data/characters.ts"
-import { ensure } from "~/utils.ts"
+import { ensure, timeoutEffect } from "~/utils.ts"
 import { useLocalStorage } from "./useLocalStorage.ts"
 
 const hasFileSystemAccess =
@@ -22,7 +22,7 @@ export function useCharacterStorage(defaultCharacter: Character) {
 		const shouldSave = fileHandle != null && autoSave
 		if (!shouldSave) return
 
-		const timeout = setTimeout(() => {
+		return timeoutEffect(500, () => {
 			void (async () => {
 				try {
 					await saveToFile(fileHandle, character)
@@ -31,11 +31,7 @@ export function useCharacterStorage(defaultCharacter: Character) {
 					// TODO: show this in UI
 				}
 			})()
-		}, 500)
-
-		return () => {
-			clearTimeout(timeout)
-		}
+		})
 	}, [character, fileHandle, autoSave])
 
 	async function save() {
