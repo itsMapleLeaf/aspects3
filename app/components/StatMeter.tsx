@@ -1,5 +1,6 @@
 import { type ComponentProps, useState } from "react"
 import { NumberInput } from "~/routes/character-sheet/NumberInput.tsx"
+import { parseNumber } from "~/utils.ts"
 
 type StatMeterProps = {
 	value: string
@@ -75,7 +76,7 @@ export function StatMeter({
 					/>
 				)}
 				<span className="relative">
-					{value}
+					{parseNumber(value, 0, max)}
 					{max != null && ` / ${max}`}
 				</span>
 			</button>
