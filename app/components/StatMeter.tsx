@@ -62,13 +62,13 @@ export function StatMeter({
 					onChange(parseNumber(value, 0, max).toString())
 				}}
 				className={`
-					relative w-full h-12 text-center text-2xl border rounded-lg transition
+					relative w-full h-12 text-center text-2xl border rounded-lg transition overflow-clip
 					${colorClasses} ${className}
 				`}
 			>
 				{max != null && (
 					<div
-						className={`absolute inset-0 rounded-lg transition-[width] ${
+						className={`absolute inset-0 transition-[width] ${
 							color === "red"
 								? "bg-red-500/20"
 								: color === "purple"
