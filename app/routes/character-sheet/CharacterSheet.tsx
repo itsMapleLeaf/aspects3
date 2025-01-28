@@ -89,16 +89,16 @@ export function CharacterSheet() {
 				<div className="flex gap-2">
 					<Button
 						onClick={createNew}
-						icon={<Icon icon="mingcute:file-new-line" />}
+						icon={<Icon icon="mingcute:file-new-fill" />}
 					>
 						New
 					</Button>
-					<Button onClick={save} icon={<Icon icon="mingcute:save-line" />}>
+					<Button onClick={save} icon={<Icon icon="mingcute:save-2-fill" />}>
 						Save...
 					</Button>
 					<Button
 						onClick={open}
-						icon={<Icon icon="mingcute:folder-open-line" />}
+						icon={<Icon icon="mingcute:folder-open-fill" />}
 					>
 						Open...
 					</Button>
