@@ -40,6 +40,7 @@ export function CharacterSheet() {
 		setAutoSave,
 		save,
 		open,
+		createNew,
 	} = useCharacterStorage(defaultCharacter)
 
 	function updateAttribute(attr: AttributeName & string, value: string) {
@@ -84,8 +85,14 @@ export function CharacterSheet() {
 
 	return (
 		<div className="page-container py-6 @container flex flex-col gap-2">
-			<div className="flex flex-col @lg:flex-row-reverse gap-2">
+			<div className="grid grid-cols-[1fr_auto] gap-2">
 				<div className="flex gap-2">
+					<Button
+						onClick={createNew}
+						icon={<Icon icon="mingcute:file-new-line" />}
+					>
+						New
+					</Button>
 					<Button onClick={save} icon={<Icon icon="mingcute:save-line" />}>
 						Save...
 					</Button>
@@ -94,24 +101,31 @@ export function CharacterSheet() {
 						icon={<Icon icon="mingcute:folder-open-line" />}
 					>
 						Open...
-					</Button>{" "}
-					{hasFileSystemAccess && hasFile && (
-						<Checkbox
-							label="Auto-save"
-							className="whitespace-nowrap"
-							checked={autoSave}
-							onChange={(event) => setAutoSave(event.target.checked)}
-						/>
-					)}
+					</Button>
 				</div>
-				<NameInput
-					name={character.name}
-					onChange={(name) => setCharacter((prev) => ({ ...prev, name }))}
-				/>
-			</div>
-			<TraitList traits={selectedTraits} />
 
-			<div className="@lg:hidden">
+				{hasFileSystemAccess && hasFile && (
+					<Checkbox
+						label="Auto-save"
+						className="whitespace-nowrap self-end @xl:-col-end-1 @xl:col-span-1 @xl:justify-self-end @xl:self-start"
+						checked={autoSave}
+						onChange={(event) => setAutoSave(event.target.checked)}
+					/>
+				)}
+
+				<div className="col-span-2 @xl:col-[1] @xl:row-[1]">
+					<NameInput
+						name={character.name}
+						onChange={(name) => setCharacter((prev) => ({ ...prev, name }))}
+					/>
+				</div>
+
+				<div className="col-span-2 @xl:row-[2] @xl:col-span-1">
+					<TraitList traits={selectedTraits} />
+				</div>
+			</div>
+
+			<div className="@xl:hidden">
 				<CharacterImage
 					imageUrl={character.imageUrl}
 					onChangeUrl={(imageUrl) =>
@@ -120,7 +134,7 @@ export function CharacterSheet() {
 				/>
 			</div>
 
-			<div className="grid gap-8 grid-cols-1 @lg:grid-cols-[1fr_auto]">
+			<div className="grid gap-8 grid-cols-1 @xl:grid-cols-[1fr_auto]">
 				<div className="space-y-6 min-w-0 @container">
 					<AttributeInputList
 						attributes={character.attributes}
@@ -149,7 +163,7 @@ export function CharacterSheet() {
 					</div>
 				</div>
 
-				<div className="hidden @lg:block w-80 space-y-4">
+				<div className="hidden @xl:block w-80 space-y-4">
 					<div className="flex gap-2 justify-end"></div>
 
 					<CharacterImage
@@ -266,7 +280,7 @@ function NameInput({ name, onChange }: NameInputProps) {
 
 function TraitList({ traits }: { traits: string[] }) {
 	const formattedTraits = formatTraitList(traits)
-	return <p className="text-gray-400">{formattedTraits}</p>
+	return <p className="text-gray-400 -mt-1">{formattedTraits}</p>
 }
 
 type AttributeInputListProps = {

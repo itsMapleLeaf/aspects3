@@ -1,3 +1,4 @@
+import { isEqual } from "es-toolkit"
 import { useEffect, useRef, useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
 import { Character } from "~/data/characters.ts"
@@ -124,6 +125,23 @@ export function useCharacterStorage(defaultCharacter: Character) {
 		fileInputRef.current.click()
 	}
 
+	function clearFile() {
+		setFileHandle(undefined)
+	}
+
+	function createNew() {
+		const hasChanges = !isEqual(character, defaultCharacter)
+		if (
+			!hasChanges ||
+			confirm(
+				"Are you sure you want to start a new character? Any unsaved changes will be lost.",
+			)
+		) {
+			setCharacter(defaultCharacter)
+			clearFile()
+		}
+	}
+
 	return {
 		character,
 		setCharacter,
@@ -134,5 +152,6 @@ export function useCharacterStorage(defaultCharacter: Character) {
 		setAutoSave,
 		save,
 		open,
+		createNew,
 	}
 }
