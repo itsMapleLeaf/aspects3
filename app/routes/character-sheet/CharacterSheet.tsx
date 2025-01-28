@@ -3,6 +3,7 @@ import { type ReactNode } from "react"
 import { Button } from "~/components/Button.tsx"
 import { Checkbox } from "~/components/Checkbox.tsx"
 import { Input } from "~/components/Input.tsx"
+import { StatMeter } from "~/components/StatMeter.tsx"
 import { aspectNames } from "~/data/aspects.ts"
 import {
 	attributeNames,
@@ -27,7 +28,6 @@ import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { AspectArts } from "./AspectArts.tsx"
 import { AspectInput } from "./AspectInput.tsx"
 import { AttributeInput } from "./AttributeInput.tsx"
-import { DotBar } from "./DotBar.tsx"
 import { TraitSelection } from "./TraitSelection.tsx"
 
 export function CharacterSheet() {
@@ -99,7 +99,7 @@ export function CharacterSheet() {
 
 					<AspectInputList character={character} onChange={updateAspect} />
 
-					<div className="space-y-4">
+					<div className="grid grid-cols-2 @md:grid-cols-3 gap-4">
 						<HitsBar
 							character={character}
 							onChange={(hits) => setCharacter((prev) => ({ ...prev, hits }))}
@@ -108,6 +108,12 @@ export function CharacterSheet() {
 							character={character}
 							onChange={(fatigue) =>
 								setCharacter((prev) => ({ ...prev, fatigue }))
+							}
+						/>
+						<ComebackCounter
+							value={character.comeback ?? "0"}
+							onChange={(comeback) =>
+								setCharacter((prev) => ({ ...prev, comeback }))
 							}
 						/>
 					</div>
@@ -315,10 +321,9 @@ function HitsBar({ character, onChange }: HitsBarProps) {
 	const toughness = getToughness(character)
 
 	return (
-		<DotBar
+		<StatMeter
 			label="Hits"
 			value={character.hits}
-			placeholder="0"
 			max={toughness}
 			onChange={onChange}
 			color="red"
@@ -335,10 +340,9 @@ function FatigueBar({ character, onChange }: FatigueBarProps) {
 	const resolve = getResolve(character)
 
 	return (
-		<DotBar
+		<StatMeter
 			label="Fatigue"
 			value={character.fatigue}
-			placeholder="0"
 			max={resolve}
 			onChange={onChange}
 			color="purple"
@@ -422,5 +426,21 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 				})}
 			</ul>
 		</div>
+	)
+}
+
+type ComebackCounterProps = {
+	value: string
+	onChange: (value: string) => void
+}
+
+function ComebackCounter({ value, onChange }: ComebackCounterProps) {
+	return (
+		<StatMeter
+			label="Comeback"
+			value={value}
+			onChange={onChange}
+			color="blue"
+		/>
 	)
 }

@@ -12,8 +12,8 @@ export function NumberInput({
 	value,
 	onChange,
 	min = 0,
-	max = 6,
-	className = "",
+	max = Number.POSITIVE_INFINITY,
+	onKeyDown,
 	...props
 }: NumberInputProps) {
 	function updateValue(delta: number) {
@@ -62,8 +62,8 @@ export function NumberInput({
 					event.preventDefault()
 					updateValue(-1)
 				}
+				onKeyDown?.(event)
 			}}
-			className={className}
 			{...props}
 		/>
 	)
