@@ -13,6 +13,7 @@ export const Character = type({
 	traits: type("string[]").default(() => []),
 	proficientSkills: type("string[]").default(() => []),
 	aspects: type(`Record<string, string>`).default(() => ({})),
+	imageUrl: "string = ''",
 })
 
 export const defaultCharacter: Character = {
@@ -30,6 +31,7 @@ export const defaultCharacter: Character = {
 	traits: [],
 	proficientSkills: [],
 	aspects: {},
+	imageUrl: "",
 }
 
 export function getAttributeValue(name: AttributeName, character: Character) {

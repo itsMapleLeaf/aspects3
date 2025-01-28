@@ -83,15 +83,45 @@ export function CharacterSheet() {
 		remainingTraits > 0 ? `Choose ${remainingTraits} more` : undefined
 
 	return (
-		<div className="page-container py-6 @container">
+		<div className="page-container py-6 @container flex flex-col gap-2">
+			<div className="flex flex-col @lg:flex-row-reverse gap-2">
+				<div className="flex gap-2">
+					<Button onClick={save} icon={<Icon icon="mingcute:save-line" />}>
+						Save...
+					</Button>
+					<Button
+						onClick={open}
+						icon={<Icon icon="mingcute:folder-open-line" />}
+					>
+						Open...
+					</Button>{" "}
+					{hasFileSystemAccess && hasFile && (
+						<Checkbox
+							label="Auto-save"
+							className="whitespace-nowrap"
+							checked={autoSave}
+							onChange={(event) => setAutoSave(event.target.checked)}
+						/>
+					)}
+				</div>
+				<NameInput
+					name={character.name}
+					onChange={(name) => setCharacter((prev) => ({ ...prev, name }))}
+				/>
+			</div>
+			<TraitList traits={selectedTraits} />
+
+			<div className="@lg:hidden">
+				<CharacterImage
+					imageUrl={character.imageUrl}
+					onChangeUrl={(imageUrl) =>
+						setCharacter((prev) => ({ ...prev, imageUrl }))
+					}
+				/>
+			</div>
+
 			<div className="grid gap-8 grid-cols-1 @lg:grid-cols-[1fr_auto]">
 				<div className="space-y-6 min-w-0 @container">
-					<NameInput
-						name={character.name}
-						traits={selectedTraits}
-						onChange={(name) => setCharacter((prev) => ({ ...prev, name }))}
-					/>
-
 					<AttributeInputList
 						attributes={character.attributes}
 						onChange={updateAttribute}
@@ -119,29 +149,15 @@ export function CharacterSheet() {
 					</div>
 				</div>
 
-				<div className="w-80 space-y-4">
-					<div className="flex gap-2 justify-end">
-						{hasFileSystemAccess && hasFile && (
-							<Checkbox
-								label="Auto-save"
-								checked={autoSave}
-								onChange={(event) => setAutoSave(event.target.checked)}
-							/>
-						)}
-						<Button onClick={save} icon={<Icon icon="mingcute:save-line" />}>
-							Save...
-						</Button>
-						<Button
-							onClick={open}
-							icon={<Icon icon="mingcute:folder-open-line" />}
-						>
-							Open...
-						</Button>
-					</div>
+				<div className="hidden @lg:block w-80 space-y-4">
+					<div className="flex gap-2 justify-end"></div>
 
-					<div className="h-80 border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center">
-						<p className="text-center text-gray-400">character image here</p>
-					</div>
+					<CharacterImage
+						imageUrl={character.imageUrl}
+						onChangeUrl={(imageUrl) =>
+							setCharacter((prev) => ({ ...prev, imageUrl }))
+						}
+					/>
 				</div>
 			</div>
 
@@ -233,27 +249,24 @@ function ToggleSection({
 
 type NameInputProps = {
 	name: string
-	traits: string[]
 	onChange: (name: string) => void
 }
 
-function NameInput({ name, traits: selectedTraits, onChange }: NameInputProps) {
-	const formattedTraits = formatTraitList(selectedTraits)
-
+function NameInput({ name, onChange }: NameInputProps) {
 	return (
-		<div>
-			<Input
-				type="text"
-				value={name}
-				onChange={(event) => onChange(event.target.value)}
-				placeholder="Unnamed Character"
-				className="text-xl"
-			/>
-			{formattedTraits && (
-				<p className="mt-1 text-gray-400">{formattedTraits}</p>
-			)}
-		</div>
+		<Input
+			type="text"
+			value={name}
+			onChange={(event) => onChange(event.target.value)}
+			placeholder="Unnamed Character"
+			className="text-xl flex-1"
+		/>
 	)
+}
+
+function TraitList({ traits }: { traits: string[] }) {
+	const formattedTraits = formatTraitList(traits)
+	return <p className="text-gray-400">{formattedTraits}</p>
 }
 
 type AttributeInputListProps = {
@@ -442,5 +455,42 @@ function ComebackCounter({ value, onChange }: ComebackCounterProps) {
 			onChange={onChange}
 			color="blue"
 		/>
+	)
+}
+
+type CharacterImageProps = {
+	imageUrl: string
+	onChangeUrl: (url: string) => void
+}
+
+function CharacterImage({ imageUrl, onChangeUrl }: CharacterImageProps) {
+	return (
+		<div className="space-y-2">
+			{imageUrl ? (
+				<a
+					href={imageUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="block aspect-[3/4] w-full border border-gray-700 rounded-lg bg-black/20 overflow-hidden"
+				>
+					<img
+						src={imageUrl}
+						alt="Character"
+						className="w-full h-full object-cover"
+					/>
+				</a>
+			) : (
+				<div className="aspect-[3/4] w-full border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center">
+					<p className="text-center text-gray-400">No image</p>
+				</div>
+			)}
+			<Input
+				type="url"
+				value={imageUrl}
+				onChange={(event) => onChangeUrl(event.target.value)}
+				placeholder="Image URL"
+				className="w-full"
+			/>
+		</div>
 	)
 }
