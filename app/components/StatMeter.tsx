@@ -57,7 +57,10 @@ export function StatMeter({
 		<div className="flex flex-col items-center gap-1">
 			<button
 				type="button"
-				onClick={() => setIsEditing(true)}
+				onClick={() => {
+					setIsEditing(true)
+					onChange(parseNumber(value, 0, max).toString())
+				}}
 				className={`
 					relative w-full h-12 text-center text-2xl border rounded-lg transition
 					${colorClasses} ${className}
