@@ -3,6 +3,7 @@ import { useState, useTransition, type ReactNode } from "react"
 import { Button } from "~/components/ui/Button.tsx"
 import { Checkbox } from "~/components/ui/Checkbox.tsx"
 import { Input } from "~/components/ui/Input.tsx"
+import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { aspectNames } from "~/data/aspects.ts"
 import {
 	attributeNames,
@@ -391,7 +392,7 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 		character.traits,
 	)
 	const usedProficiencies = attributes[attribute].skills.filter((skill) =>
-		character.proficientSkills.includes(skill),
+		character.proficientSkills.includes(skill.name),
 	).length
 
 	const neededProficiencies = availableProficiencies - usedProficiencies
@@ -410,46 +411,55 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 
 			<ul className="space-y-1">
 				{attributes[attribute].skills.map((skill) => {
-					const isProficient = character.proficientSkills.includes(skill)
+					const isProficient = character.proficientSkills.includes(skill.name)
 					const canToggle =
 						isProficient || usedProficiencies < availableProficiencies
-					const powerDice = getSkillPowerDice(attribute, skill, character)
+					const powerDice = getSkillPowerDice(attribute, skill.name, character)
 
 					return (
-						<li key={skill}>
-							<button
-								type="button"
-								disabled={!canToggle && !isProficient}
-								onClick={() => onToggleSkill(skill)}
-								className={`w-full flex justify-between items-center -mx-2 px-2 py-1 rounded transition ${
-									isProficient
-										? "bg-primary-500/20 hover:bg-primary-500/30"
-										: canToggle
-										? "hover:bg-gray-500/20"
-										: ""
-								}`}
+						<li key={skill.name}>
+							<div
+								className={`w-full flex justify-between items-center -mx-2 px-2 py-1 rounded transition`}
 							>
-								<span className="flex items-center gap-2">
-									{skill}
-									{isProficient && (
+								<span className="flex items-center gap-1.5">
+									{skill.name}
+									<Tooltip content={skill.description}>
 										<Icon
-											icon="mingcute:check-fill"
-											className="w-4 h-4 text-primary-400"
+											icon="mingcute:information-line"
+											className="w-4 h-4 text-gray-400"
 											aria-hidden
 										/>
-									)}
+									</Tooltip>
 								</span>
-								<span className="flex items-center">
-									<span className="ml-3">
-										{getAttributeValue(attribute, character)}
-									</span>
+								<span className="tabular-nums grid text-end grid-flow-col items-center">
+									<span>{getAttributeValue(attribute, character)}</span>
 									{powerDice > 0 && (
-										<span className="text-primary-400 ml-1.5">
-											+{powerDice}
-										</span>
+										<span className="text-primary-400 w-7">+{powerDice}</span>
 									)}
+
+									<div className="flex justify-end w-7">
+										{canToggle && (
+											<div
+												className={`
+												size-5 rounded-full border transition
+												${
+													isProficient
+														? "border-primary-400 bg-primary-400/20"
+														: "border-gray-400 hover:bg-gray-300/20"
+												}
+											`}
+											>
+												<input
+													type="checkbox"
+													checked={isProficient}
+													onChange={() => onToggleSkill(skill.name)}
+													className="size-full opacity-0"
+												/>
+											</div>
+										)}
+									</div>
 								</span>
-							</button>
+							</div>
 						</li>
 					)
 				})}

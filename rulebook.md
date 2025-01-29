@@ -233,43 +233,43 @@ Proficient skills:
 
 Strength
 
-- Strike
-- Block
-- Throw
-- Lift
-- Endure
+- Strike - attack with melee weapons or bare hands
+- Block - defend against physical attacks with your body or shield
+- Throw - hurl objects or people with force
+- Lift - carry heavy objects or move obstacles
+- Endure - resist physical strain, exhaustion, or harsh conditions
 
 Intellect
 
-- Intuit
-- Recall
-- Aid
-- Operate
-- Tinker
+- Intuit - understand complex concepts or make logical deductions
+- Recall - remember facts, details, or past experiences
+- Aid - provide medical treatment or assistance
+- Operate - use complex tools or machinery
+- Tinker - repair, modify, or craft items
 
 Agility
 
-- Dash
-- Jump
-- Climb
-- Dodge
-- Maneuver
+- Dash - move quickly in bursts or sprint
+- Jump - leap across gaps or over obstacles
+- Climb - scale walls, trees, or other vertical surfaces
+- Dodge - avoid incoming attacks or hazards
+- Maneuver - perform acrobatic movements or maintain balance
 
 Wit
 
-- Charm
-- Intimidate
-- Deceive
-- Read
-- Sneak
+- Charm - persuade or influence others positively
+- Intimidate - threaten or pressure others through fear
+- Deceive - lie convincingly or misdirect
+- Read - understand others' emotions and intentions
+- Sneak - move quietly and remain undetected
 
 Sense
 
-- Spy
-- Listen
-- Feel
-- Shoot
-- Focus
+- Spy - spot hidden details or distant objects
+- Listen - detect and identify sounds
+- Feel - notice changes in temperature, pressure, or vibrations
+- Shoot - attack accurately with ranged weapons
+- Focus - maintain concentration or resist distractions
 
 ## Aspects
 
