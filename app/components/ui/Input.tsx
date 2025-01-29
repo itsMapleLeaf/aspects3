@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react"
 import { type ComponentPropsWithoutRef, type ReactNode } from "react"
-import { Tooltip } from "./Tooltip"
+import { Tooltip } from "./Tooltip.tsx"
 
 type InputProps = {
 	label?: string

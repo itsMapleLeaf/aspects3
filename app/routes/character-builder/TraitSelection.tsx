@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react"
-import { Tooltip } from "~/components/Tooltip.tsx"
+import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { aspects } from "~/data/aspects.ts"
 import { attributes } from "~/data/attributes.ts"
 import { traits } from "~/data/traits.ts"

@@ -1,8 +1,8 @@
 import { Icon } from "@iconify/react"
 import { useState, useTransition, type ReactNode } from "react"
-import { Button } from "~/components/Button.tsx"
-import { Checkbox } from "~/components/Checkbox.tsx"
-import { Input } from "~/components/Input.tsx"
+import { Button } from "~/components/ui/Button.tsx"
+import { Checkbox } from "~/components/ui/Checkbox.tsx"
+import { Input } from "~/components/ui/Input.tsx"
 import { aspectNames } from "~/data/aspects.ts"
 import {
 	attributeNames,
@@ -22,9 +22,9 @@ import {
 	getToughness,
 } from "~/data/characters.ts"
 import { traits } from "~/data/traits.ts"
-import { useCharacterStorage } from "~/hooks/useCharacterStorage.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
+import { useCharacterStorage } from "~/routes/character-builder/useCharacterStorage.ts"
 import { pipe, timeoutPromise } from "~/utils.ts"
 import { AspectArts } from "./AspectArts.tsx"
 import { AspectInput } from "./AspectInput.tsx"

@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react"
 import { type ComponentProps } from "react"
-import { Tooltip } from "~/components/Tooltip.tsx"
+import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { NumberInput } from "./NumberInput.tsx"
 
 type StatInputProps = {

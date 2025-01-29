@@ -2,8 +2,8 @@ import * as Ariakit from "@ariakit/react"
 import { Icon } from "@iconify/react/dist/iconify.js"
 import { randomInt, range } from "es-toolkit"
 import { useRef, useState } from "react"
-import { Button } from "./Button.tsx"
-import { Tooltip } from "./Tooltip.tsx"
+import { Button } from "./ui/Button.tsx"
+import { Tooltip } from "./ui/Tooltip.tsx"
 
 const diceTypes = [
 	{

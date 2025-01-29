@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { useSearchParams } from "react-router"
 import { Character } from "~/data/characters.ts"
 import { ensure, timeoutEffect } from "~/utils.ts"
-import { useLocalStorage } from "./useLocalStorage.ts"
+import { useLocalStorage } from "../../hooks/useLocalStorage.ts"
 
 const hasFileSystemAccess =
 	typeof window !== "undefined" && "showSaveFilePicker" in window
