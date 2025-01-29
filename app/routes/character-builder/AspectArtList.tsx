@@ -1,6 +1,7 @@
 import { aspects } from "~/data/aspects.ts"
 import type { Character } from "~/data/characters.ts"
 import { getAspectPowerDice, getAttributeValue } from "~/data/characters.ts"
+import { parseNumber } from "~/utils.ts"
 
 const aspectColors = {
 	light: "text-yellow-300",
@@ -32,7 +33,7 @@ export function AspectArtList({
 	return (
 		<>
 			{Object.entries(aspects).map(([aspectName, aspect]) => {
-				const aspectPoints = Number(character.aspects[aspectName])
+				const aspectPoints = parseNumber(character.aspects[aspectName] ?? "")
 				const attributeValue = getAttributeValue(aspect.attribute, character)
 				const total = aspectPoints + attributeValue
 				const hasAspect = aspectPoints > 0
