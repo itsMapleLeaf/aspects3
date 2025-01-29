@@ -3,7 +3,7 @@ import { NavLink } from "react-router"
 export function Navigation() {
 	const links = [
 		{ to: "/", label: "Rulebook" },
-		{ to: "/character-sheet", label: "Character Builder" },
+		{ to: "/character-builder", label: "Character Builder" },
 	]
 
 	return (

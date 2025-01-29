@@ -1,5 +1,5 @@
 import { type ComponentProps, useState } from "react"
-import { NumberInput } from "~/routes/character-sheet/NumberInput.tsx"
+import { NumberInput } from "~/routes/character-builder/NumberInput"
 import { parseNumber } from "~/utils.ts"
 
 type StatMeterProps = {

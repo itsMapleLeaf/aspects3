@@ -1,6 +1,6 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes"
 
 export default [
-	index("routes/rulebook.tsx"),
-	route("character-sheet", "routes/character-sheet/route.tsx"),
+	index("routes/rulebook/route.tsx"),
+	route("character-builder", "routes/character-builder/route.tsx"),
 ] satisfies RouteConfig

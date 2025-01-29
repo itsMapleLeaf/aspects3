@@ -1,4 +1,4 @@
-import Rulebook from "../rulebook.md"
+import Rulebook from "../../../rulebook.md"
 
 export default function RulebookPage() {
 	return (

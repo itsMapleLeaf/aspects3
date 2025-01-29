@@ -3,7 +3,6 @@ import { type ReactNode } from "react"
 import { Button } from "~/components/Button.tsx"
 import { Checkbox } from "~/components/Checkbox.tsx"
 import { Input } from "~/components/Input.tsx"
-import { StatMeter } from "~/components/StatMeter.tsx"
 import { aspectNames } from "~/data/aspects.ts"
 import {
 	attributeNames,
@@ -25,12 +24,13 @@ import {
 import { traits } from "~/data/traits.ts"
 import { useCharacterStorage } from "~/hooks/useCharacterStorage.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
+import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
 import { AspectArts } from "./AspectArts.tsx"
 import { AspectInput } from "./AspectInput.tsx"
 import { AttributeInput } from "./AttributeInput.tsx"
 import { TraitSelection } from "./TraitSelection.tsx"
 
-export function CharacterSheet() {
+export default function CharacterBuilder() {
 	const {
 		character,
 		setCharacter,
