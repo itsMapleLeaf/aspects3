@@ -24,3 +24,28 @@ export function timeoutEffect<Args extends unknown[]>(
 		clearTimeout(timeout)
 	}
 }
+
+export function timeoutPromise(delay: number) {
+	return new Promise((resolve) => setTimeout(resolve, delay))
+}
+
+export function pipe<A, B, C>(value: A, ab: (x: A) => B, bc: (x: B) => C): C
+export function pipe<A, B, C, D>(
+	value: A,
+	ab: (x: A) => B,
+	bc: (x: B) => C,
+	cd: (x: C) => D,
+): D
+export function pipe<A, B, C, D, E>(
+	value: A,
+	ab: (x: A) => B,
+	bc: (x: B) => C,
+	cd: (x: C) => D,
+	de: (x: D) => E,
+): E
+export function pipe(
+	value: unknown,
+	...fns: Array<(input: unknown) => unknown>
+) {
+	return fns.reduce((value, fn) => fn(value), value)
+}
