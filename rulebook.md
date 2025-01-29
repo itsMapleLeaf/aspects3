@@ -4,9 +4,18 @@ summary:
 
 - story & roleplay focused
 - rules lite
-- low math (ideally)
+- easy math
 - flexible character builder based around several elements that link to one another
-- setting: cute anime characters with animal ears who can bend elements, low tech but with a modern day contemporary fantasy vibe
+
+## Theme & Setting
+
+- **_a n i m e_**
+- world of varied humans with features of common animals, fantasy, and myth (kemonomimis, cat girls, fox boys, demons, dragons, elves, and everything in between)
+- at birth, you're born with an attunement to one or more elements of nature, or **aspects**, which you can bend to your will through **aspect art** (think Avatar: The Last Airbender)
+- tech level: pre-industrial revolution - aspect art replaces much of what modern tech would accomplish
+- lore: crystals
+  - gemstones created through metamorphic earth processes
+  - posses the ability to store and repeat aspect arts depending on the quality of the crystal
 
 ## Game Flow
 
@@ -14,21 +23,37 @@ Players should first create their characters, assigning attributes, aspects, and
 
 The narrator (called the game master or dungeon master in other systems) should prepare a scenario for the players to play through, whether it’s a single-session one-shot, or a campaign spanning over dozens of sessions. Sessions can last anywhere around 1 to 3 hours, depending on the energy levels, attention span, and/or available time for those playing.
 
-The game starts and runs as a back-and-forth between players and the narrator
+The game starts and runs as a back-and-forth between players and the narrator.
 
-Example player actions:
+### Players
 
-- Look around for something interesting
-- Take a closer look at something specific
-- Charm or threaten an NPC
-- Attempt to attack someone
-- Dodge an attack
+When building your character, aside from their personality and overall vibe, one of the things you'll want to give them is a goal. It can be something concrete, such as wanting to find a lost sibling, or it can be a general north star that guides their decisions. Examples:
 
-Example narrator responses:
+- A doctor who lost someone close to them. This leads them to try to help others when they can, even to the detriment of themselves.
+- A rogueish drifter who's felt betrayal by those they thought they trusted. They now only view others as resources to take advantage of.
+- A business owner who always tries to steer themselves towards opportunities for profit. With a weakened sense of self damaged by their upbringing, they know no other means of proving their own worth.
 
-- Describe the look and feel of the current scene, anyone that might be around, as well as any items of interest
-- Ask for an attribute check to determine if a character succeeds on their action
-- Play the part of an NPC, narrating their actions and voicing their dialogue
+During gameplay, you'll tell the narrator what you would like your character to do in any given scene. You'll usually make actions that fit with your character's strengths. For example, as a strong brute type character, a lot of your problem solving would involve Strength checks. As a charming social butterfly, a lot of your actions would involve Wit.
+
+### Narrator
+
+As the narrator, start by describing the scene to the characters. Describe the look and feel and mention any other NPCs who might be present, as well as any points of interest.
+
+When players want to do something, think about whether it's something that could fail. If so, ask for a skill check, picking the appropriate skill.
+
+Although players will attempt to lean on their character's strengths, it can make things interesting to put them in situations that force them to make unfavorable compromises.
+
+Additionally, consider the scenario, and whether there are factors that might help or hinder their attempt. If so, apply power or risk dice as appropriate. If a player is asking a favor from an NPC, asking a helpful long-time friend might give them a power dice, but asking an irritable, unfriendly stranger might give them one or more risk dice instead.
+
+For a compelling, immersive game, consider parallel story threads or imminent events that may be happening in the background, and how they might affect the player's current situation.
+
+It can also help to inject minor bits of trivia to diagetically add flavor to the world. Here's an example:
+
+> You walk into a café at night. The interior is warmly lit with light aspect crystals lining the walls and hanging from the ceiling. The tables and chairs sport the dark greenish color of the tall trees that border your town.
+>
+> Behind the counter, you see a brown-skinned barista with a set of panda ears, tail, and small stubby horns that suggest a mixed lineage. You watch as she operates a small metal brewery range, sending heat through it to keep her pots of coffee and tea steaming hot.
+>
+> She notices a pot that's nearly empty. After discarding the old coffee, she fetches a bag of beans and pours them in a grinder. You watch her blow softly into a compartment of the grinder, a small bit of wind art which prompts it to spin rapidly, chopping up the beans into coarse bits ready for a fresh pot.
 
 ## Characters
 
@@ -167,6 +192,16 @@ Attacks are a specific kind of action with the intent to damage another characte
 
 Players earn 1 comeback point when failing a roll. They can spend any number of them to reduce a roll’s result. They cannot use a comeback point on the same roll that gave it to them. Comeback points return to 0 at the end of a session.
 
+## Conditions
+
+Conditions are any arbitrary status effects that could apply to a character. It may impair their ability to do certain things, or empower them. Examples:
+
+- Unconscious - cannot move, talk, or act
+- Paralyzed - cannot move
+- Deafened - cannot hear
+- Energized - increases movement speed, could grant a +1 to
+-
+
 ## Skills
 
 Skill checks:
@@ -191,6 +226,10 @@ Proficient skills:
 - Determined by your trait attributes
 - Gives +1 power die for skill checks made with that skill (_on top of_ trait bonuses)
 - Proficient skills must be unique; cannot make a skill proficient twice
+
+> [!tip]
+>
+> Narrators should aim to make failures interesting. For example, consider a character tries to **Spy** for something they lost. On failure, instead of having nothing happen, maybe they find something that a friend lost instead!
 
 Strength
 
@@ -265,7 +304,9 @@ Light
 - action: multicast - add 2 additional targets to your next action; on failure, 1 additional target
 - action: sacrifice - try to remove any 2 hits, then take 1 hit; on failure, remove any 1 hit
 - action: inspire - add 2 power dice to a target's next roll; on failure, add 1 power die
-- (idea) action: command - make someone do a thing; on failure, requires an additional Wit skill check (whichever is most appropriate)
+- action: message - send a message across any distance to someone you have met; on failure, the message must be under Wit words
+- action: command - force another character to make a specific action; on failure, requires an additional Wit skill check (whichever is most appropriate)
+  - this might be too powerful; I don't know how to balance this, so I won't
 
 Water
 
@@ -301,7 +342,6 @@ Darkness
 - action: drain - try to remove any 2 hits, then deal any 2 hits; on failure, remove 1, deal 1
 - action: cancel - prevent a target's next action; on failure, the target is random
 - action: disappear - turn invisible, you cannot take hits until your next action; on failure, you must succeed an Agility check to prevent any hit
-- (idea) action: message - send a msg; on failure, under Wit words
 
 ## Combat
 
