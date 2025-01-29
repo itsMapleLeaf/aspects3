@@ -1,3 +1,4 @@
+import { Icon } from "@iconify/react"
 import { omit } from "es-toolkit"
 import { type ComponentProps, type ReactNode } from "react"
 import { Link } from "react-router"
@@ -25,6 +26,7 @@ type ButtonProps = {
 	shape?: keyof typeof shapeClasses
 	icon?: ReactNode
 	as?: "button" | "link"
+	pending?: boolean
 } & (
 	| ({ as?: "button" } & ComponentProps<"button">)
 	| ({ as: "link" } & ComponentProps<typeof Link>)
@@ -37,6 +39,7 @@ export function Button({
 	icon,
 	className = "",
 	children,
+	pending,
 	...props
 }: ButtonProps) {
 	const combinedClasses = `
@@ -49,7 +52,13 @@ export function Button({
 
 	const content = (
 		<>
-			<div className={`${sizeClasses[size].icon} empty:hidden`}>{icon}</div>
+			<div className={`${sizeClasses[size].icon} empty:hidden`}>
+				{pending ? (
+					<Icon icon="mingcute:loading-3-fill" className="animate-spin" />
+				) : (
+					icon
+				)}
+			</div>
 			{children}
 		</>
 	)
