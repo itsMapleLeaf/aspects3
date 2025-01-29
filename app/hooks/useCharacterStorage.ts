@@ -1,5 +1,6 @@
 import { isEqual } from "es-toolkit"
 import { useEffect, useRef, useState } from "react"
+import { useSearchParams } from "react-router"
 import { Character } from "~/data/characters.ts"
 import { ensure, timeoutEffect } from "~/utils.ts"
 import { useLocalStorage } from "./useLocalStorage.ts"
@@ -17,6 +18,26 @@ export function useCharacterStorage(defaultCharacter: Character) {
 	)
 	const fileInputRef = useRef<HTMLInputElement | undefined>(undefined)
 	const hasFile = fileHandle != null
+
+	const [searchParams, setSearchParams] = useSearchParams()
+	const dataParam = searchParams.get("data")
+	useEffect(() => {
+		if (!dataParam) return
+
+		try {
+			const dataParam = new URLSearchParams(location.search).get("data")
+			if (!dataParam) return
+
+			const sharedCharacter = Character.assert(JSON.parse(atob(dataParam)))
+			setCharacter(sharedCharacter)
+			setSearchParams((params) => {
+				params.delete("data")
+				return params
+			})
+		} catch (error) {
+			console.error("Failed to parse character", error)
+		}
+	}, [dataParam])
 
 	useEffect(() => {
 		const shouldSave = fileHandle != null && autoSave
