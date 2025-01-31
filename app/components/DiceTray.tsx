@@ -1,62 +1,143 @@
 import * as Ariakit from "@ariakit/react"
-import { Icon } from "@iconify/react/dist/iconify.js"
-import { randomInt, range } from "es-toolkit"
-import { useRef, useState } from "react"
+import { randomInt, range, sum, sumBy } from "es-toolkit"
+import { Fragment, useRef, useState, type ReactNode } from "react"
 import { Button } from "./ui/Button.tsx"
+import { Icon } from "./ui/Icon.tsx"
 import { Tooltip } from "./ui/Tooltip.tsx"
 
-const diceTypes = [
-	{
-		sides: 4,
-		inactiveIcon: <Icon icon="mingcute:triangle-line" />,
-		activeIcon: <Icon icon="mingcute:triangle-fill" />,
-	},
-	{
-		sides: 6,
-		inactiveIcon: <Icon icon="mingcute:square-line" />,
-		activeIcon: <Icon icon="mingcute:square-fill" />,
-	},
-	{
-		sides: 8,
-		inactiveIcon: <Icon icon="mingcute:diamond-square-line" />,
-		activeIcon: <Icon icon="mingcute:diamond-square-fill" />,
-	},
-	{
-		sides: 10,
-		inactiveIcon: <Icon icon="mingcute:diamond-line" className="rotate-90" />,
-		activeIcon: <Icon icon="mingcute:diamond-fill" className="rotate-90" />,
-	},
-	{
-		sides: 12,
-		inactiveIcon: <Icon icon="mingcute:pentagon-line" />,
-		activeIcon: <Icon icon="mingcute:pentagon-fill" />,
-	},
-	{
-		sides: 20,
-		inactiveIcon: <Icon icon="mingcute:hexagon-line" />,
-		activeIcon: <Icon icon="mingcute:hexagon-fill" />,
-	},
-	{
-		sides: 100,
-		inactiveIcon: <Icon icon="mingcute:octagon-line" />,
-		activeIcon: <Icon icon="mingcute:octagon-fill" />,
-	},
-]
-
-interface RollResult {
-	id: string
-	dice: RollResultDie[]
+type Die = {
+	name: string
+	inactiveIcon: ReactNode
+	activeIcon: ReactNode
+	resultIcon?: ReactNode
+	sides: DieSide[]
 }
 
-interface RollResultDie {
-	id: string
-	sides: number
+type DieSide = {
+	name: string
+	symbol: ReactNode
 	value: number
 }
 
+const dice: Die[] = [
+	{
+		name: "skill",
+		inactiveIcon: <Icon icon="mingcute:square-line" />,
+		activeIcon: <Icon icon="mingcute:square-fill" />,
+		sides: range(6).map((i) => ({
+			name: `${i + 1}`,
+			symbol: i + 1,
+			value: i + 1,
+		})),
+	},
+	{
+		name: "aspect",
+		inactiveIcon: <Icon icon="mingcute:pentagon-line" />,
+		activeIcon: <Icon icon="mingcute:pentagon-fill" />,
+		sides: range(12).map((i) => ({
+			name: `${i + 1}`,
+			symbol: i + 1,
+			value: i + 1,
+		})),
+	},
+	{
+		name: "power",
+		inactiveIcon: (
+			<Icon icon="mingcute:star-line" className="text-purple-300" />
+		),
+		activeIcon: <Icon icon="mingcute:star-fill" className="text-purple-300" />,
+		resultIcon: (
+			<Icon icon="mingcute:square-fill" className="text-purple-300" />
+		),
+		sides: range(6).map((i) => {
+			const sideNumber = i + 1
+
+			let value
+			if (sideNumber === 6) {
+				value = 2
+			} else if (sideNumber >= 4) {
+				value = 1
+			} else {
+				value = 0
+			}
+
+			let symbol
+			if (value === 2) {
+				symbol = (
+					<Icon className="size-4 text-purple-900" icon="mingcute:star-fill" />
+				)
+			} else if (value === 1) {
+				symbol = (
+					<Icon className="size-4 text-purple-900" icon="mingcute:star-line" />
+				)
+			}
+
+			return {
+				name: `${value === 0 ? "" : "-"}${value} (${sideNumber})`,
+				symbol,
+				value: -value,
+			}
+		}),
+	},
+	{
+		name: "risk",
+		inactiveIcon: (
+			<Icon icon="mingcute:alert-diamond-line" className="text-red-300" />
+		),
+		activeIcon: (
+			<Icon icon="mingcute:alert-diamond-fill" className="text-red-300" />
+		),
+		resultIcon: <Icon icon="mingcute:square-fill" className="text-red-300" />,
+		sides: range(6).map((i) => {
+			const sideNumber = i + 1
+
+			let value
+			if (sideNumber === 6) {
+				value = 2
+			} else if (sideNumber >= 4) {
+				value = 1
+			} else {
+				value = 0
+			}
+
+			let symbol
+			if (value === 2) {
+				symbol = (
+					<Icon
+						className="size-6 text-red-900"
+						icon="mingcute:close-circle-fill"
+					/>
+				)
+			} else if (value === 1) {
+				symbol = (
+					<Icon className="size-4 text-red-900" icon="mingcute:close-fill" />
+				)
+			}
+
+			return {
+				name: `+${value} (${sideNumber})`,
+				symbol,
+				value,
+			}
+		}),
+	},
+]
+
+interface DiceRoll {
+	id: string
+	rolled: DieRoll[]
+}
+
+interface DieRoll {
+	id: string
+	name: string
+	sideIndex: number
+}
+
 export function DiceTray() {
-	const [counts, setCounts] = useState<Map<number, number>>(new Map())
-	const [results, setResults] = useState<RollResult[]>([])
+	const [counts, setCounts] = useState<Map<Die["name"], number>>(new Map())
+	const hasCounts = sum([...counts.values()]) > 0
+	const [results, setResults] = useState<DiceRoll[]>([])
 	const [open, setOpen] = useState(false)
 	const controlsRef = useRef<HTMLDivElement>(null)
 
@@ -65,16 +146,19 @@ export function DiceTray() {
 	}
 
 	const roll = () => {
-		const rolled: RollResultDie[] = []
+		const rolled: DieRoll[] = []
 
-		for (const [sides, count] of counts) {
-			for (const i of range(count)) {
-				rolled.push({
+		for (const [name, count] of counts) {
+			const die = dice.find((die) => die.name === name)
+			if (!die) continue
+
+			rolled.push(
+				...range(count).map(() => ({
 					id: crypto.randomUUID(),
-					sides: sides,
-					value: randomInt(sides) + 1,
-				})
-			}
+					name,
+					sideIndex: randomInt(die.sides.length),
+				})),
+			)
 		}
 
 		if (rolled.length === 0) {
@@ -86,125 +170,116 @@ export function DiceTray() {
 				...results,
 				{
 					id: crypto.randomUUID(),
-					dice: rolled,
+					rolled,
 				},
 			].slice(-10),
 		)
 		setCounts(new Map())
 	}
 
+	const handleDisclosureClick = (event: React.MouseEvent) => {
+		if (!hasCounts) return
+		roll()
+		event.preventDefault()
+	}
+
 	return (
-		<div className="fixed right-4 bottom-4">
-			<Ariakit.PopoverProvider
-				placement="bottom-end"
-				open={open}
-				setOpen={setOpen}
-			>
-				<div className="flex gap-2 items-start">
-					{open && (
-						<div className="contents" ref={controlsRef}>
+		<Ariakit.PopoverProvider
+			placement="bottom-end"
+			open={open}
+			setOpen={setOpen}
+		>
+			<div className="flex gap-2 items-start">
+				{open && (
+					<div className="contents" ref={controlsRef}>
+						{hasCounts && (
 							<Tooltip content="Clear">
 								<Button shape="circle" size="sm" onClick={clear}>
 									<Icon icon="mingcute:close-fill" />
 								</Button>
 							</Tooltip>
-							<Tooltip content="Submit">
-								<Button shape="circle" size="sm" onClick={roll}>
-									<Icon icon="mingcute:check-fill" />
-								</Button>
-							</Tooltip>
-						</div>
-					)}
-					<Ariakit.PopoverDisclosure render={<Button shape="circle" />}>
-						<Icon icon="fa6-solid:dice-d20" className="size-8" />
-					</Ariakit.PopoverDisclosure>
-				</div>
-				<Ariakit.Popover
-					gutter={12}
-					portal
-					unmountOnHide
-					fixed
-					getPersistentElements={() =>
-						controlsRef.current ? [controlsRef.current] : []
-					}
-					className="flex flex-col items-end gap-2"
-				>
-					{results.map((result) => (
-						<div
-							key={result.id}
-							className="bg-primary-950/50 border-primary-500 border rounded-md px-2 py-2 flex"
-						>
-							{result.dice
-								.flatMap((die) => {
-									const type = diceTypes.find((it) => it.sides === die.sides)
-									return type ? { ...type, ...die } : []
-								})
-								.map((die) => (
-									<div key={die.id} className="relative">
-										<div className="*:size-10 size-10">{die.activeIcon}</div>
-										<div
-											className={`absolute inset-0 flex items-center justify-center text-primary-900 font-bold text-lg ${
-												die.sides === 4 ? "translate-y-[2px]" : ""
-											}`}
-										>
-											{die.value}
-										</div>
-									</div>
-								))}
-						</div>
-					))}
-
-					<div className="flex items-center gap-2 flex-wrap">
-						{diceTypes
-							.map((dice) => ({
-								dice,
-								count: counts.get(dice.sides) ?? 0,
-							}))
-							.map(({ dice, count }) => (
-								<DiceButton
-									key={dice.sides}
-									count={count}
-									dice={dice}
-									onIncrement={() => {
-										setCounts((counts) => {
-											const next = new Map(counts)
-											next.set(dice.sides, (counts.get(dice.sides) ?? 0) + 1)
-											return next
-										})
-									}}
-									onDecrement={() => {
-										setCounts((counts) => {
-											const next = new Map(counts)
-											next.set(
-												dice.sides,
-												Math.max(0, (counts.get(dice.sides) ?? 0) - 1),
-											)
-											return next
-										})
-									}}
-								/>
-							))}
+						)}
 					</div>
-				</Ariakit.Popover>
-			</Ariakit.PopoverProvider>
-		</div>
+				)}
+				<Tooltip
+					content={
+						hasCounts ? "Roll" : open ? "Hide dice tray" : "Show dice tray"
+					}
+				>
+					<Ariakit.PopoverDisclosure
+						render={<Button shape="circle" />}
+						onClick={handleDisclosureClick}
+					>
+						<Icon
+							icon={hasCounts ? "mingcute:check-fill" : "mingcute:box-3-fill"}
+							className="size-8"
+						/>
+					</Ariakit.PopoverDisclosure>
+				</Tooltip>
+			</div>
+
+			<Ariakit.Popover
+				gutter={12}
+				portal
+				unmountOnHide
+				fixed
+				getPersistentElements={() =>
+					controlsRef.current ? [controlsRef.current] : []
+				}
+				className="flex flex-col items-end gap-2"
+			>
+				{results.map((result) => (
+					<DiceRollElement key={result.id} result={result} />
+				))}
+
+				<div className="flex items-center gap-2 flex-wrap">
+					{dice.map((die) => {
+						const count = counts.get(die.name) ?? 0
+						return (
+							<DiceButton
+								key={die.name}
+								count={count}
+								die={die}
+								onIncrement={() => {
+									setCounts((counts) => {
+										const next = new Map(counts)
+										next.set(die.name, count + 1)
+										return next
+									})
+								}}
+								onDecrement={() => {
+									setCounts((counts) => {
+										const next = new Map(counts)
+										next.set(die.name, Math.max(0, count - 1))
+										return next
+									})
+								}}
+							/>
+						)
+					})}
+				</div>
+			</Ariakit.Popover>
+		</Ariakit.PopoverProvider>
 	)
 }
 
 function DiceButton({
-	dice,
+	die,
 	count,
 	onIncrement,
 	onDecrement,
 }: {
-	dice: (typeof diceTypes)[number]
+	die: Die
 	count: number
 	onIncrement: () => void
 	onDecrement: () => void
 }) {
 	return (
 		<div className="relative">
-			<Tooltip content={`d${dice.sides}`} placement="bottom">
+			<Tooltip
+				content={`${die.name} (d${die.sides.length})`}
+				placement="bottom"
+			>
 				<Button
 					shape="circle"
 					size="sm"
@@ -217,7 +292,7 @@ function DiceButton({
 					}}
 				>
 					<div className="*:size-8 size-8">
-						{count > 0 ? dice.activeIcon : dice.inactiveIcon}
+						{count > 0 ? die.activeIcon : die.inactiveIcon}
 					</div>
 				</Button>
 			</Tooltip>
@@ -226,6 +301,45 @@ function DiceButton({
 					{count}
 				</div>
 			)}
+		</div>
+	)
+}
+
+function DiceRollElement(props: { result: DiceRoll }) {
+	const rolls = props.result.rolled
+		.flatMap((roll) => {
+			const dieIndex = dice.findIndex((it) => it.name === roll.name)
+			const die = dice[dieIndex]
+			const side = die?.sides[roll.sideIndex]
+			return side ? { roll, die, side, dieIndex } : []
+		})
+		.sort((a, b) => b.side.value - a.side.value)
+		.sort((a, b) => a.dieIndex - b.dieIndex)
+
+	return (
+		<div className="bg-primary-950/50 border-primary-500 border rounded-md px-2 py-2 flex items-center">
+			{rolls.map(({ roll, die, side }) => (
+				<Fragment key={roll.id}>
+					<Tooltip content={`${die.name}: ${side.name}`}>
+						<div className="relative cursor-default">
+							<div className="*:size-10 size-10">
+								{die.resultIcon || die.activeIcon}
+							</div>
+							<div className="absolute inset-0 flex items-center justify-center text-primary-900 font-bold text-lg">
+								{side?.symbol}
+							</div>
+						</div>
+					</Tooltip>
+				</Fragment>
+			))}
+			<Icon icon="mingcute:pause-line" className="rotate-90" />
+			<span className="text-2xl ml-1 tabular-nums font-semibold">
+				{sumBy(rolls, ({ roll }) => {
+					const die = dice.find((it) => it.name === roll.name)
+					const side = die?.sides[roll.sideIndex]
+					return side?.value ?? 0
+				})}
+			</span>
 		</div>
 	)
 }
