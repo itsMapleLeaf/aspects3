@@ -4,13 +4,14 @@ import { Link } from "react-router"
 import { Icon } from "~/components/ui/Icon.tsx"
 
 const appearanceClasses = {
-	primary:
-		"bg-primary-500/20 hover:bg-primary-500/30 focus:ring-primary-500/50",
-	secondary: "bg-gray-500/20 hover:bg-gray-500/30 focus:ring-gray-500/50",
+	default:
+		"bg-primary-500/20 border-primary-500 hover:bg-primary-500/30 focus:ring-primary-500/50",
+	ghost:
+		"border-transparent opacity-75 hover:bg-gray-500/30 hover:opacity-100 focus:ring-gray-500/50",
 } as const
 
 const sizeClasses = {
-	sm: { button: "px-2 py-1.5 text-sm gap-2", icon: "*:size-3 -mx-0.5" },
+	sm: { button: "px-2 py-1 text-sm gap-2", icon: "*:size-3 -mx-0.5" },
 	default: { button: "px-3 py-2 text-sm gap-2.5", icon: "*:size-4 -mx-1" },
 	lg: { button: "px-5 py-2 text-lg gap-3.5", icon: "*:size-5 -mx-1.5" },
 } as const
@@ -33,7 +34,7 @@ type ButtonProps = {
 )
 
 export function Button({
-	appearance = "primary",
+	appearance = "default",
 	size = "default",
 	shape = "default",
 	icon,
@@ -43,7 +44,7 @@ export function Button({
 	...props
 }: ButtonProps) {
 	const combinedClasses = `
-		flex items-center transition border border-primary-500 font-medium shadow-sm focus:outline-none focus:ring-2
+		flex items-center transition border font-medium shadow-sm focus:outline-none focus:ring-2
 		${appearanceClasses[appearance]}
 		${sizeClasses[size].button}
 		${shapeClasses[shape]}

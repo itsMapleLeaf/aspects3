@@ -1,4 +1,5 @@
 import { useState, useTransition, type ReactNode } from "react"
+import { prefillDice } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
 import { Checkbox } from "~/components/ui/Checkbox.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
@@ -403,25 +404,26 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 				{attributes[attribute].name}
 				{neededProficiencies > 0 && (
 					<span className="text-sm text-gray-400 ml-2">
-						Pick {neededProficiencies} proficiencies
-						{neededProficiencies === 1 ? "" : "s"}
+						Pick {neededProficiencies}{" "}
+						{neededProficiencies === 1 ? "proficiency" : "proficiencies"}
 					</span>
 				)}
 			</h3>
 
-			<ul className="space-y-1">
+			<ul>
 				{attributes[attribute].skills.map((skill) => {
 					const isProficient = character.proficientSkills.includes(skill.name)
 					const canToggle =
 						isProficient || usedProficiencies < availableProficiencies
 					const powerDice = getSkillPowerDice(attribute, skill.name, character)
+					const attributeValue = getAttributeValue(attribute, character)
 
 					return (
 						<li key={skill.name}>
 							<div
-								className={`w-full flex justify-between items-center -mx-2 px-2 py-1 rounded transition`}
+								className={`w-full gap-1 flex items-center -mx-2 px-2 py-1 rounded transition`}
 							>
-								<span className="flex items-center gap-1.5">
+								<span className="flex flex-1 items-center gap-1.5">
 									{skill.name}
 									<Tooltip content={skill.description}>
 										<Icon
@@ -432,7 +434,7 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 									</Tooltip>
 								</span>
 								<span className="tabular-nums grid text-end grid-flow-col items-center">
-									<span>{getAttributeValue(attribute, character)}</span>
+									<span>{attributeValue}</span>
 									{powerDice > 0 && (
 										<span className="text-primary-400 w-7">+{powerDice}</span>
 									)}
@@ -459,6 +461,20 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 										)}
 									</div>
 								</span>
+								<Button
+									icon={<Icon icon="mingcute:box-3-fill" />}
+									appearance="ghost"
+									shape="circle"
+									onClick={() => {
+										prefillDice({
+											target: attributeValue,
+											dice: [
+												{ name: "skill", count: 1 },
+												{ name: "power", count: powerDice },
+											],
+										})
+									}}
+								/>
 							</div>
 						</li>
 					)

@@ -1,3 +1,6 @@
+import { prefillDice } from "~/components/DiceTray.tsx"
+import { Button } from "~/components/ui/Button.tsx"
+import { Icon } from "~/components/ui/Icon.tsx"
 import { aspects } from "~/data/aspects.ts"
 import type { Character } from "~/data/characters.ts"
 import { getAspectPowerDice, getAttributeValue } from "~/data/characters.ts"
@@ -81,9 +84,26 @@ export function AspectArtList({
 										${color} ${bgColor}
 									`}
 								>
-									<span className={`font-medium capitalize ${color}`}>
-										{action.name}
-									</span>
+									<div className="flex gap-2">
+										<span className={`font-medium flex-1 capitalize ${color}`}>
+											{action.name}
+										</span>
+										<Button
+											icon={<Icon icon="mingcute:box-3-fill" />}
+											appearance="ghost"
+											shape="circle"
+											onClick={() => {
+												prefillDice({
+													target: total,
+													dice: [
+														{ name: "aspect", count: 1 },
+														{ name: "power", count: powerDice },
+														{ name: "risk", count: hasAspect ? 0 : 1 },
+													],
+												})
+											}}
+										/>
+									</div>
 									<p className={`text-sm  opacity-75`}>{action.description}</p>
 									{action.failure && (
 										<p className="text-sm opacity-75">

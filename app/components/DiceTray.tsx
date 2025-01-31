@@ -1,6 +1,14 @@
 import * as Ariakit from "@ariakit/react"
 import { randomInt, range, sum, sumBy } from "es-toolkit"
-import { Fragment, useRef, useState, type ReactNode } from "react"
+import {
+	Fragment,
+	useEffect,
+	useRef,
+	useState,
+	type ReactNode,
+	type RefObject,
+} from "react"
+import { twMerge } from "tailwind-merge"
 import { Button } from "./ui/Button.tsx"
 import { Icon } from "./ui/Icon.tsx"
 import { Tooltip } from "./ui/Tooltip.tsx"
@@ -126,6 +134,7 @@ const dice: Die[] = [
 interface DiceRoll {
 	id: string
 	rolled: DieRoll[]
+	target?: number
 }
 
 interface DieRoll {
@@ -134,12 +143,42 @@ interface DieRoll {
 	sideIndex: number
 }
 
+type PrefillArgs = {
+	dice: Array<{ name: string; count: number }>
+	target: number
+}
+
+const prefillListeners = new Set<(args: PrefillArgs) => void>()
+
+export function prefillDice(args: PrefillArgs) {
+	prefillListeners.forEach((listener) => listener(args))
+}
+
 export function DiceTray() {
 	const [counts, setCounts] = useState<Map<Die["name"], number>>(new Map())
 	const hasCounts = sum([...counts.values()]) > 0
+	const [target, setTarget] = useState<number>()
 	const [results, setResults] = useState<DiceRoll[]>([])
 	const [open, setOpen] = useState(false)
 	const controlsRef = useRef<HTMLDivElement>(null)
+	const disclosureRef = useRef<HTMLButtonElement>(null)
+
+	useEffect(() => {
+		const listener = (args: PrefillArgs) => {
+			const counts = new Map<Die["name"], number>()
+			for (const die of args.dice) {
+				counts.set(die.name, (counts.get(die.name) ?? 0) + die.count)
+			}
+			setCounts(counts)
+			setTarget(args.target)
+			setOpen(true)
+			disclosureRef.current?.focus()
+		}
+		prefillListeners.add(listener)
+		return () => {
+			prefillListeners.delete(listener)
+		}
+	}, [])
 
 	const clear = () => {
 		setCounts(new Map())
@@ -171,14 +210,16 @@ export function DiceTray() {
 				{
 					id: crypto.randomUUID(),
 					rolled,
+					target,
 				},
-			].slice(-10),
+			].slice(-5),
 		)
 		setCounts(new Map())
+		setTarget(undefined)
 	}
 
 	const handleDisclosureClick = (event: React.MouseEvent) => {
-		if (!hasCounts) return
+		if (!open || !hasCounts) return
 		roll()
 		event.preventDefault()
 	}
@@ -190,17 +231,26 @@ export function DiceTray() {
 			setOpen={setOpen}
 		>
 			<div className="flex gap-2 items-start">
-				{open && (
-					<div className="contents" ref={controlsRef}>
-						{hasCounts && (
-							<Tooltip content="Clear">
-								<Button shape="circle" size="sm" onClick={clear}>
-									<Icon icon="mingcute:close-fill" />
-								</Button>
-							</Tooltip>
-						)}
-					</div>
-				)}
+				<div className="contents" ref={controlsRef}>
+					{target != null && (
+						<Tooltip content="Target (Click to remove)">
+							<Button
+								size="sm"
+								icon={<Icon icon="mingcute:target-fill" />}
+								onClick={() => setTarget(undefined)}
+							>
+								{target}
+							</Button>
+						</Tooltip>
+					)}
+					{hasCounts && (
+						<Tooltip content="Clear">
+							<Button shape="circle" size="sm" onClick={clear}>
+								<Icon icon="mingcute:close-fill" />
+							</Button>
+						</Tooltip>
+					)}
+				</div>
 				<Tooltip
 					content={
 						hasCounts ? "Roll" : open ? "Hide dice tray" : "Show dice tray"
@@ -209,9 +259,14 @@ export function DiceTray() {
 					<Ariakit.PopoverDisclosure
 						render={<Button shape="circle" />}
 						onClick={handleDisclosureClick}
+						ref={disclosureRef}
 					>
 						<Icon
-							icon={hasCounts ? "mingcute:check-fill" : "mingcute:box-3-fill"}
+							icon={
+								open && hasCounts
+									? "mingcute:check-fill"
+									: "mingcute:box-3-fill"
+							}
 							className="size-8"
 						/>
 					</Ariakit.PopoverDisclosure>
@@ -223,9 +278,11 @@ export function DiceTray() {
 				portal
 				unmountOnHide
 				fixed
-				getPersistentElements={() =>
-					controlsRef.current ? [controlsRef.current] : []
-				}
+				getPersistentElements={() => [
+					...(controlsRef.current ? [controlsRef.current] : []),
+					...(disclosureRef.current ? [disclosureRef.current] : []),
+				]}
+				initialFocus={disclosureRef as RefObject<HTMLElement>}
 				className="flex flex-col items-end gap-2"
 			>
 				{results.map((result) => (
@@ -316,30 +373,52 @@ function DiceRollElement(props: { result: DiceRoll }) {
 		.sort((a, b) => Math.abs(b.side.value) - Math.abs(a.side.value))
 		.sort((a, b) => a.dieIndex - b.dieIndex)
 
+	const total = sumBy(rolls, ({ roll }) => {
+		const die = dice.find((it) => it.name === roll.name)
+		const side = die?.sides[roll.sideIndex]
+		return side?.value ?? 0
+	})
+
+	const isSuccess = props.result.target != null && total <= props.result.target
+	const isFailure = props.result.target != null && total > props.result.target
+
 	return (
-		<div className="bg-primary-950/50 border-primary-500 border rounded-md px-2 py-2 flex items-center">
-			{rolls.map(({ roll, die, side }) => (
-				<Fragment key={roll.id}>
-					<Tooltip content={`${die.name}: ${side.name}`}>
-						<div className="relative cursor-default">
-							<div className="*:size-10 size-10">
-								{die.resultIcon || die.activeIcon}
-							</div>
-							<div className="absolute inset-0 flex items-center justify-center text-primary-900 font-bold text-lg">
-								{side?.symbol}
-							</div>
-						</div>
-					</Tooltip>
-				</Fragment>
-			))}
-			<Icon icon="mingcute:pause-line" className="rotate-90" />
-			<span className="text-2xl ml-1 tabular-nums font-semibold">
-				{sumBy(rolls, ({ roll }) => {
-					const die = dice.find((it) => it.name === roll.name)
-					const side = die?.sides[roll.sideIndex]
-					return side?.value ?? 0
-				})}
-			</span>
+		<div className="bg-primary-950/50 border-primary-500 border rounded-md px-2 py-2 flex flex-col">
+			{props.result.target && <small>Target: {props.result.target}</small>}
+			<div className="flex items-center">
+				<div className="flex max-w-[240px] flex-wrap">
+					{rolls.map(({ roll, die, side }) => (
+						<Fragment key={roll.id}>
+							<Tooltip content={`${die.name}: ${side.name}`}>
+								<div className="relative cursor-default">
+									<div className="*:size-10 size-10">
+										{die.resultIcon || die.activeIcon}
+									</div>
+									<div className="absolute inset-0 flex items-center justify-center text-primary-900 font-bold text-lg">
+										{side?.symbol}
+									</div>
+								</div>
+							</Tooltip>
+						</Fragment>
+					))}
+				</div>
+				<Icon icon="mingcute:pause-line" className="rotate-90 mx-1" />
+				<span
+					className={twMerge(
+						"text-2xl ml-1 gap-1 tabular-nums font-semibold flex items-center",
+						isSuccess && "text-green-300",
+						isFailure && "text-red-300",
+					)}
+				>
+					{isSuccess && (
+						<Icon icon="mingcute:check-circle-fill" className="size-4" />
+					)}
+					{isFailure && (
+						<Icon icon="mingcute:close-circle-fill" className="size-5" />
+					)}
+					{total}
+				</span>
+			</div>
 		</div>
 	)
 }
