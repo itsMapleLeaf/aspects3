@@ -1,7 +1,7 @@
-import { Icon } from "@iconify/react"
 import { useState, useTransition, type ReactNode } from "react"
 import { Button } from "~/components/ui/Button.tsx"
 import { Checkbox } from "~/components/ui/Checkbox.tsx"
+import { Icon } from "~/components/ui/Icon.tsx"
 import { Input } from "~/components/ui/Input.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { aspectNames } from "~/data/aspects.ts"

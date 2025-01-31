@@ -1,7 +1,7 @@
-import { Icon } from "@iconify/react"
 import { omit } from "es-toolkit"
 import { type ComponentProps, type ReactNode } from "react"
 import { Link } from "react-router"
+import { Icon } from "~/components/ui/Icon.tsx"
 
 const appearanceClasses = {
 	primary:

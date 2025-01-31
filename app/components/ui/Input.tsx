@@ -1,5 +1,5 @@
-import { Icon } from "@iconify/react"
 import { type ComponentPropsWithoutRef, type ReactNode } from "react"
+import { Icon } from "~/components/ui/Icon.tsx"
 import { Tooltip } from "./Tooltip.tsx"
 
 type InputProps = {

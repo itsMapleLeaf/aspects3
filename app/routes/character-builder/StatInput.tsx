@@ -1,5 +1,5 @@
-import { Icon } from "@iconify/react"
 import { type ComponentProps } from "react"
+import { Icon } from "~/components/ui/Icon.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { NumberInput } from "./NumberInput.tsx"
 
