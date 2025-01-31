@@ -313,7 +313,7 @@ function DiceRollElement(props: { result: DiceRoll }) {
 			const side = die?.sides[roll.sideIndex]
 			return side ? { roll, die, side, dieIndex } : []
 		})
-		.sort((a, b) => b.side.value - a.side.value)
+		.sort((a, b) => Math.abs(b.side.value) - Math.abs(a.side.value))
 		.sort((a, b) => a.dieIndex - b.dieIndex)
 
 	return (
