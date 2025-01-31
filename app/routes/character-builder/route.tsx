@@ -403,7 +403,7 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 				{attributes[attribute].name}
 				{neededProficiencies > 0 && (
 					<span className="text-sm text-gray-400 ml-2">
-						Pick {neededProficiencies} skill
+						Pick {neededProficiencies} proficiencies
 						{neededProficiencies === 1 ? "" : "s"}
 					</span>
 				)}
