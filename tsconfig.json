@@ -9,12 +9,11 @@
 	"compilerOptions": {
 		"lib": ["DOM", "DOM.Iterable", "ES2024"],
 		"types": ["node", "vite/client"],
-		"target": "ES2024",
+		"target": "ES2023",
 		"module": "Preserve",
 		"moduleResolution": "bundler",
 		"jsx": "react-jsx",
 		"rootDirs": [".", "./.react-router/types"],
-		"baseUrl": ".",
 		"paths": {
 			"~/*": ["./app/*"]
 		},
