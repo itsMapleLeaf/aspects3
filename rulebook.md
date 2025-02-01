@@ -192,16 +192,6 @@ Attacks are a specific kind of action with the intent to damage another characte
 
 Players earn 1 comeback point when failing a roll. They can spend any number of them to reduce a roll’s result. They cannot use a comeback point on the same roll that gave it to them. Comeback points return to 0 at the end of a session.
 
-## Conditions
-
-Conditions are any arbitrary status effects that could apply to a character. It may impair their ability to do certain things, or empower them. Examples:
-
-- Unconscious - cannot move, talk, or act
-- Paralyzed - cannot move
-- Deafened - cannot hear
-- Energized - increases movement speed, could grant a +1 to
--
-
 ## Skills
 
 Skill checks:
