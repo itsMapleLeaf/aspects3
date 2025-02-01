@@ -10,7 +10,7 @@ summary:
 ## Theme & Setting
 
 - **_a n i m e_**
-- world of varied humans with features of common animals, fantasy, and myth (kemonomimis, cat girls, fox boys, demons, dragons, elves, and everything in between)
+- world of varied humans with features of common animals, fantasy, and myth (kemonomimi, cat girls, fox boys, demons, dragons, elves, and everything in between)
 - at birth, you're born with an attunement to one or more elements of nature, or **aspects**, which you can bend to your will through **aspect art** (think Avatar: The Last Airbender)
 - tech level: pre-industrial revolution - aspect art replaces much of what modern tech would accomplish
 - lore: crystals
@@ -339,10 +339,6 @@ Darkness
 - every round, every participant chooses their action and their targets (if any) in secret
 - once everyone has written down their action, reveal actions once by one in initiative order, making any necessary rolls at the time of revealing them
 - a combat round lasts 5 seconds - for actions that specify "this round", they will last for 5 seconds out of combat
-
-## Talents
-
-> WIP
 
 ## Luck
 
