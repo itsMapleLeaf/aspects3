@@ -217,9 +217,7 @@ Proficient skills:
 - Gives +1 power die for skill checks made with that skill (_on top of_ trait bonuses)
 - Proficient skills must be unique; cannot make a skill proficient twice
 
-> [!tip]
->
-> Narrators should aim to make failures interesting. For example, consider a character tries to **Spy** for something they lost. On failure, instead of having nothing happen, maybe they find something that a friend lost instead!
+> **Tip:** Narrators should aim to make failures interesting. For example, consider a character tries to **Spy** for something they lost. On failure, instead of having nothing happen, maybe they find something that a friend lost instead!
 
 Strength
 
