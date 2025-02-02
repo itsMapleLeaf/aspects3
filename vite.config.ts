@@ -10,6 +10,8 @@ export default defineConfig({
 	plugins: [
 		mdx(),
 		reactRouter(),
+		tsconfigPaths(),
+		tailwindcss(),
 		babel({
 			filter: /\.[jt]sx?$/,
 			include: ["app/**"],
@@ -18,8 +20,6 @@ export default defineConfig({
 				plugins: ["babel-plugin-react-compiler"],
 			},
 		}),
-		tsconfigPaths(),
-		tailwindcss(),
 		process.env.NETLIFY ? netlify() : [],
 	],
 })
