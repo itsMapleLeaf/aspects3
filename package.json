@@ -2,7 +2,7 @@
 	"name": "aspects3",
 	"private": true,
 	"type": "module",
-"packageManager": "bun@1.2.2",
+	"packageManager": "bun@1.2.2",
 	"scripts": {
 		"build": "react-router build",
 		"dev": "react-router dev",
@@ -29,6 +29,7 @@
 		"use-debounce": "^10.0.4"
 	},
 	"devDependencies": {
+		"@babel/preset-typescript": "^7.26.0",
 		"@mdx-js/rollup": "^3.1.0",
 		"@netlify/vite-plugin-react-router": "^1.0.0",
 		"@react-router/dev": "^7.1.3",
@@ -38,10 +39,12 @@
 		"@types/react": "^19.0.1",
 		"@types/react-dom": "^19.0.1",
 		"autoprefixer": "^10.4.20",
+		"babel-plugin-react-compiler": "^19.0.0-beta-27714ef-20250124",
 		"postcss": "^8.4.49",
 		"tailwindcss": "^4.0.0",
 		"typescript": "^5.7.2",
 		"vite": "^5.4.11",
+		"vite-plugin-babel": "^1.3.0",
 		"vite-tsconfig-paths": "^5.1.4"
 	}
 }
