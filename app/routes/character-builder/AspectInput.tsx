@@ -30,7 +30,7 @@ export function AspectInput({ aspect, character, onChange }: AspectInputProps) {
 				value={character.aspects[aspect] ?? "0"}
 				onChange={onChange}
 				label={`${aspectInfo.name} (${total})`}
-				description={aspectInfo.vibe}
+				description={aspectInfo.description}
 				min={0}
 				className={color}
 			/>

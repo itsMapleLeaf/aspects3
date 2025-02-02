@@ -169,7 +169,7 @@ export default function CharacterBuilder() {
 					</div>
 				</div>
 
-				<div className="hidden @xl:block w-96">
+				<div className="hidden @xl:block w-80">
 					<CharacterImage
 						imageUrl={character.imageUrl}
 						onChangeUrl={(imageUrl) =>
@@ -179,7 +179,11 @@ export default function CharacterBuilder() {
 				</div>
 			</div>
 
-			<ToggleSection title="Traits" description={traitsDescription}>
+			<ToggleSection
+				title="Traits"
+				tooltip="Character features that offer attribute bonuses."
+				description={traitsDescription}
+			>
 				<div className="grid gap-4 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
 					<TraitSelection
 						selectedTraits={selectedTraits}
@@ -189,7 +193,10 @@ export default function CharacterBuilder() {
 			</ToggleSection>
 
 			<div className="mt-6 space-y-6">
-				<ToggleSection title="Skills">
+				<ToggleSection
+					title="Skills"
+					tooltip="Various actions you can make in the game."
+				>
 					<div className="grid gap-8 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
 						{attributeNames.map((attribute) => (
 							<SkillList
@@ -209,7 +216,10 @@ export default function CharacterBuilder() {
 					</div>
 				</ToggleSection>
 
-				<ToggleSection title="Aspect Arts">
+				<ToggleSection
+					title="Aspect Arts"
+					tooltip="Abilities performed through aspect manipulation."
+				>
 					<AspectArts character={character} />
 				</ToggleSection>
 			</div>
@@ -220,6 +230,7 @@ export default function CharacterBuilder() {
 type ToggleSectionProps = {
 	title: string
 	description?: string
+	tooltip?: string
 	children: ReactNode
 	className?: string
 }
@@ -227,6 +238,7 @@ type ToggleSectionProps = {
 function ToggleSection({
 	title,
 	description,
+	tooltip,
 	children,
 	className = "",
 }: ToggleSectionProps) {
@@ -253,7 +265,17 @@ function ToggleSection({
 					select-none
 				"
 			>
-				<h3 className="text-2xl font-light flex-1">{title}</h3>
+				<h3 className="text-2xl font-light flex-1 items-center flex gap-1.5">
+					{title}
+					{tooltip && (
+						<Tooltip content={tooltip}>
+							<Icon
+								icon="mingcute:information-line"
+								className="size-5 text-gray-400"
+							/>
+						</Tooltip>
+					)}
+				</h3>
 				{description && <p className="text-gray-400">{description}</p>}
 				<Icon
 					icon="mingcute:up-line"
@@ -262,6 +284,33 @@ function ToggleSection({
 			</summary>
 			{children}
 		</details>
+	)
+}
+
+type StatSectionProps = {
+	title: ReactNode
+	hint?: ReactNode
+	children: React.ReactNode
+}
+
+function StatSection({ title, hint, children }: StatSectionProps) {
+	return (
+		<section>
+			<h3 className="flex items-center gap-2 text-lg font-light mb-1">
+				{title}
+				{hint && (
+					<Tooltip content={hint}>
+						<Icon
+							icon="mingcute:information-line"
+							className="size-4 text-gray-400"
+						/>
+					</Tooltip>
+				)}
+			</h3>
+			<div className="grid gap-2 grid-cols-1 @-[12rem]:grid-cols-2 @xs:grid-cols-3 @md:grid-cols-5">
+				{children}
+			</div>
+		</section>
 	)
 }
 
@@ -299,22 +348,20 @@ function AttributeInputList({
 	const attributeTotal = getAttributeTotal(characterAttributes)
 
 	return (
-		<section>
-			<h3 className="text-lg font-light mb-1">
-				Attributes ({attributeTotal}/18)
-			</h3>
-			<div className="grid gap-2 grid-cols-1 @-[12rem]:grid-cols-2 @xs:grid-cols-3 @md:grid-cols-5">
-				{attributeNames.map((attribute) => (
-					<AttributeInput
-						key={attribute}
-						attribute={attribute}
-						label={attributes[attribute].name}
-						value={characterAttributes[attribute] ?? "1"}
-						onChange={(value) => onChange(attribute, value.toString())}
-					/>
-				))}
-			</div>
-		</section>
+		<StatSection
+			title={`Attributes (${attributeTotal}/18)`}
+			hint="Core stats defining your physical and mental abilities."
+		>
+			{attributeNames.map((attribute) => (
+				<AttributeInput
+					key={attribute}
+					attribute={attribute}
+					label={attributes[attribute].name}
+					value={characterAttributes[attribute] ?? "1"}
+					onChange={(value) => onChange(attribute, value.toString())}
+				/>
+			))}
+		</StatSection>
 	)
 }
 
@@ -327,19 +374,19 @@ function AspectInputList({ character, onChange }: AspectInputListProps) {
 	const aspectTotal = getAspectTotal(character.aspects)
 
 	return (
-		<section>
-			<h3 className="text-lg font-light mb-1">Aspects ({aspectTotal}/6)</h3>
-			<div className="grid gap-2 grid-cols-1 @-[12rem]:grid-cols-2 @xs:grid-cols-3 @md:grid-cols-5">
-				{aspectNames.map((aspect) => (
-					<AspectInput
-						key={aspect}
-						aspect={aspect}
-						character={character}
-						onChange={(value) => onChange(aspect, value)}
-					/>
-				))}
-			</div>
-		</section>
+		<StatSection
+			title={`Aspects (${aspectTotal}/6)`}
+			hint="Expertise levels in each aspect, elements you can bend to your will."
+		>
+			{aspectNames.map((aspect) => (
+				<AspectInput
+					key={aspect}
+					aspect={aspect}
+					character={character}
+					onChange={(value) => onChange(aspect, value)}
+				/>
+			))}
+		</StatSection>
 	)
 }
 

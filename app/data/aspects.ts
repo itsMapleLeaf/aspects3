@@ -11,7 +11,7 @@ export const aspectNames = [
 
 export type AspectInfo = {
 	name: string
-	vibe: string
+	description: string
 	attribute: AttributeName
 	actions: {
 		name: string
@@ -23,7 +23,7 @@ export type AspectInfo = {
 export const aspects: Record<AspectName, AspectInfo> = {
 	light: {
 		name: "Light",
-		vibe: "justice, order, knowledge",
+		description: "physical light, healing, strengthening",
 		attribute: "intellect",
 		actions: [
 			{
@@ -56,7 +56,7 @@ export const aspects: Record<AspectName, AspectInfo> = {
 	},
 	water: {
 		name: "Water",
-		vibe: "tranquility, focus, awareness",
+		description: "water, ice, frost, cold, protection",
 		attribute: "sense",
 		actions: [
 			{
@@ -87,7 +87,7 @@ export const aspects: Record<AspectName, AspectInfo> = {
 	},
 	wind: {
 		name: "Wind",
-		vibe: "swiftness, dexterity, adaptability",
+		description: "air, sound, weather, speed, acrobatics",
 		attribute: "agility",
 		actions: [
 			{
@@ -117,7 +117,7 @@ export const aspects: Record<AspectName, AspectInfo> = {
 	},
 	fire: {
 		name: "Fire",
-		vibe: "power, destruction, force",
+		description: "flame, heat, tectonics",
 		attribute: "strength",
 		actions: [
 			{
@@ -139,7 +139,7 @@ export const aspects: Record<AspectName, AspectInfo> = {
 	},
 	darkness: {
 		name: "Darkness",
-		vibe: "manipulation, leverage, stealth",
+		description: "weakening, illusions, reality bending",
 		attribute: "wit",
 		actions: [
 			{
