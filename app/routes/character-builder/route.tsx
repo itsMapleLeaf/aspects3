@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/Button.tsx"
 import { Checkbox } from "~/components/ui/Checkbox.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { Input } from "~/components/ui/Input.tsx"
+import { TextArea } from "~/components/ui/TextArea.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { aspectNames } from "~/data/aspects.ts"
 import {
@@ -167,6 +168,15 @@ export default function CharacterBuilder() {
 							}
 						/>
 					</div>
+
+					<TextArea
+						label="Details"
+						placeholder="Character backstory, personality, or other notes."
+						value={character.details}
+						onChange={(event) =>
+							setCharacter((prev) => ({ ...prev, details: event.target.value }))
+						}
+					/>
 				</div>
 
 				<div className="hidden @xl:block w-80">

@@ -6,6 +6,7 @@ import { traits } from "./traits"
 export type Character = typeof Character.infer
 export const Character = type({
 	name: "string < 256 = ''",
+	details: "string = ''",
 	attributes: type(`Record<string, string>`).default(() => ({})),
 	hits: "string = ''",
 	fatigue: "string = ''",
@@ -18,6 +19,7 @@ export const Character = type({
 
 export const defaultCharacter: Character = {
 	name: "",
+	details: "",
 	attributes: {
 		intellect: "1",
 		sense: "1",
