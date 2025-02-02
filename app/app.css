@@ -3,6 +3,9 @@
 @plugin "@tailwindcss/typography";
 @plugin "tailwindcss-animate";
 
+@import "uploadthing/tw/v4";
+@source "../node_modules/@uploadthing/react/dist";
+
 @theme {
 	--default-font-family: "Quicksand Variable";
 
@@ -48,4 +51,20 @@
 
 @utility page-container {
 	@apply max-w-page-body px-4 w-full mx-auto;
+}
+
+@utility button-base {
+	@apply flex items-center transition border border-solid font-medium shadow-sm focus:outline-none focus:ring-2;
+}
+
+@utility button-solid {
+	@apply button-base bg-primary-500/20 border-primary-500 hover:button-solid-active focus:ring-primary-500/50;
+}
+
+@utility button-solid-active {
+	@apply bg-primary-500/30;
+}
+
+@utility button-ghost {
+	@apply button-base border-transparent opacity-75 hover:bg-gray-500/30 hover:opacity-100 focus:ring-gray-500/50;
 }

@@ -1,4 +1,5 @@
 import { useState, useTransition, type ReactNode } from "react"
+import { twMerge } from "tailwind-merge"
 import { prefillDice } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
 import { Checkbox } from "~/components/ui/Checkbox.tsx"
@@ -28,6 +29,7 @@ import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
 import { useCharacterStorage } from "~/routes/character-builder/useCharacterStorage.ts"
 import { pipe, timeoutPromise } from "~/utils.ts"
+import { UploadButton } from "../api.images/components.ts"
 import { AspectArts } from "./AspectArts.tsx"
 import { AspectInput } from "./AspectInput.tsx"
 import { AttributeInput } from "./AttributeInput.tsx"
@@ -167,9 +169,7 @@ export default function CharacterBuilder() {
 					</div>
 				</div>
 
-				<div className="hidden @xl:block w-80 space-y-4">
-					<div className="flex gap-2 justify-end"></div>
-
+				<div className="hidden @xl:block w-96">
 					<CharacterImage
 						imageUrl={character.imageUrl}
 						onChangeUrl={(imageUrl) =>
@@ -522,17 +522,53 @@ function CharacterImage({ imageUrl, onChangeUrl }: CharacterImageProps) {
 					/>
 				</a>
 			) : (
-				<div className="aspect-[3/4] w-full border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center">
-					<p className="text-center text-gray-400">No image</p>
-				</div>
+				<div className="aspect-[3/4] w-full border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center"></div>
 			)}
-			<Input
-				type="url"
-				value={imageUrl}
-				onChange={(event) => onChangeUrl(event.target.value)}
-				placeholder="Image URL"
-				className="w-full"
-			/>
+			<div className="flex items-end gap-2">
+				<Input
+					type="url"
+					value={imageUrl}
+					onChange={(event) => onChangeUrl(event.target.value)}
+					label="Image URL"
+					placeholder="https://example.com/image.jpg"
+					className="flex-1"
+				/>
+				<UploadButton
+					endpoint="imageUploader"
+					config={{ cn: twMerge }}
+					className="
+						flex-col-reverse items-start
+
+						ut-button:button-solid
+						ut-button:w-[unset]
+						ut-button:h-[unset]
+						ut-button:py-2
+						ut-button:px-3
+						ut-button:focus-within:ring-offset-0
+						ut-button:focus-within:ring-primary-500/50
+						ut-button:ut-uploading:after:bg-primary-500/50
+						hover:ut-button:button-solid-active
+
+						ut-allowed-content:text-gray-400
+						ut-allowed-content:font-semibold
+						ut-allowed-content:transition
+						hover:ut-allowed-content:text-primary-300/90
+					"
+					content={{
+						button: (args) =>
+							args.isUploading
+								? `${args.uploadProgress}%`
+								: args.ready
+								? "Upload"
+								: "Preparing...",
+						allowedContent: () => "Max 4MB",
+					}}
+					onClientUploadComplete={([result]) => {
+						if (!result) return
+						onChangeUrl(result.url)
+					}}
+				/>
+			</div>
 		</div>
 	)
 }
