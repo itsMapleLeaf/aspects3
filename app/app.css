@@ -44,6 +44,10 @@
 		scrollbar-gutter: stable;
 		color-scheme: dark;
 	}
+
+	.footnotes {
+		@apply text-sm text-gray-300 border-t border-gray-700;
+	}
 }
 
 @utility page-container {
