@@ -4,6 +4,7 @@ import { prefillDice } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
 import { Checkbox } from "~/components/ui/Checkbox.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
+import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 import { Input } from "~/components/ui/Input.tsx"
 import { TextArea } from "~/components/ui/TextArea.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
@@ -277,14 +278,7 @@ function ToggleSection({
 			>
 				<h3 className="text-2xl font-light flex-1 items-center flex gap-1.5">
 					{title}
-					{tooltip && (
-						<Tooltip content={tooltip}>
-							<Icon
-								icon="mingcute:information-line"
-								className="size-5 text-gray-400"
-							/>
-						</Tooltip>
-					)}
+					{tooltip && <IconTooltip content={tooltip} className="size-5" />}
 				</h3>
 				{description && <p className="text-gray-400">{description}</p>}
 				<Icon
@@ -482,13 +476,10 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 							>
 								<span className="flex flex-1 items-center gap-1.5">
 									{skill.name}
-									<Tooltip content={skill.description}>
-										<Icon
-											icon="mingcute:information-line"
-											className="w-4 h-4 text-gray-400"
-											aria-hidden
-										/>
-									</Tooltip>
+									<IconTooltip
+										content={skill.description}
+										className="translate-y-px"
+									/>
 								</span>
 								<span className="tabular-nums grid text-end grid-flow-col items-center">
 									<span>{attributeValue}</span>

@@ -1,6 +1,5 @@
 import { type ComponentProps } from "react"
-import { Icon } from "~/components/ui/Icon.tsx"
-import { Tooltip } from "~/components/ui/Tooltip.tsx"
+import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 import { NumberInput } from "./NumberInput.tsx"
 
 type StatInputProps = {
@@ -30,13 +29,7 @@ export function StatInput({
 			<div className="text-center flex items-center gap-1">
 				<div className="text-sm font-semibold">{label}</div>
 				{description && (
-					<Tooltip content={description}>
-						<Icon
-							icon="mingcute:information-line"
-							className="w-4 h-4 text-gray-400 hover:text-gray-100 transition"
-							aria-hidden
-						/>
-					</Tooltip>
+					<IconTooltip content={description} className="size-4" />
 				)}
 			</div>
 		</div>

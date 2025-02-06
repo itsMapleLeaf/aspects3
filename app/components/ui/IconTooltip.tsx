@@ -7,7 +7,7 @@ export function IconTooltip({ children, className, ...props }: TooltipProps) {
 		<Tooltip
 			{...props}
 			className={twMerge(
-				"size-4 *:size-full hover:*:opacity-100 *:opacity-75 focus-visible:*:opacity-100 *:transition",
+				"size-4 *:size-full hover:*:opacity-100 *:opacity-60 focus-visible:*:opacity-100 *:transition",
 				className,
 			)}
 		>

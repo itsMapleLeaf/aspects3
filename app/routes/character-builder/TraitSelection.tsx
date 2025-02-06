@@ -1,5 +1,4 @@
-import { Icon } from "~/components/ui/Icon.tsx"
-import { Tooltip } from "~/components/ui/Tooltip.tsx"
+import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 import { aspects } from "~/data/aspects.ts"
 import { attributes } from "~/data/attributes.ts"
 import { traits } from "~/data/traits.ts"
@@ -49,12 +48,7 @@ export function TraitSelection({
 										<span className="text-sm text-primary-400">
 											{attributes[attribute].name}
 										</span>
-										<Tooltip content={description}>
-											<Icon
-												icon="mingcute:information-line"
-												className="size-4 text-gray-500"
-											/>
-										</Tooltip>
+										<IconTooltip content={description} className="size-4" />
 									</div>
 								))}
 								<span className={`text-sm text-primary-400`}>

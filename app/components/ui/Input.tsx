@@ -1,6 +1,5 @@
 import { type ComponentPropsWithoutRef, type ReactNode } from "react"
-import { Icon } from "~/components/ui/Icon.tsx"
-import { Tooltip } from "./Tooltip.tsx"
+import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 
 type InputProps = {
 	label?: string
@@ -31,15 +30,7 @@ export function Input({
 			{label && (
 				<label className="flex items-center gap-1 mb-0.5 text-sm text-gray-300">
 					<p className="font-semibold">{label}</p>
-					{hint && (
-						<Tooltip content={hint}>
-							<Icon
-								icon="mingcute:information-line"
-								className="w-4 h-4 text-gray-400 hover:text-gray-100 transition"
-								aria-hidden
-							/>
-						</Tooltip>
-					)}
+					{hint && <IconTooltip content={hint} className="size-4" />}
 				</label>
 			)}
 			<div className="flex items-center gap-2">
