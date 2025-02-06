@@ -1,7 +1,8 @@
 import * as Ariakit from "@ariakit/react"
 import { type ReactNode } from "react"
 
-interface TooltipProps extends Omit<Ariakit.TooltipAnchorProps, "content"> {
+export interface TooltipProps
+	extends Omit<Ariakit.TooltipAnchorProps, "content"> {
 	content: ReactNode
 	placement?: Ariakit.TooltipStoreProps["placement"]
 }
