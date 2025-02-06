@@ -28,29 +28,25 @@ export const aspects: Record<AspectName, AspectInfo> = {
 		actions: [
 			{
 				name: "restore",
-				description: "heal 2 hits",
+				description: "heal any 2 hits",
 				failure: "1 hit",
 			},
 			{
-				name: "peacekeeper",
-				description:
-					"a chosen target may not deal more than 1 hit until your next action",
-				failure: "2 hits",
-			},
-			{
-				name: "multicast",
-				description: "add 2 additional targets to your next action",
-				failure: "1 additional target",
-			},
-			{
 				name: "sacrifice",
-				description: "try to remove any 2 hits, then take 1 hit",
-				failure: "remove any 1 hit",
+				description:
+					"try to heal any 4 hits, then take 1 hit if any hits were healed",
+				failure: "heal any 2 hits (still take 1)",
 			},
 			{
 				name: "inspire",
 				description: "add 2 power dice to a target's next roll",
 				failure: "add 1 power die",
+			},
+			{
+				name: "justice",
+				description:
+					"add 1 to a character's chosen attribute or aspect value for their next check with that attribute or aspect",
+				failure: "the attribute or aspect is random",
 			},
 		],
 	},
@@ -78,10 +74,10 @@ export const aspects: Record<AspectName, AspectInfo> = {
 				failure: "you must skip your next 2 actions",
 			},
 			{
-				name: "foresight",
+				name: "pacify",
 				description:
-					"reveal any action, then you may take 1 additional fatigue (once) to let another target character change their action",
-				failure: "you may not allow a character to change their action",
+					"a chosen target may not deal more than 1 hit until your next action",
+				failure: "2 hits",
 			},
 		],
 	},
@@ -103,15 +99,15 @@ export const aspects: Record<AspectName, AspectInfo> = {
 					"make your next action with two attributes swapped (not immediate)",
 			},
 			{
-				name: "cyclone",
-				description:
-					"deal a ranged hit to 2 random enemies or 5 random characters",
-				failure: "you must choose 5 random characters",
+				name: "surge",
+				description: "apply another character's next action three times",
+				failure: "two times",
 			},
 			{
-				name: "surge",
-				description: "apply your next action three times",
-				failure: "two times",
+				name: "multicast",
+				description:
+					"add 2 additional targets to another character's next action",
+				failure: "1 additional target",
 			},
 		],
 	},
@@ -131,6 +127,12 @@ export const aspects: Record<AspectName, AspectInfo> = {
 				failure: "2 targets",
 			},
 			{
+				name: "blind fury",
+				description:
+					"deal a ranged hit to 2 random enemies or 5 random characters",
+				failure: "you must choose 5 random characters",
+			},
+			{
 				name: "inferno",
 				description: "your next action deals triple the hits",
 				failure: "double the hits",
@@ -143,12 +145,12 @@ export const aspects: Record<AspectName, AspectInfo> = {
 		attribute: "wit",
 		actions: [
 			{
-				name: "weaken",
+				name: "imperil",
 				description: "add 2 risk dice to a target's next roll",
 				failure: "add 1 risk die",
 			},
 			{
-				name: "drain",
+				name: "transfer",
 				description: "try to remove any 2 hits, then deal any 2 hits",
 				failure: "remove 1, deal 1",
 			},
@@ -158,11 +160,17 @@ export const aspects: Record<AspectName, AspectInfo> = {
 				failure: "the target is random",
 			},
 			{
-				name: "disappear",
+				name: "foresight",
 				description:
-					"turn invisible, you cannot take hits until your next action",
-				failure: "you must succeed an Agility check to prevent any hit",
+					"reveal any action, then you may take 1 additional fatigue (once) to let another target character change their action",
+				failure: "you may not allow a character to change their action",
 			},
+			// {
+			// 	name: "disappear",
+			// 	description:
+			// 		"turn invisible, you cannot take hits until your next action",
+			// 	failure: "you must succeed an Agility check to prevent any hit",
+			// },
 		],
 	},
 }
