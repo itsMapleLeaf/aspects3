@@ -39,13 +39,10 @@
 @layer base {
 	html,
 	body {
-		@apply bg-white dark:bg-gray-950 overflow-x-clip selection:bg-primary-800/50;
+		@apply bg-gray-950 overflow-x-clip selection:bg-primary-800/50;
 		scrollbar-color: var(--color-gray-700) var(--color-gray-950);
 		scrollbar-gutter: stable;
-
-		@media (prefers-color-scheme: dark) {
-			color-scheme: dark;
-		}
+		color-scheme: dark;
 	}
 }
 
