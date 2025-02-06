@@ -49,3 +49,18 @@ export function pipe(
 ) {
 	return fns.reduce((value, fn) => fn(value), value)
 }
+
+export function createEmitter<T>() {
+	const listeners = new Set<(value: T) => void>()
+	return {
+		listen: (listener: (value: T) => void) => {
+			listeners.add(listener)
+			return () => {
+				listeners.delete(listener)
+			}
+		},
+		emit: (value: T) => {
+			for (const listener of listeners) listener(value)
+		},
+	}
+}

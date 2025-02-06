@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge"
-import { prefillDice } from "~/components/DiceTray.tsx"
+import { useDiceTray } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
@@ -35,6 +35,7 @@ export function AspectArtList({
 	character,
 	showAttunedOnly,
 }: AspectArtListProps) {
+	const diceTray = useDiceTray()
 	return (
 		<>
 			{Object.entries(aspects).map(([aspectName, aspect]) => {
@@ -107,7 +108,7 @@ export function AspectArtList({
 											shape="circle"
 											className="float-right"
 											onClick={() => {
-												prefillDice({
+												diceTray.prefill({
 													target: total,
 													dice: [
 														{ name: "aspect", count: 1 },

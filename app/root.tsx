@@ -40,10 +40,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<Navigation />
-				<div className="page-container">{children}</div>
-				<div className="fixed right-4 bottom-4">
-					<DiceTray />
-				</div>
+				<DiceTray>
+					<div className="page-container">{children}</div>
+				</DiceTray>
 				<ScrollRestoration />
 				<Scripts />
 			</body>

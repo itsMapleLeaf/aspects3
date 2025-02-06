@@ -1,6 +1,6 @@
 import { useState, useTransition, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
-import { prefillDice } from "~/components/DiceTray.tsx"
+import { useDiceTray } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
 import { Checkbox } from "~/components/ui/Checkbox.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
@@ -449,6 +449,8 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 
 	const neededProficiencies = availableProficiencies - usedProficiencies
 
+	const diceTray = useDiceTray()
+
 	return (
 		<div className="space-y-2">
 			<h3 className="font-medium">
@@ -514,7 +516,7 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 									appearance="ghost"
 									shape="circle"
 									onClick={() => {
-										prefillDice({
+										diceTray.prefill({
 											target: attributeValue,
 											dice: [
 												{ name: "skill", count: 1 },

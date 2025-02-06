@@ -1,7 +1,9 @@
 import * as Ariakit from "@ariakit/react"
 import { randomInt, range, sum, sumBy } from "es-toolkit"
 import {
+	createContext,
 	Fragment,
+	use,
 	useEffect,
 	useRef,
 	useState,
@@ -9,6 +11,7 @@ import {
 	type RefObject,
 } from "react"
 import { twMerge } from "tailwind-merge"
+import { createEmitter } from "~/utils.ts"
 import { Button } from "./ui/Button.tsx"
 import { Icon } from "./ui/Icon.tsx"
 import { Tooltip } from "./ui/Tooltip.tsx"
@@ -148,13 +151,11 @@ type PrefillArgs = {
 	target: number
 }
 
-const prefillListeners = new Set<(args: PrefillArgs) => void>()
+const DiceTrayContext = createContext({
+	prefill: (args: PrefillArgs) => {},
+})
 
-export function prefillDice(args: PrefillArgs) {
-	prefillListeners.forEach((listener) => listener(args))
-}
-
-export function DiceTray() {
+export function DiceTray({ children }: { children: ReactNode }) {
 	const [counts, setCounts] = useState<Map<Die["name"], number>>(new Map())
 	const hasCounts = sum([...counts.values()]) > 0
 	const [target, setTarget] = useState<number>()
@@ -163,8 +164,10 @@ export function DiceTray() {
 	const controlsRef = useRef<HTMLDivElement>(null)
 	const disclosureRef = useRef<HTMLButtonElement>(null)
 
+	const [prefillEmitter] = useState(() => createEmitter<PrefillArgs>())
+
 	useEffect(() => {
-		const listener = (args: PrefillArgs) => {
+		return prefillEmitter.listen((args: PrefillArgs) => {
 			const counts = new Map<Die["name"], number>()
 			for (const die of args.dice) {
 				counts.set(die.name, (counts.get(die.name) ?? 0) + die.count)
@@ -173,11 +176,7 @@ export function DiceTray() {
 			setTarget(args.target)
 			setOpen(true)
 			disclosureRef.current?.focus()
-		}
-		prefillListeners.add(listener)
-		return () => {
-			prefillListeners.delete(listener)
-		}
+		})
 	}, [])
 
 	const clear = () => {
@@ -225,99 +224,108 @@ export function DiceTray() {
 	}
 
 	return (
-		<Ariakit.PopoverProvider
-			placement="bottom-end"
-			open={open}
-			setOpen={setOpen}
-		>
-			<div className="flex gap-2 items-start">
-				<div className="contents" ref={controlsRef}>
-					{target != null && (
-						<Tooltip content="Target (Click to remove)">
-							<Button
-								size="sm"
-								icon={<Icon icon="mingcute:target-fill" />}
-								onClick={() => setTarget(undefined)}
-							>
-								{target}
-							</Button>
-						</Tooltip>
-					)}
-					{hasCounts && (
-						<Tooltip content="Clear">
-							<Button shape="circle" size="sm" onClick={clear}>
-								<Icon icon="mingcute:close-fill" />
-							</Button>
-						</Tooltip>
-					)}
-				</div>
-				<Tooltip
-					content={
-						hasCounts ? "Roll" : open ? "Hide dice tray" : "Show dice tray"
-					}
-				>
-					<Ariakit.PopoverDisclosure
-						render={<Button shape="circle" />}
-						onClick={handleDisclosureClick}
-						ref={disclosureRef}
-					>
-						<Icon
-							icon={
-								open && hasCounts
-									? "mingcute:check-fill"
-									: "mingcute:box-3-fill"
-							}
-							className="size-8"
-						/>
-					</Ariakit.PopoverDisclosure>
-				</Tooltip>
-			</div>
-
-			<Ariakit.Popover
-				gutter={12}
-				portal
-				unmountOnHide
-				fixed
-				getPersistentElements={() => [
-					...(controlsRef.current ? [controlsRef.current] : []),
-					...(disclosureRef.current ? [disclosureRef.current] : []),
-				]}
-				initialFocus={disclosureRef as RefObject<HTMLElement>}
-				className="flex flex-col items-end gap-2"
+		<DiceTrayContext value={{ prefill: prefillEmitter.emit }}>
+			{children}
+			<Ariakit.PopoverProvider
+				placement="bottom-end"
+				open={open}
+				setOpen={setOpen}
 			>
-				{results.map((result) => (
-					<DiceRollElement key={result.id} result={result} />
-				))}
-
-				<div className="flex items-center gap-2 flex-wrap">
-					{dice.map((die) => {
-						const count = counts.get(die.name) ?? 0
-						return (
-							<DiceButton
-								key={die.name}
-								count={count}
-								die={die}
-								onIncrement={() => {
-									setCounts((counts) => {
-										const next = new Map(counts)
-										next.set(die.name, count + 1)
-										return next
-									})
-								}}
-								onDecrement={() => {
-									setCounts((counts) => {
-										const next = new Map(counts)
-										next.set(die.name, Math.max(0, count - 1))
-										return next
-									})
-								}}
-							/>
-						)
-					})}
+				<div className="fixed right-4 bottom-4">
+					<div className="flex gap-2 items-start">
+						<div className="contents" ref={controlsRef}>
+							{target != null && (
+								<Tooltip content="Target (Click to remove)">
+									<Button
+										size="sm"
+										icon={<Icon icon="mingcute:target-fill" />}
+										onClick={() => setTarget(undefined)}
+									>
+										{target}
+									</Button>
+								</Tooltip>
+							)}
+							{hasCounts && (
+								<Tooltip content="Clear">
+									<Button shape="circle" size="sm" onClick={clear}>
+										<Icon icon="mingcute:close-fill" />
+									</Button>
+								</Tooltip>
+							)}
+						</div>
+						<Tooltip
+							content={
+								hasCounts ? "Roll" : open ? "Hide dice tray" : "Show dice tray"
+							}
+						>
+							<Ariakit.PopoverDisclosure
+								render={<Button shape="circle" />}
+								onClick={handleDisclosureClick}
+								ref={disclosureRef}
+							>
+								<Icon
+									icon={
+										open && hasCounts
+											? "mingcute:check-fill"
+											: "mingcute:box-3-fill"
+									}
+									className="size-8"
+								/>
+							</Ariakit.PopoverDisclosure>
+						</Tooltip>
+					</div>
 				</div>
-			</Ariakit.Popover>
-		</Ariakit.PopoverProvider>
+
+				<Ariakit.Popover
+					gutter={12}
+					portal
+					unmountOnHide
+					fixed
+					getPersistentElements={() => [
+						...(controlsRef.current ? [controlsRef.current] : []),
+						...(disclosureRef.current ? [disclosureRef.current] : []),
+					]}
+					initialFocus={disclosureRef as RefObject<HTMLElement>}
+					className="flex flex-col items-end gap-2"
+				>
+					{results.map((result) => (
+						<DiceRollElement key={result.id} result={result} />
+					))}
+
+					<div className="flex items-center gap-2 flex-wrap">
+						{dice.map((die) => {
+							const count = counts.get(die.name) ?? 0
+							return (
+								<DiceButton
+									key={die.name}
+									count={count}
+									die={die}
+									onIncrement={() => {
+										setCounts((counts) => {
+											const next = new Map(counts)
+											next.set(die.name, count + 1)
+											return next
+										})
+									}}
+									onDecrement={() => {
+										setCounts((counts) => {
+											const next = new Map(counts)
+											next.set(die.name, Math.max(0, count - 1))
+											return next
+										})
+									}}
+								/>
+							)
+						})}
+					</div>
+				</Ariakit.Popover>
+			</Ariakit.PopoverProvider>
+		</DiceTrayContext>
 	)
+}
+
+export function useDiceTray() {
+	return use(DiceTrayContext)
 }
 
 function DiceButton({
