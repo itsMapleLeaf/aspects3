@@ -1,6 +1,8 @@
+import { twMerge } from "tailwind-merge"
 import { prefillDice } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
+import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 import { aspects } from "~/data/aspects.ts"
 import type { Character } from "~/data/characters.ts"
 import { getAspectPowerDice, getAttributeValue } from "~/data/characters.ts"
@@ -63,13 +65,21 @@ export function AspectArtList({
 					>
 						<div>
 							<h3
-								className={`
-									text-lg font-medium capitalize transition-colors flex items-center gap-2
-									${color} ${!hasAspect && "opacity-50"}
-								`}
+								className={twMerge(
+									"text-lg font-medium capitalize transition-colors flex items-center",
+									color,
+								)}
 							>
 								{aspect.name}
-								<span className="opacity-75">({total})</span>
+								<span className="opacity-75 ml-1">({total})</span>
+								{hasAspect ? (
+									<IconTooltip
+										content="attuned"
+										className="opacity-60 size-4 ml-1.5 translate-y-px"
+									>
+										<Icon icon="mingcute:check-circle-fill" />
+									</IconTooltip>
+								) : null}
 							</h3>
 							<p className={`text-sm ${color} opacity-75`}>
 								{modifiers.join(", ")}
@@ -79,19 +89,23 @@ export function AspectArtList({
 							{aspect.actions.map((action) => (
 								<div
 									key={action.name}
-									className={`
-										flex flex-col gap-1 px-3 py-2 rounded-lg border transition-all
-										${color} ${bgColor}
-									`}
+									className={twMerge(
+										"px-3 py-2 rounded-lg border transition-all",
+										color,
+										bgColor,
+									)}
 								>
-									<div className="flex gap-2">
-										<span className={`font-medium flex-1 capitalize ${color}`}>
+									<div>
+										<span
+											className={`font-medium text-lg flex-1 capitalize ${color}`}
+										>
 											{action.name}
 										</span>
 										<Button
 											icon={<Icon icon="mingcute:box-3-fill" />}
 											appearance="ghost"
 											shape="circle"
+											className="float-right"
 											onClick={() => {
 												prefillDice({
 													target: total,
@@ -104,9 +118,9 @@ export function AspectArtList({
 											}}
 										/>
 									</div>
-									<p className={`text-sm  opacity-75`}>{action.description}</p>
+									<p className={`opacity-90`}>{action.description}</p>
 									{action.failure && (
-										<p className="text-sm opacity-75">
+										<p className="opacity-90">
 											<span className="text-red-400">failure</span> -{" "}
 											{action.failure}
 										</p>
