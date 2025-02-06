@@ -1,20 +1,30 @@
 import * as Ariakit from "@ariakit/react"
 import { type ReactNode } from "react"
+import { twMerge } from "tailwind-merge"
 
 export interface TooltipProps
 	extends Omit<Ariakit.TooltipAnchorProps, "content"> {
 	content: ReactNode
 	placement?: Ariakit.TooltipStoreProps["placement"]
+	className?: string
 }
 
-export function Tooltip({ placement, content, children }: TooltipProps) {
+export function Tooltip({
+	placement,
+	content,
+	className,
+	children,
+}: TooltipProps) {
 	const tooltip = Ariakit.useTooltipStore({ placement })
 
 	return (
 		<>
 			<Ariakit.TooltipAnchor
 				store={tooltip}
-				className="inline-block rounded-md focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-400"
+				className={twMerge(
+					"inline-block rounded-md focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-400",
+					className,
+				)}
 			>
 				{children}
 			</Ariakit.TooltipAnchor>
