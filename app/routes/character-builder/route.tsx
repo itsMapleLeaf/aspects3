@@ -570,12 +570,12 @@ function CharacterImage({ imageUrl, onChangeUrl }: CharacterImageProps) {
 					href={imageUrl}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="block aspect-[3/4] w-full border border-gray-700 rounded-lg bg-black/20 overflow-hidden"
+					className="block w-full border border-gray-700 rounded-lg bg-black/20 overflow-hidden"
 				>
 					<img
 						src={imageUrl}
 						alt="Character"
-						className="w-full h-full object-cover"
+						className="w-full object-top object-cover"
 					/>
 				</a>
 			) : (
