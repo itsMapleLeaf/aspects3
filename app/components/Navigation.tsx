@@ -3,6 +3,7 @@ import { NavLink } from "react-router"
 export function Navigation() {
 	const links = [
 		{ to: "/", label: "Rulebook" },
+		{ to: "/lore", label: "World Lore" },
 		{ to: "/character-builder", label: "Character Builder" },
 	]
 
