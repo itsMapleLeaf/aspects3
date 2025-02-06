@@ -139,7 +139,7 @@ export const aspects: Record<AspectName, AspectInfo> = {
 	},
 	darkness: {
 		name: "Darkness",
-		description: "weakening, illusions, reality bending",
+		description: "psychology, illusions, reality bending",
 		attribute: "wit",
 		actions: [
 			{
