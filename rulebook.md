@@ -21,9 +21,11 @@ summary:
 
 Players should first create their characters, assigning attributes, aspects, and traits that suit them.
 
-The narrator (called the game master or dungeon master in other systems) should prepare a scenario for the players to play through, whether it’s a single-session one-shot, or a campaign spanning over dozens of sessions. Sessions can last anywhere around 1 to 3 hours, depending on the energy levels, attention span, and/or available time for those playing.
+The narrator[^1] should prepare a scenario for the players to play through, whether it’s a single-session one-shot, or a campaign spanning over dozens of sessions. Sessions can last anywhere around 1 to 3 hours, depending on the energy levels, attention span, and/or available time for those playing.
 
 The game starts and runs as a back-and-forth between players and the narrator.
+
+[^1]: In other systems, this is called the game master or dungeon master
 
 ### Players
 
@@ -63,7 +65,6 @@ Define the following for your character:
 - Attribute values: give each one a score from 1 to 6, and they should add to 18
 - Traits: choose three
 - Aspects: choose one or more and assign 6 points among them. to each aspect, add your character’s value for that aspect’s related attribute
-- Talents: pick one
 
 Other values:
 
