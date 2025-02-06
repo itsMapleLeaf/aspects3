@@ -40,7 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<Navigation />
-				{children}
+				<div className="page-container">{children}</div>
 				<div className="fixed right-4 bottom-4">
 					<DiceTray />
 				</div>
@@ -72,8 +72,8 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	}
 
 	return (
-		<main className="pt-16 p-4 container mx-auto">
-			<h1>{message}</h1>
+		<main className="pt-8 mx-auto">
+			<h1 className="font-light text-4xl">{message}</h1>
 			<p>{details}</p>
 			{stack && (
 				<pre className="w-full p-4 overflow-x-auto">

@@ -90,7 +90,7 @@ export default function CharacterBuilder() {
 		remainingTraits > 0 ? `Choose ${remainingTraits} more` : undefined
 
 	return (
-		<div className="page-container py-6 @container flex flex-col gap-2">
+		<div className="py-6 @container flex flex-col gap-2">
 			<div className="grid grid-cols-[1fr_auto] gap-2">
 				<div className="flex gap-2 flex-wrap-reverse">
 					<Button
