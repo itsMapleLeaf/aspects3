@@ -6,7 +6,7 @@ import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 import { aspects } from "~/data/aspects.ts"
 import type { Character } from "~/data/characters.ts"
 import { getAspectPowerDice, getAttributeValue } from "~/data/characters.ts"
-import { parseNumber } from "~/utils.ts"
+import { parseNumber } from "~/lib/utils"
 
 const aspectColors = {
 	light: "text-yellow-300",

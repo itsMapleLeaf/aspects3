@@ -2,7 +2,7 @@ import { isEqual } from "es-toolkit"
 import { useEffect, useRef, useState } from "react"
 import { useSearchParams } from "react-router"
 import { Character } from "~/data/characters.ts"
-import { ensure, timeoutEffect } from "~/utils.ts"
+import { ensure, timeoutEffect } from "~/lib/utils.ts"
 import { useLocalStorage } from "../../hooks/useLocalStorage.ts"
 
 const hasFileSystemAccess =
