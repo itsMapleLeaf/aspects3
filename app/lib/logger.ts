@@ -15,6 +15,7 @@ const logger = (() => {
 		}
 	}
 	return pino({
+		enabled: process.env.NODE_ENV !== "test",
 		transport,
 	})
 })()
