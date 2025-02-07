@@ -16,14 +16,6 @@ const logger = (() => {
 	}
 	return pino({
 		transport,
-		hooks: {
-			logMethod: function logMethod(args, method) {
-				if (args.length >= 2) {
-					args[0] = `${args[0]} %j`
-				}
-				method.apply(this, args)
-			},
-		},
 	})
 })()
 

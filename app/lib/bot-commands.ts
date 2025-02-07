@@ -2,7 +2,12 @@ import * as Discord from "discord.js"
 import { range, startCase } from "es-toolkit"
 import { matchSorter } from "match-sorter"
 import { aspectNames, aspects, type AspectName } from "~/data/aspects.ts"
-import { attributes, getAttributeBySkill } from "~/data/attributes.ts"
+import {
+	attributeNames,
+	attributes,
+	getAttributeBySkill,
+	getSkill,
+} from "~/data/attributes.ts"
 import {
 	Character,
 	getAspectPowerDice,
@@ -15,13 +20,10 @@ import {
 	numericDie,
 	parseDiceRollStringInput,
 	powerDie,
-	riskDie,
 	rollDice,
-	type Die,
 } from "./dice.ts"
 import { logger } from "./logger.ts"
 import { prisma } from "./prisma.ts"
-import { parseNumber } from "./utils.ts"
 
 export interface ChatCommand extends Discord.ChatInputApplicationCommandData {
 	run: (interaction: Discord.ChatInputCommandInteraction) => Promise<void>
@@ -149,112 +151,129 @@ export const commands: Command[] = [
 			}
 		},
 	},
+
 	{
 		name: "roll",
 		description: "Make a dice roll",
+
 		options: [
 			{
 				name: "dice",
-				description: "The dice, aspect, or skill to roll",
+				description: "The dice to roll, e.g. '2d6 1d12'",
+				type: Discord.ApplicationCommandOptionType.String,
+				required: true,
+			},
+		],
+
+		run: async (interaction) => {
+			const input = interaction.options.getString("dice", true)
+
+			const dice = [...parseDiceRollStringInput(input)].flatMap((result) =>
+				result.valid
+					? range(result.count).map(() => numericDie(result.sides))
+					: [],
+			)
+
+			const results = [...rollDice(dice)]
+			const total = results.reduce((sum, result) => sum + result.value, 0)
+
+			let content = `Rolling **${input}**\n##`
+			if (results.length >= 2) {
+				content += ` ${results
+					.map((result) => `${result.symbol || ""}${result.value}`)
+					.join("  ")}  ⇒ `
+			}
+			content += ` **${total}**`
+
+			await interaction.reply(content)
+		},
+	},
+
+	{
+		name: "skill",
+		description: "Perform a skill check",
+		options: [
+			{
+				name: "skill",
+				description: "The skill to roll",
 				type: Discord.ApplicationCommandOptionType.String,
 				required: true,
 				autocomplete: true,
 			},
 		],
-		run: async (interaction) => {
-			const deferred = await interaction.deferReply({
-				// flags: [Discord.MessageFlags.Ephemeral],
+
+		autocomplete: async (interaction) => {
+			const characterRow = await prisma.character.findFirst({
+				where: { owner: { discordUserId: interaction.user.id } },
+			})
+			const character = characterRow && Character.assert(characterRow.data)
+
+			const focused = interaction.options.getFocused(true)
+			if (focused.name !== "skill") return
+
+			let options = attributeNames.flatMap((attribute) => {
+				return attributes[attribute].skills.map((skill) => {
+					let name = skill.name
+					if (character) {
+						const attributeValue = getAttributeValue(attribute, character)
+						const powerCount = getSkillPowerDice(character, skill.name)
+						name += ` (${attributeValue})`
+						if (powerCount > 0) {
+							name += ` (+${powerCount} power)`
+						}
+					}
+					return {
+						name: name,
+						value: skill.name,
+					}
+				})
 			})
 
-			const input = interaction.options.getString("dice", true)
+			options = matchSorter(options, focused.value, {
+				keys: ["name", "value"],
+			})
 
-			const inputSkillAttribute = getAttributeBySkill(input)[0]
+			await interaction.respond(options.slice(0, 25))
+		},
 
-			const inputAspect = aspectNames.includes(input)
-				? (input as AspectName)
-				: undefined
+		run: async (interaction) => {
+			const deferred = await interaction.deferReply()
 
 			const characterRow = await prisma.character.findFirst({
 				where: { owner: { discordUserId: interaction.user.id } },
 			})
 
-			if ((inputAspect || inputSkillAttribute) && !characterRow) {
+			if (!characterRow) {
 				await deferred.edit({
-					content: "You don't have a character set. Run `/characters set`",
+					content:
+						"You don't have a character set. Run `/characters set` to set one.",
 				})
-				await deferred.delete()
 				return
 			}
 
-			const character = characterRow && Character.assert(characterRow.data)
-			const characterUrl = character && getCharacterUrl(character)
+			const character = Character.assert(characterRow.data)
 
-			let label
-			let dice: Die[] = []
-			let target
+			const skillInput = interaction.options.getString("skill", true)
+			const skill = getSkill(skillInput)
+			const attributeName = skill && getAttributeBySkill(skill.name)[0]
 
-			if (inputSkillAttribute && character) {
-				const attributeValue =
-					inputSkillAttribute &&
-					getAttributeValue(inputSkillAttribute, character)
-
-				if (!attributeValue) {
-					logger.error(
-						{ input, attribute: inputSkillAttribute },
-						"Invalid skill/attribute",
-					)
-					await deferred.edit({
-						content: `Sorry, something went wrong. Try again.`,
-					})
-					await deferred.delete()
-					return
-				}
-
-				const powerCount = getSkillPowerDice(character, input)
-				const url = getCharacterUrl(character)
-
-				label = `[**${character.name}**](${url.href}) rolled **${input}** (${attributeValue})`
-				if (powerCount > 0) {
-					label += ` (+${powerCount} power)`
-				}
-
-				dice = [numericDie(6), ...range(powerCount).map(() => powerDie())]
-				target = attributeValue
-			} else if (inputAspect && character) {
-				const aspectName = aspects[inputAspect].name
-				const aspectValue = getAspectValue(inputAspect, character)
-				const powerCount = getAspectPowerDice(inputAspect, character)
-				const riskCount =
-					parseNumber(character.aspects[inputAspect] ?? "") > 0 ? 0 : 1
-				const url = getCharacterUrl(character)
-
-				label = `[**${character.name}**](${url.href}) rolled **${aspectName}** (${aspectValue})`
-				if (powerCount > 0) {
-					label += ` (+${powerCount} power)`
-				}
-				if (riskCount > 0) {
-					label += ` (+${riskCount} risk)`
-				}
-
-				dice = [
-					numericDie(12),
-					...range(powerCount).map(() => powerDie()),
-					...range(riskCount).map(() => riskDie()),
-				]
-				target = aspectValue
-			} else {
-				label = `Rolling **${input}**`
-
-				dice = [...parseDiceRollStringInput(input)].flatMap((result) =>
-					result.valid
-						? range(result.count).map(() => numericDie(result.sides))
-						: [],
-				)
+			if (!attributeName) {
+				logger.error({ skillInput }, "Invalid skill")
+				await deferred.edit({
+					content: "Sorry, something went wrong. Try again.",
+				})
+				return
 			}
 
+			const attributeValue = getAttributeValue(attributeName, character)
+			const powerCount = getSkillPowerDice(character, skill.name)
+			const url = getCharacterUrl(character)
+
+			const label = `Rolling **${skill.name}** for [**${character.name}**](${url.href}) (${attributeValue})`
+			const dice = [numericDie(6), ...range(powerCount).map(() => powerDie())]
 			const results = [...rollDice(dice)]
 			const total = results.reduce((sum, result) => sum + result.value, 0)
-			const success = target == null ? undefined : total <= target
+			const success = total <= attributeValue
 
 			let content = `${label}\n##`
 			if (results.length >= 2) {
@@ -263,35 +282,102 @@ export const commands: Command[] = [
 					.join("  ")}  ⇒ `
 			}
 			content += ` **${total}**`
-			if (target != null) {
-				const icon = total <= target ? "✓" : "✕"
-				content += ` ${icon}`
-			}
+			content += ` ${success ? "✓" : "✕"}`
 
-			await interaction.followUp(content)
+			await deferred.edit({ content })
 		},
-		autocomplete: async (interaction) => {
-			const focused = interaction.options.getFocused(true)
-			if (focused.name === "dice") {
-				const options = [
-					...Object.values(attributes).flatMap((attr) =>
-						attr.skills.map((skill) => ({
-							name: skill.name,
-							value: skill.name,
-						})),
-					),
-					...Object.entries(aspects).map(([key, aspect]) => ({
-						name: aspect.name,
-						value: key,
-					})),
-				]
+	},
 
-				await interaction.respond(
-					matchSorter(options, focused.value, {
-						keys: ["name", "value"],
-					}).slice(0, 25),
-				)
+	{
+		name: "aspect",
+		description: "Perform an aspect check",
+		options: [
+			{
+				name: "aspect",
+				description: "The aspect to roll",
+				type: Discord.ApplicationCommandOptionType.String,
+				required: true,
+				autocomplete: true,
+			},
+		],
+
+		autocomplete: async (interaction) => {
+			const characterRow = await prisma.character.findFirst({
+				where: { owner: { discordUserId: interaction.user.id } },
+			})
+			const character = characterRow && Character.assert(characterRow.data)
+
+			const focused = interaction.options.getFocused(true)
+			if (focused.name !== "aspect") return
+
+			let options = aspectNames.map((aspectName) => {
+				let name = aspects[aspectName].name
+				if (character) {
+					const aspectValue = getAspectValue(aspectName, character)
+					name += ` (${aspectValue})`
+				}
+				return {
+					name: name,
+					value: aspectName,
+				}
+			})
+
+			options = matchSorter(options, focused.value, {
+				keys: ["name", "value"],
+			})
+
+			await interaction.respond(options.slice(0, 25))
+		},
+
+		run: async (interaction) => {
+			const deferred = await interaction.deferReply()
+
+			const characterRow = await prisma.character.findFirst({
+				where: { owner: { discordUserId: interaction.user.id } },
+			})
+
+			if (!characterRow) {
+				await deferred.edit({
+					content:
+						"You don't have a character set. Run `/characters set` to set one.",
+				})
+				return
 			}
+
+			const character = Character.assert(characterRow.data)
+
+			const aspectName = interaction.options.getString(
+				"aspect",
+				true,
+			) as AspectName
+
+			if (!aspectNames.includes(aspectName)) {
+				logger.error({ aspectName }, "Invalid aspect")
+				await deferred.edit({
+					content: "Sorry, something went wrong. Try again.",
+				})
+				return
+			}
+
+			const aspectValue = getAspectValue(aspectName, character)
+			const powerCount = getAspectPowerDice(aspectName, character)
+
+			const label = `Rolling **${aspects[aspectName].name}** (${aspectValue})`
+			const dice = [numericDie(12), ...range(powerCount).map(() => powerDie())]
+			const results = [...rollDice(dice)]
+			const total = results.reduce((sum, result) => sum + result.value, 0)
+			const success = total <= aspectValue
+
+			let content = `${label}\n##`
+			if (results.length >= 2) {
+				content += ` ${results
+					.map((result) => `${result.symbol || ""}${result.value}`)
+					.join("  ")}  ⇒ `
+			}
+			content += ` **${total}**`
+			content += ` ${success ? "✓" : "✕"}`
+
+			await deferred.edit({ content })
 		},
 	},
 ]
@@ -341,7 +427,6 @@ export async function handleInteraction(interaction: Discord.Interaction) {
 			interaction.isAutocomplete() &&
 			interaction.commandName === command.name
 		) {
-			console.log("autocomplete", command.name)
 			await command.autocomplete?.(interaction)
 		}
 	}
