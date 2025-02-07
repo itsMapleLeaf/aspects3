@@ -35,6 +35,7 @@ export function addCommands(router: InteractionRouter) {
 				options.string({
 					name: "url",
 					description: "The shared character sheet URL",
+					required: true,
 				})
 
 				return {
@@ -120,9 +121,10 @@ export function addCommands(router: InteractionRouter) {
 		description: "Commands for rolling dice",
 		subcommands: (sub) => {
 			sub.command((option) => {
-				const diceOption = option.string({
+				option.string({
 					name: "dice",
 					description: 'The dice to roll, e.g. "2d6 1d12"',
+					required: true,
 				})
 
 				return {
@@ -158,6 +160,7 @@ export function addCommands(router: InteractionRouter) {
 				option.string({
 					name: "skill",
 					description: "The skill to roll for",
+					required: true,
 					autocomplete: async (input, interaction) => {
 						const characterRow = await prisma.character.findFirst({
 							where: { owner: { discordUserId: interaction.user.id } },
@@ -250,6 +253,7 @@ export function addCommands(router: InteractionRouter) {
 				option.string({
 					name: "aspect",
 					description: "The aspect to roll for",
+					required: true,
 					autocomplete: async (input, interaction) => {
 						const characterRow = await prisma.character.findFirst({
 							where: { owner: { discordUserId: interaction.user.id } },

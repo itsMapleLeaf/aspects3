@@ -1,4 +1,5 @@
 import * as Discord from "discord.js"
+import type { Except } from "type-fest"
 import { logger } from "../logger.ts"
 
 export type InteractionRouter = ReturnType<typeof createInteractionRouter>
@@ -75,13 +76,21 @@ function createChatCommand(scope: ChatCommandScope): ChatCommand {
 	const { run, ...data } = scope({
 		string: ({ autocomplete, ...data }) => {
 			options.set(data.name, {
-				data: { ...data, type: Discord.ApplicationCommandOptionType.String },
+				data: {
+					...data,
+					type: Discord.ApplicationCommandOptionType.String,
+					autocomplete: autocomplete != null,
+				},
 				autocomplete,
 			})
 		},
 		number: ({ autocomplete, ...data }) => {
 			options.set(data.name, {
-				data: { ...data, type: Discord.ApplicationCommandOptionType.Number },
+				data: {
+					...data,
+					type: Discord.ApplicationCommandOptionType.Number,
+					autocomplete: autocomplete != null,
+				},
 				autocomplete,
 			})
 		},
@@ -142,6 +151,11 @@ function createParentChatCommand(scope: ParentChatCommandScope) {
 				({ data: { options, ...data } }) => ({
 					...data,
 					type: Discord.ApplicationCommandOptionType.Subcommand as const,
+					options: options?.filter(
+						(opt) =>
+							opt.type !== Discord.ApplicationCommandOptionType.Subcommand &&
+							opt.type !== Discord.ApplicationCommandOptionType.SubcommandGroup,
+					),
 				}),
 			),
 		},
@@ -176,8 +190,28 @@ function createParentChatCommand(scope: ParentChatCommandScope) {
 }
 
 type OptionCreatorMap = {
-	string: (args: AutocompleteChatCommandOptionArgs<string>) => void
-	number: (args: AutocompleteChatCommandOptionArgs<number>) => void
+	string: (
+		args: Except<
+			Discord.ApplicationCommandAutocompleteStringOptionData,
+			"type" | "autocomplete"
+		> & {
+			autocomplete?: (
+				input: string,
+				interaction: Discord.AutocompleteInteraction,
+			) => Promise<Discord.ApplicationCommandOptionChoiceData<string>[]>
+		},
+	) => void
+	number: (
+		args: Except<
+			Discord.ApplicationCommandAutocompleteNumericOptionData,
+			"type" | "autocomplete"
+		> & {
+			autocomplete?: (
+				input: string,
+				interaction: Discord.AutocompleteInteraction,
+			) => Promise<Discord.ApplicationCommandOptionChoiceData<number>[]>
+		},
+	) => void
 }
 
 type ChatCommandOptionArgs = {

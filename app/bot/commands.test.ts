@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test"
+import { expect, mock, test } from "bun:test"
 import * as Discord from "discord.js"
 import { createInteractionRouter } from "../lib/interactions/router.ts"
 import { prisma } from "../lib/prisma.ts"
@@ -218,6 +218,37 @@ test("/roll skill - fails when no character found", async () => {
 	expect(replyContent).toContain("You don't have a character set")
 
 	prisma.character.findFirst = originalFindFirst
+})
+
+test("/roll aspect - aspect option is set as required", async () => {
+	const router = createInteractionRouter()
+	addCommands(router)
+
+	let setFn = mock()
+
+	router.registerCommands({
+		application: {
+			commands: {
+				set: setFn,
+			},
+		} as any,
+	} as unknown as Discord.Client<true>)
+
+	expect(setFn.mock.calls[0]?.[0]).toEqual(
+		expect.arrayContaining([
+			expect.objectContaining({
+				name: "roll",
+				options: expect.arrayContaining([
+					expect.objectContaining({
+						name: "aspect",
+						options: expect.arrayContaining([
+							expect.objectContaining({ name: "aspect", required: true }),
+						]),
+					}),
+				]),
+			}),
+		]),
+	)
 })
 
 test("/roll aspect - rolls the aspect", async () => {
