@@ -10,9 +10,9 @@
 		"dev:bot": "bun --watch app/bot.entry.ts",
 		"dev:test": "bun test --watch",
 		"preview": "react-router-serve ./build/server/index.js",
-		"typecheck": "prisma generate && react-router typegen && tsc",
 		"db:push": "prisma db push",
-		"test": "bun test --coverage"
+		"test": "bun test --coverage",
+		"typecheck": "prisma generate && react-router typegen && tsc"
 	},
 	"dependencies": {
 		"@ariakit/react": "^0.4.15",
