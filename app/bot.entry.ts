@@ -1,5 +1,6 @@
 import * as Discord from "discord.js"
-import { handleInteraction, registerCommands } from "./lib/bot-commands.ts"
+import { addCommands } from "./bot/commands.ts"
+import { createInteractionRouter } from "./lib/interactions/router.ts"
 import { console } from "./lib/logger.ts"
 
 const token = process.env.DISCORD_BOT_TOKEN
@@ -8,19 +9,21 @@ if (!token) {
 	process.exit(1)
 }
 
+const router = createInteractionRouter()
+addCommands(router)
+
 const client = new Discord.Client({
 	intents: [],
 })
 
 client.on("ready", async (client) => {
-	console.info("Registering commands")
-	await registerCommands(client)
+	await router.registerCommands(client)
 	console.info("Ready")
 })
 
 client.on("interactionCreate", async (interaction) => {
 	try {
-		await handleInteraction(interaction)
+		await router.handle(interaction)
 	} catch (error) {
 		console.error("Failed to run command")
 		console.error(error)
