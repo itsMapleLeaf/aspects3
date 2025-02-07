@@ -1,6 +1,6 @@
 import { type } from "arktype"
 import { aspects, type AspectName } from "./aspects.ts"
-import { type AttributeName } from "./attributes"
+import { getAttributeBySkill, type AttributeName } from "./attributes"
 import { traits } from "./traits"
 
 export type Character = typeof Character.infer
@@ -53,13 +53,12 @@ export function getTraitPowerDice(
 	}, 0)
 }
 
-export function getSkillPowerDice(
-	attribute: AttributeName,
-	skill: string,
-	character: Character,
-) {
+export function getSkillPowerDice(character: Character, skillName: string) {
+	const [attribute] = getAttributeBySkill(skillName)
+	if (!attribute) return 0
+
 	const traitDice = getTraitPowerDice(attribute, character.traits)
-	const proficiencyDice = character.proficientSkills.includes(skill) ? 1 : 0
+	const proficiencyDice = character.proficientSkills.includes(skillName) ? 1 : 0
 	return traitDice + proficiencyDice
 }
 
@@ -140,4 +139,16 @@ export function getAspectPowerDice(
 	return traits
 		.filter((trait) => character.traits.includes(trait.name))
 		.filter((trait) => trait.aspect === aspectName).length
+}
+
+export function getCharacterUrl(data: Character) {
+	const encoded = btoa(JSON.stringify(data))
+
+	const baseUrl = import.meta.env.DEV
+		? "http://localhost:5173"
+		: "https://aspects-of-nature.netlify.app"
+
+	const url = new URL("/character-builder", baseUrl)
+	url.searchParams.set("data", encoded)
+	return url
 }

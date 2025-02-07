@@ -1,4 +1,4 @@
-import { clamp } from "es-toolkit"
+import { clamp, randomInt } from "es-toolkit"
 
 export function parseNumber(value: string, min = 0, max = Infinity) {
 	const parsed = parseInt(value)
@@ -63,4 +63,9 @@ export function createEmitter<T>() {
 			for (const listener of listeners) listener(value)
 		},
 	}
+}
+
+export function randomItem<T>(items: Iterable<T>) {
+	const itemsArray = Array.from(items)
+	return itemsArray[randomInt(itemsArray.length)]
 }

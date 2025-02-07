@@ -468,7 +468,7 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 					const isProficient = character.proficientSkills.includes(skill.name)
 					const canToggle =
 						isProficient || usedProficiencies < availableProficiencies
-					const powerDice = getSkillPowerDice(attribute, skill.name, character)
+					const powerDice = getSkillPowerDice(character, skill.name)
 					const attributeValue = getAttributeValue(attribute, character)
 
 					return (

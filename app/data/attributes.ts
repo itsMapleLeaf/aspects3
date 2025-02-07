@@ -106,3 +106,23 @@ export const attributes: Record<AttributeName, AttributeInfo> = {
 		],
 	},
 }
+
+export function getSkill(id: string) {
+	for (const attribute of Object.values(attributes)) {
+		const skill = attribute.skills.find((s) => s.name === id)
+		if (skill) return skill
+	}
+}
+
+export function getAttributeBySkill(skillName: string) {
+	for (const [id, attribute] of Object.entries(attributes)) {
+		if (
+			attribute.skills.some(
+				(s) => s.name.toLowerCase() === skillName.toLowerCase(),
+			)
+		) {
+			return [id as AttributeName, attribute] as const
+		}
+	}
+	return [] as const
+}
