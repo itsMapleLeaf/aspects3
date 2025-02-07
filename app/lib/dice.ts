@@ -15,7 +15,10 @@ export type DieFace = {
 
 export function numericDie(sides: number): Die {
 	return {
-		faces: range(1, sides).map((value) => ({ value })),
+		faces: range(1, sides).map((value) => ({
+			value,
+			symbol: "🎲",
+		})),
 	}
 }
 

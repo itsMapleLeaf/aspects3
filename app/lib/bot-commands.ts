@@ -211,8 +211,9 @@ export const commands: Command[] = [
 				}
 
 				const powerCount = getSkillPowerDice(character, input)
+				const url = getCharacterUrl(character)
 
-				label = `${character.name} rolled **${input}** (${attributeValue})`
+				label = `[**${character.name}**](${url.href}) rolled **${input}** (${attributeValue})`
 				if (powerCount > 0) {
 					label += ` (+${powerCount} power)`
 				}
@@ -225,8 +226,9 @@ export const commands: Command[] = [
 				const powerCount = getAspectPowerDice(inputAspect, character)
 				const riskCount =
 					parseNumber(character.aspects[inputAspect] ?? "") > 0 ? 0 : 1
+				const url = getCharacterUrl(character)
 
-				label = `${character.name} rolled **${aspectName}** (${aspectValue})`
+				label = `[**${character.name}**](${url.href}) rolled **${aspectName}** (${aspectValue})`
 				if (powerCount > 0) {
 					label += ` (+${powerCount} power)`
 				}
