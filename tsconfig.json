@@ -1,14 +1,7 @@
 {
-	"include": [
-		"**/*",
-		"**/.server/**/*",
-		"**/.client/**/*",
-		".react-router/types/**/*"
-	],
 	"exclude": ["**/node_modules", "build"],
 	"compilerOptions": {
 		"lib": ["DOM", "DOM.Iterable", "ES2024"],
-		"types": ["node", "vite/client"],
 		"target": "ES2023",
 		"module": "Preserve",
 		"moduleResolution": "bundler",
