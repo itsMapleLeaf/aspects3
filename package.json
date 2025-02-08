@@ -3,6 +3,9 @@
 	"private": true,
 	"type": "module",
 	"packageManager": "bun@1.2.2",
+	"engines": {
+		"node": "22"
+	},
 	"scripts": {
 		"build": "react-router build",
 		"dev": "convex dev --until-success && run-p --race 'dev:*'",
