@@ -18,7 +18,9 @@ const client = new Discord.Client({
 
 client.on("ready", async (client) => {
 	await router.registerCommands(client)
-	console.info("Ready")
+	console.info(
+		`Logged in as ${client.user.displayName} (@${client.user.username})`,
+	)
 })
 
 client.on("interactionCreate", async (interaction) => {
