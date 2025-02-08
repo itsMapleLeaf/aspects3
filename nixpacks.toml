@@ -1,3 +1,6 @@
 [phases.setup]
 nixPkgs = ["nodejs_22", "bun"]
 nixLibs = ["...", "openssl"]
+
+[phases.build]
+cmds = ["...", "bun run db:push"]
