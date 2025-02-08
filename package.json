@@ -8,6 +8,7 @@
 	},
 	"scripts": {
 		"build": "react-router build",
+		"deploy": "convex deploy --cmd \"bun run build\"",
 		"dev": "convex dev --until-success && run-p --race 'dev:*'",
 		"dev:app": "react-router dev",
 		"dev:bot": "bun --watch app/bot.entry.ts",
