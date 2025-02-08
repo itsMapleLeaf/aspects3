@@ -20,6 +20,7 @@ import {
 	numericDie,
 	parseDiceRollStringInput,
 	powerDie,
+	riskDie,
 	rollDice,
 } from "../lib/dice.ts"
 import type { InteractionRouter } from "../lib/interactions/router.ts"
@@ -190,6 +191,16 @@ export function addCommands(router: InteractionRouter) {
 					},
 				})
 
+				option.number({
+					name: "power",
+					description: "The number of power dice to add",
+				})
+
+				option.number({
+					name: "risk",
+					description: "The number of risk dice to add",
+				})
+
 				return {
 					name: "skill",
 					description: "Make a skill check",
@@ -211,6 +222,9 @@ export function addCommands(router: InteractionRouter) {
 						const character = Character.assert(characterRow.data)
 
 						const skillInput = interaction.options.getString("skill", true)
+						const extraPowerDice = interaction.options.getNumber("power") ?? 0
+						const extraRiskDice = interaction.options.getNumber("risk") ?? 0
+
 						const skill = getSkill(skillInput)
 						const attributeName = skill && getAttributeBySkill(skill.name)[0]
 
@@ -229,7 +243,8 @@ export function addCommands(router: InteractionRouter) {
 						const label = `Rolling **${skill.name}** for [**${character.name}**](${url.href}) (${attributeValue})`
 						const dice = [
 							numericDie(6),
-							...range(powerCount).map(() => powerDie()),
+							...range(powerCount + extraPowerDice).map(() => powerDie()),
+							...range(extraRiskDice).map(() => riskDie()),
 						]
 						const results = [...rollDice(dice)]
 						const total = results.reduce((sum, result) => sum + result.value, 0)
@@ -277,6 +292,16 @@ export function addCommands(router: InteractionRouter) {
 					},
 				})
 
+				option.number({
+					name: "power",
+					description: "The number of power dice to add",
+				})
+
+				option.number({
+					name: "risk",
+					description: "The number of risk dice to add",
+				})
+
 				return {
 					name: "aspect",
 					description: "Make an aspect check",
@@ -302,6 +327,9 @@ export function addCommands(router: InteractionRouter) {
 							true,
 						) as AspectName
 
+						const extraPowerDice = interaction.options.getNumber("power") ?? 0
+						const extraRiskDice = interaction.options.getNumber("risk") ?? 0
+
 						if (!aspectNames.includes(aspectName)) {
 							logger.error({ aspectName }, "Invalid aspect")
 							await deferred.edit({
@@ -316,7 +344,8 @@ export function addCommands(router: InteractionRouter) {
 						const label = `Rolling **${aspects[aspectName].name}** (${aspectValue})`
 						const dice = [
 							numericDie(12),
-							...range(powerCount).map(() => powerDie()),
+							...range(powerCount + extraPowerDice).map(() => powerDie()),
+							...range(extraRiskDice).map(() => riskDie()),
 						]
 						const results = [...rollDice(dice)]
 						const total = results.reduce((sum, result) => sum + result.value, 0)
