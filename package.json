@@ -5,7 +5,7 @@
 	"packageManager": "bun@1.2.2",
 	"scripts": {
 		"build": "react-router build",
-		"dev": "run-p --print-label --race 'dev:*'",
+		"dev": "run-p --race 'dev:*'",
 		"dev:app": "react-router dev",
 		"dev:bot": "bun --watch app/bot.entry.ts",
 		"dev:test": "bun test --watch",
