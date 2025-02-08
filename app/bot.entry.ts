@@ -57,6 +57,12 @@ client.on("interactionCreate", async (interaction) => {
 	} catch (error) {
 		console.error("Failed to run command")
 		console.error(error)
+
+		if (interaction.isRepliable() && interaction.deferred) {
+			await interaction.editReply("Sorry, something went wrong. Try again.")
+		} else if (interaction.isRepliable() && !interaction.replied) {
+			await interaction.reply("Sorry, something went wrong. Try again.")
+		}
 	}
 })
 
