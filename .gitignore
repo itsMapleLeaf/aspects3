@@ -8,3 +8,5 @@
 .env
 
 prisma/*.db
+
+.env.local
