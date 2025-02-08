@@ -9,7 +9,10 @@
 		"dev:app": "react-router dev",
 		"dev:bot": "bun --watch app/bot.entry.ts",
 		"dev:test": "bun test --watch",
-		"preview": "react-router-serve ./build/server/index.js",
+		"preview": "bun start:app",
+		"start": "run-p --race 'start:*'",
+		"start:app": "react-router-serve ./build/server/index.js",
+		"start:bot": "bun app/bot.entry.ts",
 		"db:push": "prisma db push",
 		"test": "bun test --coverage",
 		"typecheck": "prisma generate && react-router typegen && tsc"
