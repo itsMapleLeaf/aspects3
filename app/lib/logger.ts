@@ -9,13 +9,14 @@ const logger = (() => {
 				colorize: true,
 				ignore: "pid,hostname",
 				translateTime: "SYS:mediumTime",
-				minimumLevel: process.env.NODE_ENV === "test" ? "warn" : "debug",
+				minimumLevel: "debug",
 				levelFirst: true,
 			},
 		}
 	}
 	return pino({
 		transport,
+		enabled: process.env.NODE_ENV !== "test",
 	})
 })()
 
