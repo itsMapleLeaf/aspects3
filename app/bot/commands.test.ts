@@ -1,7 +1,8 @@
 import { expect, mock, test } from "bun:test"
 import * as Discord from "discord.js"
 import { createInteractionRouter } from "../lib/interactions/router.ts"
-import { addCommands, type CommandContext } from "./commands.ts"
+import { addCommands } from "./commands.ts"
+import { type CommandContext } from "./context.ts"
 
 const dummyCharacterData = {
 	name: "Test",
@@ -31,7 +32,7 @@ const emptyCharacter = {
 
 function createMockContext(): CommandContext {
 	return {
-		findCharacterByUserId: async () => ({
+		findCharacterByUser: async () => ({
 			name: "Test Character",
 			details: "Test details",
 			traits: [],
@@ -117,7 +118,7 @@ test("/characters set - fails when URL missing data param", async () => {
 test("/characters show - shows the character", async () => {
 	const router = createInteractionRouter()
 	const context = createMockContext()
-	context.findCharacterByUserId = async () => dummyCharacterData
+	context.findCharacterByUser = async () => dummyCharacterData
 	addCommands(router, context)
 
 	let replyContent = ""
@@ -143,7 +144,7 @@ test("/characters show - tells the user to set a character if one is not set", a
 	const router = createInteractionRouter()
 	const context: CommandContext = {
 		...createMockContext(),
-		findCharacterByUserId: async () => null,
+		findCharacterByUser: async () => null,
 	}
 	addCommands(router, context)
 
@@ -169,7 +170,7 @@ test("/characters show - tells the user to set a character if one is not set", a
 test("/roll skill - rolls the skill", async () => {
 	const router = createInteractionRouter()
 	const context = createMockContext()
-	context.findCharacterByUserId = async () => dummyCharacterData
+	context.findCharacterByUser = async () => dummyCharacterData
 	addCommands(router, context)
 
 	let replyContent = ""
@@ -203,9 +204,9 @@ test("/roll skill - rolls the skill", async () => {
 
 test("/roll skill - fails when no character found", async () => {
 	const router = createInteractionRouter()
-	const context = {
+	const context: CommandContext = {
 		...createMockContext(),
-		findCharacterByUserId: async () => null,
+		findCharacterByUser: async () => null,
 	}
 	addCommands(router, context)
 
@@ -268,7 +269,7 @@ test("/roll aspect - aspect option is set as required", async () => {
 test("/roll aspect - rolls the aspect", async () => {
 	const router = createInteractionRouter()
 	const context = createMockContext()
-	context.findCharacterByUserId = async () => dummyCharacterData
+	context.findCharacterByUser = async () => dummyCharacterData
 	addCommands(router, context)
 
 	let replyContent = ""
@@ -303,7 +304,7 @@ test("/roll aspect - rolls the aspect", async () => {
 test("/roll aspect - fails for invalid aspect", async () => {
 	const router = createInteractionRouter()
 	const context = createMockContext()
-	context.findCharacterByUserId = async () => emptyCharacter
+	context.findCharacterByUser = async () => emptyCharacter
 	addCommands(router, context)
 
 	let replyContent = ""

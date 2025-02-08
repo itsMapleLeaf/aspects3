@@ -20,6 +20,7 @@
 	},
 	"dependencies": {
 		"@ariakit/react": "^0.4.15",
+		"@auth/core": "^0.37.4",
 		"@convex-dev/auth": "^0.0.80",
 		"@fontsource-variable/quicksand": "^5.1.1",
 		"@iconify/react": "^5.2.0",

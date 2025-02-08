@@ -1,50 +1,49 @@
 import { createAccount, retrieveAccount } from "@convex-dev/auth/server"
 import { v } from "convex/values"
-import { invariant } from "es-toolkit"
-import { CharacterSchema } from "../../app/data/characters.zod.ts"
+import { omit } from "es-toolkit"
 import { internal } from "../_generated/api"
 import type { DataModel } from "../_generated/dataModel"
 import { internalMutation } from "../_generated/server"
 import schema from "../schema.ts"
 import { adminAction, adminQuery } from "./utils.lib.ts"
 
-export const saveByUrl = adminAction({
+export const save = adminAction({
 	args: {
 		discordUser: v.object({
+			id: v.string(),
 			username: v.string(),
 			displayName: v.string(),
 		}),
-		url: v.string(),
+		character: v.object(
+			omit(schema.tables.characters.validator.fields, ["ownerId"]),
+		),
 	},
-	handler: async (ctx, { discordUser, url }) => {
-		let auth = await retrieveAccount(ctx, {
-			provider: "discord",
-			account: { id: discordUser.username },
-		})
+	handler: async (ctx, { discordUser, character }) => {
+		let auth
+
+		try {
+			auth = await retrieveAccount(ctx, {
+				provider: "discord",
+				account: { id: discordUser.id },
+			})
+		} catch (error) {
+			console.warn("retrieveAccount failed", error)
+		}
 
 		if (!auth) {
 			auth = await createAccount<DataModel>(ctx, {
 				provider: "discord",
-				account: { id: discordUser.username },
-				profile: { name: discordUser.displayName },
-			})
-		}
-
-		const encoded = new URL(url).searchParams.get("data")
-		invariant(encoded, "No data found in url")
-
-		const decoded = atob(encoded)
-		const parsed = JSON.parse(decoded)
-		const validateResult = await CharacterSchema["~validate"](parsed)
-		if (validateResult.issues) {
-			throw new Error("Invalid character data", {
-				cause: validateResult.issues,
+				account: { id: discordUser.id },
+				profile: {
+					name: discordUser.displayName,
+					discordUsername: discordUser.username,
+				},
 			})
 		}
 
 		await ctx.runMutation(internal.admin.characters.upsertByOwner, {
 			character: {
-				...validateResult.value,
+				...character,
 				ownerId: auth.user._id,
 			},
 		})
@@ -74,6 +73,7 @@ export const upsertByOwner = internalMutation({
 export const getLatestByOwner = adminQuery({
 	args: {
 		discordUser: v.object({
+			id: v.string(),
 			username: v.string(),
 			displayName: v.string(),
 		}),
@@ -82,9 +82,7 @@ export const getLatestByOwner = adminQuery({
 		const account = await ctx.db
 			.query("authAccounts")
 			.withIndex("providerAndAccountId", (q) =>
-				q
-					.eq("provider", "discord")
-					.eq("providerAccountId", discordUser.username),
+				q.eq("provider", "discord").eq("providerAccountId", discordUser.id),
 			)
 			.first()
 

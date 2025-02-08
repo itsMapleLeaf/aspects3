@@ -4,6 +4,14 @@ import { v } from "convex/values"
 
 export default defineSchema({
 	...authTables,
+
+	users: defineTable({
+		...authTables.users.validator.fields,
+		discordUsername: v.optional(v.string()),
+	})
+		.index("email", ["email"])
+		.index("phone", ["phone"]),
+
 	characters: defineTable({
 		ownerId: v.id("users"),
 		name: v.string(),

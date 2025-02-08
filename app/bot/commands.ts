@@ -25,13 +25,7 @@ import {
 } from "../lib/dice.ts"
 import type { InteractionRouter } from "../lib/interactions/router.ts"
 import { logger } from "../lib/logger.ts"
-export interface CommandContext {
-	findCharacterByUserId: (userId: string) => Promise<Character | null>
-	upsertUserWithCharacter: (params: {
-		userId: string
-		character: Character
-	}) => Promise<void>
-}
+import type { CommandContext } from "./context.ts"
 
 export function addCommands(
 	router: InteractionRouter,
@@ -70,7 +64,7 @@ export function addCommands(
 							const data = Character.assert(JSON.parse(atob(dataParam)))
 
 							await context.upsertUserWithCharacter({
-								userId: interaction.user.id,
+								user: interaction.user,
 								character: data,
 							})
 
@@ -96,9 +90,7 @@ export function addCommands(
 						flags: [Discord.MessageFlags.Ephemeral],
 					})
 
-					const character = await context.findCharacterByUserId(
-						interaction.user.id,
-					)
+					const character = await context.findCharacterByUser(interaction.user)
 
 					if (!character) {
 						await interaction.editReply({
@@ -161,8 +153,8 @@ export function addCommands(
 					description: "The skill to roll for",
 					required: true,
 					autocomplete: async (input, interaction) => {
-						const character = await context.findCharacterByUserId(
-							interaction.user.id,
+						const character = await context.findCharacterByUser(
+							interaction.user,
 						)
 
 						const options = attributeNames.flatMap((attribute) => {
@@ -203,8 +195,8 @@ export function addCommands(
 					run: async (interaction) => {
 						const deferred = await interaction.deferReply()
 
-						const character = await context.findCharacterByUserId(
-							interaction.user.id,
+						const character = await context.findCharacterByUser(
+							interaction.user,
 						)
 
 						if (!character) {
@@ -264,8 +256,8 @@ export function addCommands(
 					description: "The aspect to roll for",
 					required: true,
 					autocomplete: async (input, interaction) => {
-						const character = await context.findCharacterByUserId(
-							interaction.user.id,
+						const character = await context.findCharacterByUser(
+							interaction.user,
 						)
 
 						let options = aspectNames.map((aspectName) => {
@@ -300,8 +292,8 @@ export function addCommands(
 					run: async (interaction) => {
 						const deferred = await interaction.deferReply()
 
-						const character = await context.findCharacterByUserId(
-							interaction.user.id,
+						const character = await context.findCharacterByUser(
+							interaction.user,
 						)
 
 						if (!character) {
