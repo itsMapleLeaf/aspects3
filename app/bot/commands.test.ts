@@ -1,33 +1,73 @@
 import { expect, mock, test } from "bun:test"
 import * as Discord from "discord.js"
 import { createInteractionRouter } from "../lib/interactions/router.ts"
-import { prisma } from "../lib/prisma.ts"
-import { addCommands } from "./commands.ts"
+import { addCommands, type CommandContext } from "./commands.ts"
+
+const dummyCharacterData = {
+	name: "Test",
+	details: "A brave adventurer",
+	traits: ["Brave", "Loyal"],
+	attributes: { strength: "5" },
+	aspects: { fire: "5" },
+	proficientSkills: [],
+	imageUrl: "https://example.com/image.png",
+	hits: "0",
+	fatigue: "0",
+	comeback: "0",
+}
+
+const emptyCharacter = {
+	name: "Test",
+	details: "",
+	traits: [],
+	attributes: {},
+	aspects: {},
+	proficientSkills: [],
+	imageUrl: "https://example.com/image.png",
+	hits: "0",
+	fatigue: "0",
+	comeback: "0",
+}
+
+function createMockContext(): CommandContext {
+	return {
+		findCharacterByUserId: async () => ({
+			name: "Test Character",
+			details: "Test details",
+			traits: [],
+			attributes: { strength: "10" },
+			aspects: { fire: "10" },
+			proficientSkills: [],
+			imageUrl: "test.jpg",
+			hits: "10",
+			fatigue: "10",
+			comeback: "10",
+		}),
+		upsertUserWithCharacter: async () => {},
+	}
+}
 
 test("/characters set - sets the character", async () => {
 	const router = createInteractionRouter()
-	addCommands(router)
+	const context = createMockContext()
+	let upsertCalled = false
+	context.upsertUserWithCharacter = async () => {
+		upsertCalled = true
+	}
+	addCommands(router, context)
 
 	let replyContent = ""
-	// Dummy character data
-	const dummyCharacterData = {
-		name: "Test",
-		details: "A brave adventurer",
-		traits: ["Brave", "Loyal"],
-		attributes: { strength: "5" },
-		aspects: { fire: "5" },
-		proficientSkills: [],
-		imageUrl: "https://example.com/image.png",
-	}
 	// Pre-encoded valid data param (base64)
 	const encodedData = Buffer.from(JSON.stringify(dummyCharacterData)).toString(
 		"base64",
 	)
 	const urlWithData = `http://example.com/?data=${encodedData}`
 
-	const fakeInteraction = createMockInteraction({
+	const fakeInteraction = {
+		...createMockInteraction(),
 		commandName: "characters",
 		options: {
+			...createMockInteraction().options,
 			getSubcommand: () => "set",
 			getString: (name: string, required?: boolean) => {
 				if (name === "url") return urlWithData
@@ -39,25 +79,24 @@ test("/characters set - sets the character", async () => {
 			replyContent = msg.content
 		},
 		toJSON: () => ({}),
-	})
+	}
 
-	const originalUpsert = prisma.user.upsert
-	// @ts-expect-error
-	prisma.user.upsert = async () => ({})
-
-	await router.handle(fakeInteraction)
+	await router.handle(fakeInteraction as unknown as Discord.Interaction)
 	expect(replyContent).toContain("You are playing as [**Test**]")
-	prisma.user.upsert = originalUpsert
+	expect(upsertCalled).toBe(true)
 })
 
 test("/characters set - fails when URL missing data param", async () => {
 	const router = createInteractionRouter()
-	addCommands(router)
+	const context = createMockContext()
+	addCommands(router, context)
 
 	let replyContent = ""
-	const fakeInteraction = createMockInteraction({
+	const fakeInteraction = {
+		...createMockInteraction(),
 		commandName: "characters",
 		options: {
+			...createMockInteraction().options,
 			getSubcommand: () => "set",
 			getString: (name: string, required?: boolean) => {
 				if (name === "url") return "http://example.com/?data="
@@ -69,37 +108,24 @@ test("/characters set - fails when URL missing data param", async () => {
 			replyContent = msg.content
 		},
 		toJSON: () => ({}),
-	})
+	}
 
-	const originalUpsert = prisma.user.upsert
-	// @ts-expect-error
-	prisma.user.upsert = async () => ({})
-
-	await router.handle(fakeInteraction)
+	await router.handle(fakeInteraction as unknown as Discord.Interaction)
 	expect(replyContent).toContain("Invalid URL")
-
-	prisma.user.upsert = originalUpsert
 })
 
 test("/characters show - shows the character", async () => {
 	const router = createInteractionRouter()
-	addCommands(router)
+	const context = createMockContext()
+	context.findCharacterByUserId = async () => dummyCharacterData
+	addCommands(router, context)
 
 	let replyContent = ""
-	const dummyCharacter = {
-		data: {
-			name: "Test",
-			details: "A brave adventurer",
-			traits: ["Brave", "Loyal"],
-			attributes: { strength: "5" },
-			aspects: { fire: "5" },
-			proficientSkills: [],
-			imageUrl: "https://example.com/image.png",
-		},
-	}
-	const fakeInteraction = createMockInteraction({
+	const fakeInteraction = {
+		...createMockInteraction(),
 		commandName: "characters",
 		options: {
+			...createMockInteraction().options,
 			getSubcommand: () => "show",
 		},
 		deferReply: async () => ({}),
@@ -107,25 +133,26 @@ test("/characters show - shows the character", async () => {
 			replyContent = msg.content
 		},
 		toJSON: () => ({}),
-	})
+	}
 
-	const originalFindFirst = prisma.character.findFirst
-	// @ts-expect-error
-	prisma.character.findFirst = async () => dummyCharacter
-
-	await router.handle(fakeInteraction)
+	await router.handle(fakeInteraction as unknown as Discord.Interaction)
 	expect(replyContent).toContain("You are playing as [**Test**]")
-	prisma.character.findFirst = originalFindFirst
 })
 
 test("/characters show - tells the user to set a character if one is not set", async () => {
 	const router = createInteractionRouter()
-	addCommands(router)
+	const context: CommandContext = {
+		...createMockContext(),
+		findCharacterByUserId: async () => null,
+	}
+	addCommands(router, context)
 
 	let replyContent = ""
-	const fakeInteraction = createMockInteraction({
+	const fakeInteraction = {
+		...createMockInteraction(),
 		commandName: "characters",
 		options: {
+			...createMockInteraction().options,
 			getSubcommand: () => "show",
 		},
 		deferReply: async () => ({}),
@@ -133,43 +160,34 @@ test("/characters show - tells the user to set a character if one is not set", a
 			replyContent = msg.content
 		},
 		toJSON: () => ({}),
-	})
+	}
 
-	const originalFindFirst = prisma.character.findFirst
-	// @ts-expect-error
-	prisma.character.findFirst = async () => null
-
-	await router.handle(fakeInteraction)
+	await router.handle(fakeInteraction as unknown as Discord.Interaction)
 	expect(replyContent).toContain("You don't have a character set")
-
-	prisma.character.findFirst = originalFindFirst
 })
 
 test("/roll skill - rolls the skill", async () => {
 	const router = createInteractionRouter()
-	addCommands(router)
+	const context = createMockContext()
+	context.findCharacterByUserId = async () => dummyCharacterData
+	addCommands(router, context)
 
 	let replyContent = ""
-	// Using "Strike" as a valid skill assumed to belong to "strength"
-	const dummyCharacter = {
-		data: {
-			name: "Test",
-			details: "A brave adventurer",
-			traits: ["Brave"],
-			attributes: { strength: "5" },
-			aspects: { fire: "5" },
-			proficientSkills: [],
-			imageUrl: "https://example.com/image.png",
-		},
-	}
-	const fakeInteraction = createMockInteraction({
+	const fakeInteraction = {
+		...createMockInteraction(),
 		commandName: "roll",
 		options: {
+			...createMockInteraction().options,
 			getSubcommand: () => "skill",
 			getString: (name: string, required?: boolean) => {
 				if (name === "skill") return "Strike"
 				return ""
 			},
+			getNumber: (name: string, required?: boolean) => {
+				if (name === "power") return 0
+				if (name === "risk") return 0
+				return undefined
+			},
 		},
 		deferReply: async () => ({
 			edit: async (msg: any) => {
@@ -177,28 +195,29 @@ test("/roll skill - rolls the skill", async () => {
 			},
 		}),
 		toJSON: () => ({}),
-	})
+	}
 
-	const originalFindFirst = prisma.character.findFirst
-	// @ts-expect-error
-	prisma.character.findFirst = async () => dummyCharacter
-
-	await router.handle(fakeInteraction)
+	await router.handle(fakeInteraction as unknown as Discord.Interaction)
 	expect(replyContent).toContain("Rolling **Strike**")
-	prisma.character.findFirst = originalFindFirst
 })
 
 test("/roll skill - fails when no character found", async () => {
 	const router = createInteractionRouter()
-	addCommands(router)
+	const context = {
+		...createMockContext(),
+		findCharacterByUserId: async () => null,
+	}
+	addCommands(router, context)
 
 	let replyContent = ""
-	const fakeInteraction = createMockInteraction({
+	const fakeInteraction = {
+		...createMockInteraction(),
 		commandName: "roll",
 		options: {
+			...createMockInteraction().options,
 			getSubcommand: () => "skill",
 			getString: (name: string, required?: boolean) => {
-				if (name === "skill") return "someSkill"
+				if (name === "skill") return "dash"
 				return ""
 			},
 		},
@@ -208,21 +227,16 @@ test("/roll skill - fails when no character found", async () => {
 			},
 		}),
 		toJSON: () => ({}),
-	})
+	}
 
-	const originalFindFirst = prisma.character.findFirst
-	// @ts-expect-error
-	prisma.character.findFirst = async () => null
-
-	await router.handle(fakeInteraction)
+	await router.handle(fakeInteraction as unknown as Discord.Interaction)
 	expect(replyContent).toContain("You don't have a character set")
-
-	prisma.character.findFirst = originalFindFirst
 })
 
 test("/roll aspect - aspect option is set as required", async () => {
 	const router = createInteractionRouter()
-	addCommands(router)
+	const context = createMockContext()
+	addCommands(router, context)
 
 	let setFn = mock()
 
@@ -253,29 +267,26 @@ test("/roll aspect - aspect option is set as required", async () => {
 
 test("/roll aspect - rolls the aspect", async () => {
 	const router = createInteractionRouter()
-	addCommands(router)
+	const context = createMockContext()
+	context.findCharacterByUserId = async () => dummyCharacterData
+	addCommands(router, context)
 
 	let replyContent = ""
-	// Using "fire" as a valid aspect
-	const dummyCharacter = {
-		data: {
-			name: "Test",
-			details: "A brave adventurer",
-			traits: ["Brave"],
-			attributes: { strength: "5", agility: "3" },
-			aspects: { fire: "5" },
-			proficientSkills: [],
-			imageUrl: "https://example.com/image.png",
-		},
-	}
-	const fakeInteraction = createMockInteraction({
+	const fakeInteraction = {
+		...createMockInteraction(),
 		commandName: "roll",
 		options: {
+			...createMockInteraction().options,
 			getSubcommand: () => "aspect",
 			getString: (name: string, required?: boolean) => {
 				if (name === "aspect") return "fire"
 				return ""
 			},
+			getNumber: (name: string, required?: boolean) => {
+				if (name === "power") return 0
+				if (name === "risk") return 0
+				return undefined
+			},
 		},
 		deferReply: async () => ({
 			edit: async (msg: any) => {
@@ -283,30 +294,34 @@ test("/roll aspect - rolls the aspect", async () => {
 			},
 		}),
 		toJSON: () => ({}),
-	})
+	}
 
-	const originalFindFirst = prisma.character.findFirst
-	// @ts-expect-error
-	prisma.character.findFirst = async () => dummyCharacter
-
-	await router.handle(fakeInteraction)
+	await router.handle(fakeInteraction as unknown as Discord.Interaction)
 	expect(replyContent).toContain("Rolling **Fire**")
-	prisma.character.findFirst = originalFindFirst
 })
 
 test("/roll aspect - fails for invalid aspect", async () => {
 	const router = createInteractionRouter()
-	addCommands(router)
+	const context = createMockContext()
+	context.findCharacterByUserId = async () => emptyCharacter
+	addCommands(router, context)
 
 	let replyContent = ""
-	const fakeInteraction = createMockInteraction({
+	const fakeInteraction = {
+		...createMockInteraction(),
 		commandName: "roll",
 		options: {
+			...createMockInteraction().options,
 			getSubcommand: () => "aspect",
 			getString: (name: string, required?: boolean) => {
 				if (name === "aspect") return "invalidAspect"
 				return ""
 			},
+			getNumber: (name: string, required?: boolean) => {
+				if (name === "power") return 0
+				if (name === "risk") return 0
+				return undefined
+			},
 		},
 		deferReply: async () => ({
 			edit: async (msg: any) => {
@@ -314,36 +329,23 @@ test("/roll aspect - fails for invalid aspect", async () => {
 			},
 		}),
 		toJSON: () => ({}),
-	})
-
-	const dummyCharacter = {
-		data: {
-			name: "Test",
-			details: "",
-			traits: [],
-			attributes: {},
-			aspects: {},
-			proficientSkills: [],
-		},
 	}
-	const originalFindFirst = prisma.character.findFirst
-	// @ts-expect-error
-	prisma.character.findFirst = async () => dummyCharacter
 
-	await router.handle(fakeInteraction)
+	await router.handle(fakeInteraction as unknown as Discord.Interaction)
 	expect(replyContent).toContain("Sorry, something went wrong")
-
-	prisma.character.findFirst = originalFindFirst
 })
 
 test("/roll dice - rolls dice", async () => {
 	const router = createInteractionRouter()
-	addCommands(router)
+	const context = createMockContext()
+	addCommands(router, context)
 
 	let replyContent = ""
-	const fakeInteraction = createMockInteraction({
+	const fakeInteraction = {
+		...createMockInteraction(),
 		commandName: "roll",
 		options: {
+			...createMockInteraction().options,
 			getSubcommand: () => "dice",
 			getString: (name: string, required?: boolean) => {
 				if (name === "dice") return "2d6"
@@ -354,13 +356,13 @@ test("/roll dice - rolls dice", async () => {
 			replyContent = msg
 		},
 		toJSON: () => ({}),
-	})
+	}
 
-	await router.handle(fakeInteraction)
+	await router.handle(fakeInteraction as unknown as Discord.Interaction)
 	expect(replyContent).toContain("Rolling **2d6**")
 })
 
-function createMockInteraction(overrides = {}) {
+function createMockInteraction() {
 	return {
 		id: "123456789012345678",
 		type: Discord.InteractionType.ApplicationCommand,
@@ -409,6 +411,9 @@ function createMockInteraction(overrides = {}) {
 				return undefined
 			},
 			getString() {
+				return undefined
+			},
+			getNumber() {
 				return undefined
 			},
 			getInteger() {
@@ -460,6 +465,20 @@ function createMockInteraction(overrides = {}) {
 		isUserContextMenuCommand() {
 			return false
 		},
-		...overrides,
-	} as unknown as Discord.ChatInputCommandInteraction
+		inGuild: () => true,
+		inCachedGuild: () => true,
+		inRawGuild: () => true,
+		command: {
+			name: "test",
+			type: Discord.ApplicationCommandType.ChatInput,
+		},
+		client: {
+			user: null,
+			application: {
+				commands: {
+					cache: new Map(),
+				},
+			},
+		} as unknown as Discord.Client<true>,
+	} as const
 }

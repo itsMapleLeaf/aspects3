@@ -25,9 +25,18 @@ import {
 } from "../lib/dice.ts"
 import type { InteractionRouter } from "../lib/interactions/router.ts"
 import { logger } from "../lib/logger.ts"
-import { prisma } from "../lib/prisma.ts"
+export interface CommandContext {
+	findCharacterByUserId: (userId: string) => Promise<Character | null>
+	upsertUserWithCharacter: (params: {
+		userId: string
+		character: Character
+	}) => Promise<void>
+}
 
-export function addCommands(router: InteractionRouter) {
+export function addCommands(
+	router: InteractionRouter,
+	context: CommandContext,
+) {
 	router.command(() => ({
 		name: "characters",
 		description: "Commands to manage characters",
@@ -60,20 +69,9 @@ export function addCommands(router: InteractionRouter) {
 
 							const data = Character.assert(JSON.parse(atob(dataParam)))
 
-							await prisma.user.upsert({
-								where: { discordUserId: interaction.user.id },
-								create: {
-									discordUserId: interaction.user.id,
-									characters: {
-										create: { data },
-									},
-								},
-								update: {
-									characters: {
-										deleteMany: {},
-										create: { data },
-									},
-								},
+							await context.upsertUserWithCharacter({
+								userId: interaction.user.id,
+								character: data,
 							})
 
 							await interaction.editReply(
@@ -98,9 +96,9 @@ export function addCommands(router: InteractionRouter) {
 						flags: [Discord.MessageFlags.Ephemeral],
 					})
 
-					const character = await prisma.character.findFirst({
-						where: { owner: { discordUserId: interaction.user.id } },
-					})
+					const character = await context.findCharacterByUserId(
+						interaction.user.id,
+					)
 
 					if (!character) {
 						await interaction.editReply({
@@ -109,9 +107,9 @@ export function addCommands(router: InteractionRouter) {
 						return
 					}
 
-					const data = Character.assert(character.data)
-
-					await interaction.editReply(getCharacterDisplayMessageOptions(data))
+					await interaction.editReply(
+						getCharacterDisplayMessageOptions(character),
+					)
 				},
 			}))
 		},
@@ -163,11 +161,9 @@ export function addCommands(router: InteractionRouter) {
 					description: "The skill to roll for",
 					required: true,
 					autocomplete: async (input, interaction) => {
-						const characterRow = await prisma.character.findFirst({
-							where: { owner: { discordUserId: interaction.user.id } },
-						})
-						const character =
-							characterRow && Character.assert(characterRow.data)
+						const character = await context.findCharacterByUserId(
+							interaction.user.id,
+						)
 
 						const options = attributeNames.flatMap((attribute) => {
 							return attributes[attribute].skills.map((skill) => {
@@ -207,19 +203,17 @@ export function addCommands(router: InteractionRouter) {
 					run: async (interaction) => {
 						const deferred = await interaction.deferReply()
 
-						const characterRow = await prisma.character.findFirst({
-							where: { owner: { discordUserId: interaction.user.id } },
-						})
+						const character = await context.findCharacterByUserId(
+							interaction.user.id,
+						)
 
-						if (!characterRow) {
+						if (!character) {
 							await deferred.edit({
 								content:
 									"You don't have a character set. Run `/characters set` to set one.",
 							})
 							return
 						}
-
-						const character = Character.assert(characterRow.data)
 
 						const skillInput = interaction.options.getString("skill", true)
 						const extraPowerDice = interaction.options.getNumber("power") ?? 0
@@ -270,11 +264,9 @@ export function addCommands(router: InteractionRouter) {
 					description: "The aspect to roll for",
 					required: true,
 					autocomplete: async (input, interaction) => {
-						const characterRow = await prisma.character.findFirst({
-							where: { owner: { discordUserId: interaction.user.id } },
-						})
-						const character =
-							characterRow && Character.assert(characterRow.data)
+						const character = await context.findCharacterByUserId(
+							interaction.user.id,
+						)
 
 						let options = aspectNames.map((aspectName) => {
 							let name = aspects[aspectName].name
@@ -308,19 +300,17 @@ export function addCommands(router: InteractionRouter) {
 					run: async (interaction) => {
 						const deferred = await interaction.deferReply()
 
-						const characterRow = await prisma.character.findFirst({
-							where: { owner: { discordUserId: interaction.user.id } },
-						})
+						const character = await context.findCharacterByUserId(
+							interaction.user.id,
+						)
 
-						if (!characterRow) {
+						if (!character) {
 							await deferred.edit({
 								content:
 									"You don't have a character set. Run `/characters set` to set one.",
 							})
 							return
 						}
-
-						const character = Character.assert(characterRow.data)
 
 						const aspectName = interaction.options.getString(
 							"aspect",
