@@ -16,7 +16,7 @@ export const Character = type({
 	proficientSkills: type("string[]").default(() => []),
 	aspects: type(`Record<string, string>`).default(() => ({})),
 	imageUrl: "string = ''",
-})
+}).onUndeclaredKey("delete")
 
 export const createEmptyCharacter = (): Character => ({
 	key: crypto.randomUUID(),
