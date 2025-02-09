@@ -15,7 +15,9 @@ import type {
 } from "convex/server";
 import type * as admin_characters from "../admin/characters.js";
 import type * as auth from "../auth.js";
+import type * as db from "../db.js";
 import type * as http from "../http.js";
+import type * as public_characters from "../public/characters.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -28,7 +30,9 @@ import type * as http from "../http.js";
 declare const fullApi: ApiFromModules<{
   "admin/characters": typeof admin_characters;
   auth: typeof auth;
+  db: typeof db;
   http: typeof http;
+  "public/characters": typeof public_characters;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
