@@ -17,25 +17,6 @@ export const Character = type({
 	imageUrl: "string = ''",
 })
 
-export const defaultCharacter: Character = {
-	name: "",
-	details: "",
-	attributes: {
-		intellect: "1",
-		sense: "1",
-		agility: "1",
-		strength: "1",
-		wit: "1",
-	},
-	hits: "",
-	fatigue: "",
-	comeback: "",
-	traits: [],
-	proficientSkills: [],
-	aspects: {},
-	imageUrl: "",
-}
-
 export function getAttributeValue(name: AttributeName, character: Character) {
 	return parseNumber(character.attributes[name] ?? "1", 1, 6)
 }

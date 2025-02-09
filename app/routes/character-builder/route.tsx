@@ -1,8 +1,8 @@
-import { useState, useTransition, type ReactNode } from "react"
+import { useEffect, useState, useTransition, type ReactNode } from "react"
+import { redirect } from "react-router"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
-import { Checkbox } from "~/components/ui/Checkbox.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 import { Input } from "~/components/ui/Input.tsx"
@@ -16,7 +16,6 @@ import {
 } from "~/data/attributes.ts"
 import {
 	Character,
-	defaultCharacter,
 	formatTraitList,
 	getAspectTotal,
 	getAttributeTotal,
@@ -30,25 +29,113 @@ import { traits } from "~/data/traits.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { pipe, timeoutPromise } from "~/lib/utils.ts"
 import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
-import { useCharacterStorage } from "~/routes/character-builder/useCharacterStorage.ts"
 import { UploadButton } from "../api.images/components.ts"
+import type { Route } from "./+types/route.ts"
 import { AspectArts } from "./AspectArts.tsx"
 import { AspectInput } from "./AspectInput.tsx"
 import { AttributeInput } from "./AttributeInput.tsx"
 import { TraitSelection } from "./TraitSelection.tsx"
 
-export default function CharacterBuilder() {
-	const {
-		character,
-		setCharacter,
-		hasFileSystemAccess,
-		hasFile,
-		autoSave,
-		setAutoSave,
-		save,
-		open,
-		createNew,
-	} = useCharacterStorage(defaultCharacter)
+const characterStorageKey = "character"
+
+export const defaultCharacter: Character = {
+	name: "",
+	details: "",
+	attributes: {
+		intellect: "1",
+		sense: "1",
+		agility: "1",
+		strength: "1",
+		wit: "1",
+	},
+	hits: "",
+	fatigue: "",
+	comeback: "",
+	traits: [],
+	proficientSkills: [],
+	aspects: {},
+	imageUrl: "",
+}
+
+export function clientLoader({ request }: Route.ClientLoaderArgs) {
+	const url = new URL(request.url)
+	const dataParam = url.searchParams.get("data")
+	if (dataParam) {
+		try {
+			const serialized = atob(dataParam)
+			const character = Character.assert(JSON.parse(serialized))
+
+			const destination = new URL(url)
+			destination.searchParams.delete("data")
+
+			// save to local storage so the data exists after redirect
+			localStorage.setItem(characterStorageKey, JSON.stringify(character))
+
+			return redirect(destination.href)
+		} catch (error) {
+			alert(`Failed to parse data from url: ${error}`)
+		}
+	}
+
+	const serialized = localStorage.getItem(characterStorageKey)
+	if (!serialized) {
+		return { character: defaultCharacter }
+	}
+
+	try {
+		return { character: Character.assert(JSON.parse(serialized)) }
+	} catch (error) {
+		alert(`Failed to load character data: ${error}`)
+		return { character: defaultCharacter }
+	}
+}
+
+export default function CharacterBuilder({ loaderData }: Route.ComponentProps) {
+	const [character, setCharacter] = useState(loaderData.character)
+
+	useEffect(() => {
+		localStorage.setItem(characterStorageKey, JSON.stringify(character))
+	}, [character])
+
+	function createNew() {
+		const yes = confirm(
+			"Are you sure you want to create a new character? Make sure to export or share your current character before continuing.",
+		)
+		if (yes) {
+			setCharacter(defaultCharacter)
+		}
+	}
+
+	function downloadCharacter() {
+		const serialized = JSON.stringify(character)
+		const url = URL.createObjectURL(
+			new Blob([serialized], { type: "application/json" }),
+		)
+		const a = document.createElement("a")
+		a.href = url
+		a.download = `${character.name}.json`
+		a.click()
+		URL.revokeObjectURL(url)
+	}
+
+	function importCharacterFromFile() {
+		const input = document.createElement("input")
+		input.type = "file"
+		input.accept = ".json,application/json"
+		input.addEventListener("change", async () => {
+			const file = input.files?.[0]
+			if (!file) return
+
+			try {
+				const data = await file.text()
+				const parsed = JSON.parse(data)
+				setCharacter(Character.assert(parsed))
+			} catch (error) {
+				alert(`Import failed: ${error}`)
+			}
+		})
+		input.click()
+	}
 
 	function updateAttribute(attr: AttributeName & string, value: string) {
 		setCharacter((prev) => ({
@@ -100,26 +187,20 @@ export default function CharacterBuilder() {
 					>
 						New
 					</Button>
-					<Button onClick={save} icon={<Icon icon="mingcute:save-2-fill" />}>
-						Save...
+					<Button
+						onClick={downloadCharacter}
+						icon={<Icon icon="mingcute:file-export-fill" />}
+					>
+						Export...
 					</Button>
 					<Button
-						onClick={open}
-						icon={<Icon icon="mingcute:folder-open-fill" />}
+						onClick={importCharacterFromFile}
+						icon={<Icon icon="mingcute:file-import-fill" />}
 					>
-						Open...
+						Import...
 					</Button>
 					<ShareButton character={character} />
 				</div>
-
-				{hasFileSystemAccess && hasFile && (
-					<Checkbox
-						label="Auto-save"
-						className="whitespace-nowrap self-end @xl:-col-end-1 @xl:col-span-1 @xl:justify-self-end @xl:self-start"
-						checked={autoSave}
-						onChange={(event) => setAutoSave(event.target.checked)}
-					/>
-				)}
 
 				<div className="col-span-2 @xl:col-[1] @xl:row-[1]">
 					<NameInput
