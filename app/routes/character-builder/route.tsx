@@ -52,10 +52,7 @@ export function clientLoader({ request }: Route.ClientLoaderArgs) {
 	const url = new URL(request.url)
 	try {
 		return {
-			character:
-				loadCharacterFromUrl(url) ??
-				loadCharacterFromStorage() ??
-				createEmptyCharacter(),
+			character: loadCharacterFromUrl(url) ?? loadCharacterFromStorage(),
 		}
 	} catch (error) {
 		alert("Failed to load character data: " + error)
@@ -91,6 +88,14 @@ export default function CharacterBuilderRoute({
 	const character = (() => {
 		if (characterState) return characterState
 
+		// if there's no local character, we should use the first remote character,
+		// or fall back to a new empty character
+		if (!loaderData.character) {
+			return remoteCharacters?.[0]
+				? Character.assert(remoteCharacters[0])
+				: createEmptyCharacter()
+		}
+
 		// attempt to find a remote character matching our stored key
 		// so that we don't overwrite the remote character with local changes
 		const fromRemote = remoteCharacters?.find(
@@ -102,8 +107,8 @@ export default function CharacterBuilderRoute({
 			return Character.assert(fromRemote)
 		}
 
-		// if no remote character with the same key exists, use the fallback local character,
-		// which should get synced as a new character
+		// if there's no remote character matching our local key,
+		// use the local character
 		return loaderData.character
 	})()
 
