@@ -876,7 +876,7 @@ function CharacterImage({ imageUrl, onChangeUrl }: CharacterImageProps) {
 					}}
 					onClientUploadComplete={([result]) => {
 						if (!result) return
-						onChangeUrl(result.url)
+						onChangeUrl(result.ufsUrl)
 					}}
 				/>
 			</div>
