@@ -27,6 +27,7 @@ function createCharacterInput(
 		comeback: "",
 		proficientSkills: [],
 		imageUrl: "",
+		key: crypto.randomUUID(),
 	}
 }
 

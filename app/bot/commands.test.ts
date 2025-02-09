@@ -1,11 +1,13 @@
 import { expect, mock, test } from "bun:test"
 import * as Discord from "discord.js"
+import type { Character } from "../data/characters.ts"
 import { createInteractionRouter } from "../lib/interactions/router.ts"
 import { addCommands } from "./commands.ts"
 import { type CommandContext } from "./context.ts"
 
-const dummyCharacterData = {
+const dummyCharacterData: Character = {
 	name: "Test",
+	key: crypto.randomUUID(),
 	details: "A brave adventurer",
 	traits: ["Brave", "Loyal"],
 	attributes: { strength: "5" },
@@ -17,8 +19,9 @@ const dummyCharacterData = {
 	comeback: "0",
 }
 
-const emptyCharacter = {
+const emptyCharacter: Character = {
 	name: "Test",
+	key: crypto.randomUUID(),
 	details: "",
 	traits: [],
 	attributes: {},
@@ -34,6 +37,7 @@ function createMockContext(): CommandContext {
 	return {
 		findCharacterByUser: async () => ({
 			name: "Test Character",
+			key: crypto.randomUUID(),
 			details: "Test details",
 			traits: [],
 			attributes: { strength: "10" },

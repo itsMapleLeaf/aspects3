@@ -30,7 +30,7 @@ export default defineSchema({
 		aspects: v.record(v.string(), v.string()),
 		imageUrl: v.string(),
 		ownerId: v.id("users"),
-		key: v.optional(v.string()), // client-defined key for consistent upsert
+		key: v.string(), // client-defined key for consistent upsert
 	})
 		.index("ownerId", ["ownerId"])
 		.index("ownerId_name", ["ownerId", "name"])
