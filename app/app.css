@@ -33,6 +33,12 @@
 	--color-gray-900: var(--color-zinc-900);
 	--color-gray-950: var(--color-zinc-950);
 
+	--color-primary-dark: color-mix(
+		in oklch,
+		black,
+		var(--color-primary-950) 50%
+	);
+
 	--spacing-page-body: 960px;
 }
 
@@ -48,6 +54,10 @@
 	.footnotes {
 		@apply text-sm text-gray-300 border-t border-gray-700;
 	}
+}
+
+@utility panel {
+	@apply bg-primary-dark border border-primary-900 rounded-lg;
 }
 
 @utility page-container {

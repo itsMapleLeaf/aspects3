@@ -1,5 +1,6 @@
+import { useAuthActions } from "@convex-dev/auth/react"
+import { Authenticated, AuthLoading, Unauthenticated } from "convex/react"
 import { useEffect, useState, useTransition, type ReactNode } from "react"
-import { redirect } from "react-router"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
@@ -34,9 +35,11 @@ import type { Route } from "./+types/route.ts"
 import { AspectArts } from "./AspectArts.tsx"
 import { AspectInput } from "./AspectInput.tsx"
 import { AttributeInput } from "./AttributeInput.tsx"
+import { CloudSaveCta } from "./CloudSaveCta.tsx"
 import { TraitSelection } from "./TraitSelection.tsx"
 
 const characterStorageKey = "character"
+const remoteCharacterIdStorageKey = "remoteCharacterId"
 
 export const defaultCharacter: Character = {
 	name: "",
@@ -57,41 +60,109 @@ export const defaultCharacter: Character = {
 	imageUrl: "",
 }
 
-export function clientLoader({ request }: Route.ClientLoaderArgs) {
+export async function clientLoader({
+	request,
+	params,
+}: Route.ClientLoaderArgs) {
 	const url = new URL(request.url)
-	const dataParam = url.searchParams.get("data")
-	if (dataParam) {
-		try {
-			const serialized = atob(dataParam)
-			const character = Character.assert(JSON.parse(serialized))
 
-			const destination = new URL(url)
-			destination.searchParams.delete("data")
+	// if (params.character) {
+	// 	const character = await convexClient.query(api.public.characters.get, {
+	// 		id: params.character,
+	// 	})
+	// 	if (character) {
+	// 		return { character }
+	// 	}
+	// }
 
-			// save to local storage so the data exists after redirect
-			localStorage.setItem(characterStorageKey, JSON.stringify(character))
+	// const me = await convexClient.query(api.public.auth.me)
+	// if (me) {
+	// 	const storedRemoteId = localStorage.getItem(remoteCharacterIdStorageKey)
+	// 	if (storedRemoteId) {
+	// 		return redirect(`/character-builder/${storedRemoteId}`)
+	// 	}
 
-			return redirect(destination.href)
-		} catch (error) {
-			alert(`Failed to parse data from url: ${error}`)
-		}
-	}
+	// 	const fallback = await convexClient.query(api.public.characters.getFallback)
+	// 	if (fallback) {
+	// 		return redirect(`/character-builder/${fallback._id}`)
+	// 	}
 
-	const serialized = localStorage.getItem(characterStorageKey)
-	if (!serialized) {
-		return { character: defaultCharacter }
-	}
+	// 	let newCharacter
+	// 	try {
+	// 		newCharacter = loadCharacterFromUrl(url) ?? loadCharacterFromStorage()
+	// 	} catch (error) {
+	// 		alert("Failed to load character data: " + error)
+	// 	}
+
+	// 	const id = await convexClient.mutation(
+	// 		api.public.characters.create,
+	// 		newCharacter ?? defaultCharacter,
+	// 	)
+
+	// 	return redirect(`/character-builder/${id}`)
+	// }
 
 	try {
-		return { character: Character.assert(JSON.parse(serialized)) }
+		return {
+			character:
+				loadCharacterFromUrl(url) ??
+				loadCharacterFromStorage() ??
+				defaultCharacter,
+		}
 	} catch (error) {
-		alert(`Failed to load character data: ${error}`)
+		alert("Failed to load character data: " + error)
 		return { character: defaultCharacter }
 	}
 }
 
-export default function CharacterBuilder({ loaderData }: Route.ComponentProps) {
-	const [character, setCharacter] = useState(loaderData.character)
+function loadCharacterFromStorage() {
+	const serialized = localStorage.getItem(characterStorageKey)
+	if (!serialized) return
+	return Character.assert(JSON.parse(serialized))
+}
+
+function loadCharacterFromUrl(url: URL) {
+	const dataParam = url.searchParams.get("data")
+	if (!dataParam) return
+
+	const serialized = atob(dataParam)
+	return Character.assert(JSON.parse(serialized))
+}
+
+export default function CharacterBuilderRoute({
+	loaderData,
+}: Route.ComponentProps) {
+	return (
+		<AuthLoadingGuard>
+			<CharacterBuilder initialCharacter={loaderData.character} />
+		</AuthLoadingGuard>
+	)
+}
+
+function AuthLoadingGuard({ children }: { children: ReactNode }) {
+	return (
+		<>
+			<AuthLoading>
+				<main className="flex flex-col items-center justify-center h-dvh fixed inset-0">
+					<Icon
+						icon="mingcute:loading-3-fill"
+						className="size-12 animate-spin"
+					/>
+					<p className="text-gray-400 text-2xl font-light">Loading...</p>
+				</main>
+			</AuthLoading>
+			<Authenticated>{children}</Authenticated>
+			<Unauthenticated>{children}</Unauthenticated>
+		</>
+	)
+}
+
+function CharacterBuilder({
+	initialCharacter,
+}: {
+	initialCharacter: Character
+}) {
+	const [character, setCharacter] = useState(initialCharacter)
 
 	useEffect(() => {
 		localStorage.setItem(characterStorageKey, JSON.stringify(character))
@@ -179,7 +250,7 @@ export default function CharacterBuilder({ loaderData }: Route.ComponentProps) {
 
 	return (
 		<div className="py-6 @container flex flex-col gap-2">
-			<div className="grid grid-cols-[1fr_auto] gap-2">
+			<div className="flex flex-wrap justify-between gap-2">
 				<div className="flex gap-2 flex-wrap-reverse">
 					<Button
 						onClick={createNew}
@@ -201,17 +272,20 @@ export default function CharacterBuilder({ loaderData }: Route.ComponentProps) {
 					</Button>
 					<ShareButton character={character} />
 				</div>
+				<Unauthenticated>
+					<CloudSaveCta />
+				</Unauthenticated>
+				<Authenticated>
+					<SignOutButton />
+				</Authenticated>
+			</div>
 
-				<div className="col-span-2 @xl:col-[1] @xl:row-[1]">
-					<NameInput
-						name={character.name}
-						onChange={(name) => setCharacter((prev) => ({ ...prev, name }))}
-					/>
-				</div>
-
-				<div className="col-span-2 @xl:row-[2] @xl:col-span-1">
-					<TraitList traits={selectedTraits} />
-				</div>
+			<div className="grid  gap-2">
+				<NameInput
+					name={character.name}
+					onChange={(name) => setCharacter((prev) => ({ ...prev, name }))}
+				/>
+				<TraitList traits={selectedTraits} />
 			</div>
 
 			<div className="@xl:hidden">
@@ -316,6 +390,19 @@ export default function CharacterBuilder({ loaderData }: Route.ComponentProps) {
 				</ToggleSection>
 			</div>
 		</div>
+	)
+}
+
+function SignOutButton() {
+	const { signOut } = useAuthActions()
+	return (
+		<Button
+			icon={<Icon icon="mingcute:exit-door-fill" />}
+			appearance="ghost"
+			onClick={signOut}
+		>
+			Sign out
+		</Button>
 	)
 }
 

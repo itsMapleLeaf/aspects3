@@ -1,3 +1,4 @@
+import { ConvexAuthProvider } from "@convex-dev/auth/react"
 import font from "@fontsource-variable/quicksand?url"
 import {
 	isRouteErrorResponse,
@@ -11,6 +12,7 @@ import { Navigation } from "~/components/Navigation"
 import type { Route } from "./+types/root"
 import stylesheet from "./app.css?url"
 import { DiceTray } from "./components/DiceTray.tsx"
+import { convexClient } from "./lib/convex.ts"
 
 export const meta: Route.MetaFunction = () => [{ title: "Aspects of Nature" }]
 
@@ -51,7 +53,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-	return <Outlet />
+	return (
+		<ConvexAuthProvider client={convexClient}>
+			<Outlet />
+		</ConvexAuthProvider>
+	)
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
