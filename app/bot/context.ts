@@ -9,9 +9,13 @@ type DiscordUser = {
 }
 
 export interface CommandContext {
-	findCharacterByUser: (user: DiscordUser) => Promise<Character | null>
-	upsertUserWithCharacter: (params: {
+	findCharacterByUser: (args: {
 		user: DiscordUser
+		guild: { id: string }
+	}) => Promise<Character | null>
+	upsertUserWithCharacter: (args: {
+		user: DiscordUser
+		guild: { id: string }
 		character: Character
 	}) => Promise<void>
 }
@@ -21,7 +25,7 @@ const adminSecret = process.env.ADMIN_SECRET as string
 
 export function createConvexContext(): CommandContext {
 	return {
-		async findCharacterByUser(user) {
+		async findCharacterByUser({ user, guild }) {
 			// calling the validator to normalize the data, strip extra fields, and avoid arg validation errors
 			return Character.assert(
 				await convex.query(api.admin.characters.getLatestByOwner, {
@@ -31,10 +35,11 @@ export function createConvexContext(): CommandContext {
 						username: user.username,
 						displayName: user.globalName || user.username,
 					},
+					discordGuildId: guild.id,
 				}),
 			)
 		},
-		async upsertUserWithCharacter({ user, character }) {
+		async upsertUserWithCharacter({ user, guild, character }) {
 			console.log({ character })
 			console.log({ validated: Character.assert(character) })
 			await convex.action(api.admin.characters.save, {
@@ -44,6 +49,7 @@ export function createConvexContext(): CommandContext {
 					username: user.username,
 					displayName: user.globalName || user.username,
 				},
+				discordGuildId: guild.id,
 				// calling the validator to normalize the data, strip extra fields, and avoid arg validation errors
 				character: Character.assert(character),
 			})

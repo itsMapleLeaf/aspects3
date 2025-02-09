@@ -46,6 +46,14 @@ export function addCommands(
 					name: "set",
 					description: "Set your character from a URL",
 					run: async (interaction) => {
+						if (!interaction.inCachedGuild()) {
+							await interaction.reply({
+								content: "This command can only be used in guilds.",
+								ephemeral: true,
+							})
+							return
+						}
+
 						await interaction.deferReply({
 							flags: [Discord.MessageFlags.Ephemeral],
 						})
@@ -65,6 +73,7 @@ export function addCommands(
 
 							await context.upsertUserWithCharacter({
 								user: interaction.user,
+								guild: interaction.guild,
 								character: data,
 							})
 
@@ -86,11 +95,22 @@ export function addCommands(
 				name: "show",
 				description: "Show your current character",
 				run: async (interaction) => {
+					if (!interaction.inCachedGuild()) {
+						await interaction.reply({
+							content: "This command can only be used in guilds.",
+							ephemeral: true,
+						})
+						return
+					}
+
 					await interaction.deferReply({
 						flags: [Discord.MessageFlags.Ephemeral],
 					})
 
-					const character = await context.findCharacterByUser(interaction.user)
+					const character = await context.findCharacterByUser({
+						user: interaction.user,
+						guild: interaction.guild,
+					})
 
 					if (!character) {
 						await interaction.editReply({
@@ -153,9 +173,14 @@ export function addCommands(
 					description: "The skill to roll for",
 					required: true,
 					autocomplete: async (input, interaction) => {
-						const character = await context.findCharacterByUser(
-							interaction.user,
-						)
+						if (!interaction.inCachedGuild()) {
+							return []
+						}
+
+						const character = await context.findCharacterByUser({
+							user: interaction.user,
+							guild: interaction.guild,
+						})
 
 						const options = attributeNames.flatMap((attribute) => {
 							return attributes[attribute].skills.map((skill) => {
@@ -193,11 +218,20 @@ export function addCommands(
 					name: "skill",
 					description: "Make a skill check",
 					run: async (interaction) => {
+						if (!interaction.inCachedGuild()) {
+							await interaction.reply({
+								content: "This command can only be used in guilds.",
+								ephemeral: true,
+							})
+							return
+						}
+
 						const deferred = await interaction.deferReply()
 
-						const character = await context.findCharacterByUser(
-							interaction.user,
-						)
+						const character = await context.findCharacterByUser({
+							user: interaction.user,
+							guild: interaction.guild,
+						})
 
 						if (!character) {
 							await deferred.edit({
@@ -256,9 +290,14 @@ export function addCommands(
 					description: "The aspect to roll for",
 					required: true,
 					autocomplete: async (input, interaction) => {
-						const character = await context.findCharacterByUser(
-							interaction.user,
-						)
+						if (!interaction.inCachedGuild()) {
+							return []
+						}
+
+						const character = await context.findCharacterByUser({
+							user: interaction.user,
+							guild: interaction.guild,
+						})
 
 						let options = aspectNames.map((aspectName) => {
 							let name = aspects[aspectName].name
@@ -290,11 +329,20 @@ export function addCommands(
 					name: "aspect",
 					description: "Make an aspect check",
 					run: async (interaction) => {
+						if (!interaction.inCachedGuild()) {
+							await interaction.reply({
+								content: "This command can only be used in guilds.",
+								ephemeral: true,
+							})
+							return
+						}
+
 						const deferred = await interaction.deferReply()
 
-						const character = await context.findCharacterByUser(
-							interaction.user,
-						)
+						const character = await context.findCharacterByUser({
+							user: interaction.user,
+							guild: interaction.guild,
+						})
 
 						if (!character) {
 							await deferred.edit({

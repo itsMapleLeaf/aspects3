@@ -8,6 +8,12 @@ export default defineSchema({
 	users: defineTable({
 		...authTables.users.validator.fields,
 		discordUsername: v.optional(v.string()),
+		guildCharacters: v.optional(
+			v.record(
+				v.string(), // discord guild id
+				v.id("characters"),
+			),
+		),
 	})
 		.index("email", ["email"])
 		.index("phone", ["phone"]),

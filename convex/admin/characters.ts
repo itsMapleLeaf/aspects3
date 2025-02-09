@@ -1,6 +1,6 @@
 import { createAccount, retrieveAccount } from "@convex-dev/auth/server"
-import { v } from "convex/values"
-import { omit } from "es-toolkit"
+import { ConvexError, v } from "convex/values"
+import { omit, pick } from "es-toolkit"
 import { internal } from "../_generated/api"
 import type { DataModel } from "../_generated/dataModel"
 import { internalMutation } from "../_generated/server"
@@ -14,11 +14,12 @@ export const save = adminAction({
 			username: v.string(),
 			displayName: v.string(),
 		}),
+		discordGuildId: v.string(),
 		character: v.object(
 			omit(schema.tables.characters.validator.fields, ["ownerId"]),
 		),
 	},
-	handler: async (ctx, { discordUser, character }) => {
+	handler: async (ctx, { discordUser, discordGuildId, character }) => {
 		let auth
 
 		try {
@@ -41,32 +42,51 @@ export const save = adminAction({
 			})
 		}
 
-		await ctx.runMutation(internal.admin.characters.upsertByOwner, {
+		await ctx.runMutation(internal.admin.characters.saveMutation, {
 			character: {
 				...character,
 				ownerId: auth.user._id,
 			},
+			discordGuildId,
 		})
 	},
 })
 
-export const upsertByOwner = internalMutation({
+export const saveMutation = internalMutation({
 	args: {
 		character: schema.tables.characters.validator,
+		discordGuildId: v.string(),
 	},
-	handler: async (ctx, { character }) => {
+	handler: async (ctx, { character, discordGuildId }) => {
+		const user = await ctx.db.get(character.ownerId)
+		if (!user) {
+			throw new ConvexError({
+				message: `Character owner not found`,
+				character: pick(character, ["key", "name", "ownerId"]),
+			})
+		}
+
 		const existing = await ctx.db
 			.query("characters")
-			.withIndex("ownerId_name", (q) =>
-				q.eq("ownerId", character.ownerId).eq("name", character.name),
+			.withIndex("ownerId_key", (q) =>
+				q.eq("ownerId", character.ownerId).eq("key", character.key),
 			)
 			.first()
 
+		let characterId
 		if (existing) {
 			await ctx.db.replace(existing._id, character)
+			characterId = existing._id
 		} else {
-			await ctx.db.insert("characters", character)
+			characterId = await ctx.db.insert("characters", character)
 		}
+
+		await ctx.db.patch(user._id, {
+			guildCharacters: {
+				...user.guildCharacters,
+				[discordGuildId]: characterId,
+			},
+		})
 	},
 })
 
@@ -77,8 +97,9 @@ export const getLatestByOwner = adminQuery({
 			username: v.string(),
 			displayName: v.string(),
 		}),
+		discordGuildId: v.string(),
 	},
-	handler: async (ctx, { discordUser }) => {
+	handler: async (ctx, { discordUser, discordGuildId }) => {
 		const account = await ctx.db
 			.query("authAccounts")
 			.withIndex("providerAndAccountId", (q) =>
@@ -88,9 +109,17 @@ export const getLatestByOwner = adminQuery({
 
 		if (!account) return null
 
+		const user = await ctx.db.get(account.userId)
+		if (!user) return null
+
+		const characterId = user.guildCharacters?.[discordGuildId]
+		const character = characterId && (await ctx.db.get(characterId))
+		if (character) return character
+
+		// legacy: if the guild character ID isn't set, try to find the latest character owned by the user
 		return await ctx.db
 			.query("characters")
-			.withIndex("ownerId_name", (q) => q.eq("ownerId", account.userId))
+			.withIndex("ownerId", (q) => q.eq("ownerId", account.userId))
 			.order("desc")
 			.first()
 	},
