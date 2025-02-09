@@ -5,6 +5,7 @@ import { traits } from "./traits"
 
 export type Character = typeof Character.infer
 export const Character = type({
+	key: type("string").default(() => crypto.randomUUID()),
 	name: "string < 256 = ''",
 	details: "string = ''",
 	attributes: type(`Record<string, string>`).default(() => ({})),
@@ -15,6 +16,26 @@ export const Character = type({
 	proficientSkills: type("string[]").default(() => []),
 	aspects: type(`Record<string, string>`).default(() => ({})),
 	imageUrl: "string = ''",
+})
+
+export const createEmptyCharacter = (): Character => ({
+	key: crypto.randomUUID(),
+	name: "",
+	details: "",
+	attributes: {
+		intellect: "1",
+		sense: "1",
+		agility: "1",
+		strength: "1",
+		wit: "1",
+	},
+	hits: "",
+	fatigue: "",
+	comeback: "",
+	traits: [],
+	proficientSkills: [],
+	aspects: {},
+	imageUrl: "",
 })
 
 export function getAttributeValue(name: AttributeName, character: Character) {

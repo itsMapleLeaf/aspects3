@@ -1,5 +1,11 @@
 import { useAuthActions } from "@convex-dev/auth/react"
-import { Authenticated, AuthLoading, Unauthenticated } from "convex/react"
+import {
+	Authenticated,
+	Unauthenticated,
+	useConvexAuth,
+	useMutation,
+	useQuery,
+} from "convex/react"
 import { useEffect, useState, useTransition, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"
@@ -17,6 +23,7 @@ import {
 } from "~/data/attributes.ts"
 import {
 	Character,
+	createEmptyCharacter,
 	formatTraitList,
 	getAspectTotal,
 	getAttributeTotal,
@@ -30,6 +37,7 @@ import { traits } from "~/data/traits.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { pipe, timeoutPromise } from "~/lib/utils.ts"
 import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
+import { api } from "../../../convex/_generated/api"
 import { UploadButton } from "../api.images/components.ts"
 import type { Route } from "./+types/route.ts"
 import { AspectArts } from "./AspectArts.tsx"
@@ -39,80 +47,20 @@ import { CloudSaveCta } from "./CloudSaveCta.tsx"
 import { TraitSelection } from "./TraitSelection.tsx"
 
 const characterStorageKey = "character"
-const remoteCharacterIdStorageKey = "remoteCharacterId"
 
-export const defaultCharacter: Character = {
-	name: "",
-	details: "",
-	attributes: {
-		intellect: "1",
-		sense: "1",
-		agility: "1",
-		strength: "1",
-		wit: "1",
-	},
-	hits: "",
-	fatigue: "",
-	comeback: "",
-	traits: [],
-	proficientSkills: [],
-	aspects: {},
-	imageUrl: "",
-}
-
-export async function clientLoader({
-	request,
-	params,
-}: Route.ClientLoaderArgs) {
+export function clientLoader({ request }: Route.ClientLoaderArgs) {
 	const url = new URL(request.url)
-
-	// if (params.character) {
-	// 	const character = await convexClient.query(api.public.characters.get, {
-	// 		id: params.character,
-	// 	})
-	// 	if (character) {
-	// 		return { character }
-	// 	}
-	// }
-
-	// const me = await convexClient.query(api.public.auth.me)
-	// if (me) {
-	// 	const storedRemoteId = localStorage.getItem(remoteCharacterIdStorageKey)
-	// 	if (storedRemoteId) {
-	// 		return redirect(`/character-builder/${storedRemoteId}`)
-	// 	}
-
-	// 	const fallback = await convexClient.query(api.public.characters.getFallback)
-	// 	if (fallback) {
-	// 		return redirect(`/character-builder/${fallback._id}`)
-	// 	}
-
-	// 	let newCharacter
-	// 	try {
-	// 		newCharacter = loadCharacterFromUrl(url) ?? loadCharacterFromStorage()
-	// 	} catch (error) {
-	// 		alert("Failed to load character data: " + error)
-	// 	}
-
-	// 	const id = await convexClient.mutation(
-	// 		api.public.characters.create,
-	// 		newCharacter ?? defaultCharacter,
-	// 	)
-
-	// 	return redirect(`/character-builder/${id}`)
-	// }
-
 	try {
 		return {
 			character:
 				loadCharacterFromUrl(url) ??
 				loadCharacterFromStorage() ??
-				defaultCharacter,
+				createEmptyCharacter(),
 		}
 	} catch (error) {
 		alert("Failed to load character data: " + error)
-		return { character: defaultCharacter }
 	}
+	return { character: createEmptyCharacter() }
 }
 
 function loadCharacterFromStorage() {
@@ -132,64 +80,98 @@ function loadCharacterFromUrl(url: URL) {
 export default function CharacterBuilderRoute({
 	loaderData,
 }: Route.ComponentProps) {
-	return (
-		<AuthLoadingGuard>
-			<CharacterBuilder initialCharacter={loaderData.character} />
-		</AuthLoadingGuard>
-	)
-}
+	const auth = useConvexAuth()
 
-function AuthLoadingGuard({ children }: { children: ReactNode }) {
-	return (
-		<>
-			<AuthLoading>
-				<main className="flex flex-col items-center justify-center h-dvh fixed inset-0">
-					<Icon
-						icon="mingcute:loading-3-fill"
-						className="size-12 animate-spin"
-					/>
-					<p className="text-gray-400 text-2xl font-light">Loading...</p>
-				</main>
-			</AuthLoading>
-			<Authenticated>{children}</Authenticated>
-			<Unauthenticated>{children}</Unauthenticated>
-		</>
-	)
-}
+	const remoteCharacters = useQuery(api.public.characters.listOwned)
+	const upsertRemoteCharacter = useMutation(api.public.characters.upsert)
+	const deleteRemoteCharacter = useMutation(api.public.characters.delete)
 
-function CharacterBuilder({
-	initialCharacter,
-}: {
-	initialCharacter: Character
-}) {
-	const [character, setCharacter] = useState(initialCharacter)
+	const [characterState, setCharacter] = useState<Character>()
 
-	useEffect(() => {
-		localStorage.setItem(characterStorageKey, JSON.stringify(character))
-	}, [character])
+	const character = (() => {
+		if (characterState) return characterState
 
-	function createNew() {
-		const yes = confirm(
-			"Are you sure you want to create a new character? Make sure to export or share your current character before continuing.",
+		// attempt to find a remote character matching our stored key
+		// so that we don't overwrite the remote character with local changes
+		const fromRemote = remoteCharacters?.find(
+			(character) => character.key === loaderData.character?.key,
 		)
-		if (yes) {
-			setCharacter(defaultCharacter)
+		if (fromRemote) {
+			// remove non-mutable fields so they don't get sent to the server or saved,
+			// otherwise we'll get a validation error
+			return Character.assert(fromRemote)
 		}
+
+		// if no remote character with the same key exists, use the fallback local character,
+		// which should get synced as a new character
+		return loaderData.character
+	})()
+
+	// undefined when editing a character that doesn't yet exist on the server
+	const remoteCharacter = remoteCharacters?.find(
+		(it) => it.key === character.key,
+	)
+
+	function updateCharacter(next: React.SetStateAction<Character>) {
+		setCharacter((prev = character) => {
+			return next instanceof Function ? next(prev) : { ...prev, ...next }
+		})
+	}
+
+	// to avoid re-syncing a remote character,
+	// we keep local changes separate from the remote data --
+	// when there are no local changes, state is undefined,
+	// so we skip the sync
+	useEffect(() => {
+		if (characterState) {
+			localStorage.setItem(characterStorageKey, JSON.stringify(characterState))
+			upsertRemoteCharacter(characterState).catch(console.error)
+		}
+	}, [characterState])
+
+	async function createNew() {
+		const yes =
+			auth.isAuthenticated ||
+			confirm(
+				`Are you sure you want to create a new character? Make sure to export or share your current character before continuing.`,
+			)
+
+		if (!yes) return
+
+		updateCharacter(createEmptyCharacter())
 	}
 
 	function downloadCharacter() {
-		const serialized = JSON.stringify(character)
+		const serialized = JSON.stringify(character, null, 2)
 		const url = URL.createObjectURL(
 			new Blob([serialized], { type: "application/json" }),
 		)
+
+		const suggestedName =
+			character.name.split(/\s+/).slice(0, 1).join("").toLocaleLowerCase() ||
+			"character"
+
 		const a = document.createElement("a")
 		a.href = url
-		a.download = `${character.name}.json`
+		a.download = `${suggestedName}.json`
 		a.click()
 		URL.revokeObjectURL(url)
 	}
 
 	function importCharacterFromFile() {
+		let yes
+
+		if (auth.isAuthenticated) {
+			// always creates a new character, no need to confirm
+			yes = true
+		} else {
+			yes = confirm(
+				"Importing a character will overwrite your current character. Are you sure you want to continue?",
+			)
+		}
+
+		if (!yes) return
+
 		const input = document.createElement("input")
 		input.type = "file"
 		input.accept = ".json,application/json"
@@ -200,7 +182,10 @@ function CharacterBuilder({
 			try {
 				const data = await file.text()
 				const parsed = JSON.parse(data)
-				setCharacter(Character.assert(parsed))
+				updateCharacter({
+					...Character.assert(parsed),
+					key: crypto.randomUUID(),
+				})
 			} catch (error) {
 				alert(`Import failed: ${error}`)
 			}
@@ -209,7 +194,7 @@ function CharacterBuilder({
 	}
 
 	function updateAttribute(attr: AttributeName & string, value: string) {
-		setCharacter((prev) => ({
+		updateCharacter((prev) => ({
 			...prev,
 			attributes: {
 				...prev.attributes,
@@ -219,7 +204,7 @@ function CharacterBuilder({
 	}
 
 	function updateAspect(aspect: string, value: string) {
-		setCharacter((prev) => ({
+		updateCharacter((prev) => ({
 			...prev,
 			aspects: {
 				...prev.aspects,
@@ -229,7 +214,7 @@ function CharacterBuilder({
 	}
 
 	function toggleTrait(traitName: string) {
-		setCharacter((prev) => ({
+		updateCharacter((prev) => ({
 			...prev,
 			traits: prev.traits.includes(traitName)
 				? prev.traits.filter((t) => t !== traitName)
@@ -276,14 +261,66 @@ function CharacterBuilder({
 					<CloudSaveCta />
 				</Unauthenticated>
 				<Authenticated>
-					<SignOutButton />
+					<div className="flex flex-wrap gap-2">
+						<SignOutButton />
+
+						<Button
+							icon={<Icon icon="mingcute:delete-3-fill" />}
+							onClick={() => {
+								if (!remoteCharacter) return
+
+								const yes = confirm(
+									"Are you sure you want to delete this character? This action cannot be undone.",
+								)
+								if (!yes) return
+
+								const nextSelection = remoteCharacters?.find(
+									(it) => it.key !== character.key,
+								)
+
+								updateCharacter(
+									nextSelection
+										? Character.assert(nextSelection)
+										: createEmptyCharacter(),
+								)
+
+								deleteRemoteCharacter({ id: remoteCharacter._id })
+							}}
+							appearance="ghost"
+						>
+							Delete
+						</Button>
+
+						<select
+							className="button-solid w-48"
+							value={character.key}
+							onChange={(event) => {
+								const newCharacter = remoteCharacters?.find(
+									(character) => character.key === event.target.value,
+								)
+								if (newCharacter) {
+									updateCharacter(
+										// omit non-mutable fields so they don't get sent to the server,
+										// otherwise we'll get a validation error
+										Character.assert(newCharacter),
+									)
+								}
+							}}
+						>
+							{remoteCharacters?.map((character) => (
+								<option key={character.key} value={character.key}>
+									{character.name || "Unnamed Character"}
+								</option>
+							))}
+						</select>
+					</div>
 				</Authenticated>
 			</div>
 
-			<div className="grid  gap-2">
+			<div className="grid gap-2">
 				<NameInput
 					name={character.name}
-					onChange={(name) => setCharacter((prev) => ({ ...prev, name }))}
+					onChange={(name) => updateCharacter((prev) => ({ ...prev, name }))}
 				/>
 				<TraitList traits={selectedTraits} />
 			</div>
@@ -292,7 +329,7 @@ function CharacterBuilder({
 				<CharacterImage
 					imageUrl={character.imageUrl}
 					onChangeUrl={(imageUrl) =>
-						setCharacter((prev) => ({ ...prev, imageUrl }))
+						updateCharacter((prev) => ({ ...prev, imageUrl }))
 					}
 				/>
 			</div>
@@ -309,18 +346,20 @@ function CharacterBuilder({
 					<div className="grid grid-cols-2 @md:grid-cols-3 gap-4">
 						<HitsBar
 							character={character}
-							onChange={(hits) => setCharacter((prev) => ({ ...prev, hits }))}
+							onChange={(hits) =>
+								updateCharacter((prev) => ({ ...prev, hits }))
+							}
 						/>
 						<FatigueBar
 							character={character}
 							onChange={(fatigue) =>
-								setCharacter((prev) => ({ ...prev, fatigue }))
+								updateCharacter((prev) => ({ ...prev, fatigue }))
 							}
 						/>
 						<ComebackCounter
 							value={character.comeback ?? "0"}
 							onChange={(comeback) =>
-								setCharacter((prev) => ({ ...prev, comeback }))
+								updateCharacter((prev) => ({ ...prev, comeback }))
 							}
 						/>
 					</div>
@@ -330,7 +369,10 @@ function CharacterBuilder({
 						placeholder="Character backstory, personality, or other notes."
 						value={character.details}
 						onChange={(event) =>
-							setCharacter((prev) => ({ ...prev, details: event.target.value }))
+							updateCharacter((prev) => ({
+								...prev,
+								details: event.target.value,
+							}))
 						}
 					/>
 				</div>
@@ -339,7 +381,7 @@ function CharacterBuilder({
 					<CharacterImage
 						imageUrl={character.imageUrl}
 						onChangeUrl={(imageUrl) =>
-							setCharacter((prev) => ({ ...prev, imageUrl }))
+							updateCharacter((prev) => ({ ...prev, imageUrl }))
 						}
 					/>
 				</div>
@@ -370,7 +412,7 @@ function CharacterBuilder({
 								attribute={attribute}
 								character={character}
 								onToggleSkill={(skill) => {
-									setCharacter((prev) => ({
+									updateCharacter((prev) => ({
 										...prev,
 										proficientSkills: prev.proficientSkills.includes(skill)
 											? prev.proficientSkills.filter((s) => s !== skill)
@@ -505,7 +547,7 @@ function NameInput({ name, onChange }: NameInputProps) {
 
 function TraitList({ traits }: { traits: string[] }) {
 	const formattedTraits = formatTraitList(traits)
-	return <p className="text-gray-400 -mt-1">{formattedTraits}</p>
+	return <p className="text-gray-400 min-h-6 -mt-1">{formattedTraits}</p>
 }
 
 type AttributeInputListProps = {
@@ -724,23 +766,69 @@ type CharacterImageProps = {
 }
 
 function CharacterImage({ imageUrl, onChangeUrl }: CharacterImageProps) {
+	const fadeOnLoad = (image: HTMLImageElement | null) => {
+		if (!image) return
+
+		if (image.complete) {
+			image.style.opacity = "1"
+			return
+		}
+
+		image.style.opacity = "0"
+
+		const controller = new AbortController()
+
+		image.addEventListener(
+			"load",
+			() => {
+				image.animate([{ opacity: "0" }, { opacity: "1" }], {
+					duration: 200,
+					fill: "forwards",
+				})
+			},
+			{ signal: controller.signal },
+		)
+
+		image.addEventListener(
+			"error",
+			() => {
+				image.style.opacity = "1"
+			},
+			{ once: true },
+		)
+
+		return () => controller.abort()
+	}
+
 	return (
 		<div className="space-y-2">
 			{imageUrl ? (
 				<a
 					href={imageUrl}
+					key={imageUrl}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="block w-full border border-gray-700 rounded-lg bg-black/20 overflow-hidden"
+					className="block w-full aspect-[3/4] relative border border-gray-700 rounded-lg bg-black/20 overflow-hidden"
 				>
 					<img
 						src={imageUrl}
-						alt="Character"
-						className="w-full object-top object-cover"
+						alt=""
+						className="absolute size-full inset-0 object-cover brightness-50 blur-lg opacity-0"
+						ref={fadeOnLoad}
+					/>
+					<img
+						src={imageUrl}
+						alt=""
+						className="absolute size-full inset-0 object-contain opacity-0"
+						ref={fadeOnLoad}
 					/>
 				</a>
 			) : (
-				<div className="aspect-[3/4] w-full border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center"></div>
+				<div className="w-full aspect-[3/4] border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center">
+					<div className="w-full max-w-32 aspect-square opacity-25">
+						<Icon icon="mingcute:pic-fill" className="size-full" />
+					</div>
+				</div>
 			)}
 			<div className="flex items-end gap-2">
 				<Input

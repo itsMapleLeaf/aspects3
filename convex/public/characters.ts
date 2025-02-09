@@ -22,6 +22,41 @@ export const get = query({
 	},
 })
 
+export const getByKey = query({
+	args: {
+		key: v.string(),
+	},
+	handler: async (ctx, args) => {
+		try {
+			const userId = await ensureAuthUserId(ctx)
+			return await ctx.db
+				.query("characters")
+				.withIndex("ownerId_key", (q) =>
+					q.eq("ownerId", userId).eq("key", args.key),
+				)
+				.first()
+		} catch (error) {
+			console.warn(error)
+			return null
+		}
+	},
+})
+
+export const getFallback = query({
+	handler: async (ctx) => {
+		try {
+			const userId = await ensureAuthUserId(ctx)
+			return await ctx.db
+				.query("characters")
+				.withIndex("ownerId_name", (q) => q.eq("ownerId", userId))
+				.first()
+		} catch (error) {
+			console.warn(error)
+			return null
+		}
+	},
+})
+
 export const listOwned = query({
 	handler: async (ctx) => {
 		try {
@@ -58,6 +93,30 @@ export const update = mutation({
 	handler: async (ctx, args) => {
 		await ensureViewerOwnedCharacter(ctx, args.id)
 		await ctx.db.patch(args.id, args.data)
+	},
+})
+
+export const upsert = mutation({
+	args: omit(schema.tables.characters.validator.fields, ["ownerId"]),
+	handler: async (ctx, args) => {
+		const userId = await ensureAuthUserId(ctx)
+
+		const existing = await ctx.db
+			.query("characters")
+			.withIndex("ownerId_key", (q) =>
+				q.eq("ownerId", userId).eq("key", args.key),
+			)
+			.first()
+
+		if (existing) {
+			await ctx.db.patch(existing._id, args)
+		} else {
+			await ctx.db.insert("characters", {
+				...args,
+				ownerId: userId,
+				key: args.key,
+			})
+		}
 	},
 })
 

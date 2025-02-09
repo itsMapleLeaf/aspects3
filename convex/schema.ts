@@ -13,7 +13,6 @@ export default defineSchema({
 		.index("phone", ["phone"]),
 
 	characters: defineTable({
-		ownerId: v.id("users"),
 		name: v.string(),
 		details: v.string(),
 		attributes: v.record(v.string(), v.string()),
@@ -24,7 +23,10 @@ export default defineSchema({
 		proficientSkills: v.array(v.string()),
 		aspects: v.record(v.string(), v.string()),
 		imageUrl: v.string(),
+		ownerId: v.id("users"),
+		key: v.optional(v.string()), // client-defined key for consistent upsert
 	})
 		.index("ownerId", ["ownerId"])
-		.index("ownerId_name", ["ownerId", "name"]),
+		.index("ownerId_name", ["ownerId", "name"])
+		.index("ownerId_key", ["ownerId", "key"]),
 })
