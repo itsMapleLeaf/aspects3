@@ -38,7 +38,7 @@ import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { pipe, timeoutPromise } from "~/lib/utils.ts"
 import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
 import { api } from "../../../convex/_generated/api"
-import { UploadButton } from "../api.images/components.ts"
+import { UploadButton, useUploadThing } from "../api.images/components.ts"
 import type { Route } from "./+types/route.ts"
 import { AspectArts } from "./AspectArts.tsx"
 import { AspectInput } from "./AspectInput.tsx"
@@ -771,6 +771,8 @@ type CharacterImageProps = {
 }
 
 function CharacterImage({ imageUrl, onChangeUrl }: CharacterImageProps) {
+	const { routeConfig } = useUploadThing("imageUploader")
+
 	const fadeOnLoad = (image: HTMLImageElement | null) => {
 		if (!image) return
 
@@ -872,7 +874,9 @@ function CharacterImage({ imageUrl, onChangeUrl }: CharacterImageProps) {
 								: args.ready
 								? "Upload"
 								: "Preparing...",
-						allowedContent: () => "Max 4MB",
+						allowedContent: () =>
+							routeConfig?.image?.maxFileSize &&
+							`Max ${routeConfig.image.maxFileSize}`,
 					}}
 					onClientUploadComplete={([result]) => {
 						if (!result) return
