@@ -1,4 +1,4 @@
-import { type ComponentProps } from "react"
+import { useId, type ComponentProps } from "react"
 import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 import { NumberInput } from "./NumberInput.tsx"
 
@@ -18,6 +18,7 @@ export function StatInput({
 	min = 0,
 	className = "",
 }: StatInputProps) {
+	const id = useId()
 	return (
 		<div className="flex flex-col items-center gap-1">
 			<NumberInput
@@ -25,9 +26,12 @@ export function StatInput({
 				onChange={onChange}
 				min={min}
 				className={`transition w-full h-12 text-center text-2xl border rounded-lg focus:outline-none focus:ring-2 ${className}`}
+				id={id}
 			/>
 			<div className="text-center flex items-center gap-1">
-				<div className="text-sm font-semibold">{label}</div>
+				<label htmlFor={id} className="text-sm font-semibold">
+					{label}
+				</label>
 				{description && (
 					<IconTooltip content={description} className="size-4" />
 				)}

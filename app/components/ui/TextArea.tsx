@@ -1,4 +1,4 @@
-import { type ComponentPropsWithoutRef, type ReactNode } from "react"
+import { useId, type ComponentPropsWithoutRef, type ReactNode } from "react"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { Tooltip } from "./Tooltip.tsx"
 
@@ -26,10 +26,15 @@ export function TextArea({
 		? "border-red-300 focus:border-red-500 focus:ring-red-500"
 		: "border-gray-700"
 
+	const id = useId()
+
 	return (
 		<div className={`min-w-0 ${className}`}>
 			{label && (
-				<label className="flex items-center gap-1 mb-0.5 text-sm text-gray-300">
+				<label
+					htmlFor={id}
+					className="flex items-center gap-1 mb-0.5 text-sm text-gray-300"
+				>
 					<p className="font-semibold">{label}</p>
 					{hint && (
 						<Tooltip content={hint}>
@@ -44,6 +49,7 @@ export function TextArea({
 			)}
 			<div className="flex items-center gap-2">
 				<textarea
+					id={id}
 					className={`${baseClasses} ${stateClasses}`}
 					readOnly={readOnly}
 					{...props}

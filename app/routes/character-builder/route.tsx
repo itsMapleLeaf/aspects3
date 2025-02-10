@@ -541,6 +541,7 @@ type NameInputProps = {
 function NameInput({ name, onChange }: NameInputProps) {
 	return (
 		<Input
+			aria-label="Character Name"
 			type="text"
 			value={name}
 			onChange={(event) => onChange(event.target.value)}

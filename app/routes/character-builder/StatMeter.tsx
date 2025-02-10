@@ -1,4 +1,4 @@
-import { type ComponentProps, useState } from "react"
+import { type ComponentProps, useId, useState } from "react"
 import { parseNumber } from "~/lib/utils"
 import { NumberInput } from "~/routes/character-builder/NumberInput"
 
@@ -29,11 +29,13 @@ export function StatMeter({
 	const numericValue = parseInt(value) || 0
 	const fillPercentage =
 		max != null ? Math.min(100, (numericValue / max) * 100) : 0
+	const inputId = useId()
 
 	if (isEditing) {
 		return (
 			<div className="flex flex-col items-center gap-1">
 				<NumberInput
+					id={inputId}
 					value={value}
 					onChange={onChange}
 					onBlur={() => setIsEditing(false)}
@@ -48,7 +50,9 @@ export function StatMeter({
 					className={`transition w-full h-12 text-center text-2xl border rounded-lg focus:outline-none focus:ring-2 ${colorClasses} ${className}`}
 					autoFocus
 				/>
-				<div className="text-sm font-semibold">{label}</div>
+				<label className="text-sm font-semibold" htmlFor={inputId}>
+					{label}
+				</label>
 			</div>
 		)
 	}
@@ -56,6 +60,7 @@ export function StatMeter({
 	return (
 		<div className="flex flex-col items-center gap-1">
 			<button
+				id={inputId}
 				type="button"
 				onClick={() => {
 					setIsEditing(true)
@@ -83,7 +88,9 @@ export function StatMeter({
 					{max != null && ` / ${max}`}
 				</span>
 			</button>
-			<div className="text-sm font-semibold">{label}</div>
+			<label className="text-sm font-semibold" htmlFor={inputId}>
+				{label}
+			</label>
 		</div>
 	)
 }
