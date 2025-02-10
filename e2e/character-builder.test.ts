@@ -1,4 +1,46 @@
+import { openrouter } from "@openrouter/ai-sdk-provider"
 import { expect, test } from "@playwright/test"
+import { generateText } from "ai"
+
+test("persistence but ai", async ({ page }) => {
+	await page.goto("http://localhost:5173/character-builder", {
+		waitUntil: "networkidle",
+	})
+
+	const html = await page.content()
+
+	const { text } = await generateText({
+		model: openrouter("google/gemini-2.0-flash-lite-preview-02-05:free"),
+		system: `
+			You will receive an instruction and the HTML content of a webpage. Return a list of precise steps for carrying out that instruction. Refer to elements with precise CSS selectors that should only match that element.
+
+			Available actions:
+			- click
+			- type (text)
+			- blur
+
+			## Examples
+
+			Given the instruction "type 'fakeuser' and 'fakepass' into the login form":
+			\`\`\`
+			- fill (fakeuser) input#username
+			- fill (fakepass) input#password
+			\`\`\`
+
+			Given the instruction "click the sign in button":
+			\`\`\`
+			- click button.btn[aria-label="Sign in"]
+			\`\`\`
+		`,
+		prompt: `
+			Instruction: Type a random integer from 1 to 6 in each of the attribute text inputs.
+			---
+			${html}
+		`,
+	})
+
+	console.info(text)
+})
 
 test("persistence", async ({ page }) => {
 	const textFields = [
