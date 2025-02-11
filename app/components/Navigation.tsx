@@ -8,7 +8,7 @@ export function Navigation() {
 	]
 
 	return (
-		<nav className="z-10 sticky top-0 bg-gray-950/25 backdrop-blur-md">
+		<nav className="z-10 sticky top-0 bg-gray-950/25 backdrop-blur-md print:hidden">
 			<div className="page-container">
 				<div className="-mx-3 items-center flex gap-2 py-3 flex-wrap">
 					{links.map((link) => (

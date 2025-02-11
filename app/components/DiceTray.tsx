@@ -231,7 +231,7 @@ export function DiceTray({ children }: { children: ReactNode }) {
 				open={open}
 				setOpen={setOpen}
 			>
-				<div className="fixed right-4 bottom-4">
+				<div className="fixed right-4 bottom-4 print:hidden">
 					<div className="flex gap-2 items-start">
 						<div className="contents" ref={controlsRef}>
 							{target != null && (
