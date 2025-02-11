@@ -1,3 +1,4 @@
+import * as Ariakit from "@ariakit/react"
 import { useAuthActions } from "@convex-dev/auth/react"
 import {
 	Authenticated,
@@ -296,28 +297,11 @@ export default function CharacterBuilderRoute({
 							Delete
 						</Button>
 
-						<select
-							className="button-solid w-48"
-							value={character.key}
-							onChange={(event) => {
-								const newCharacter = remoteCharacters?.find(
-									(character) => character.key === event.target.value,
-								)
-								if (newCharacter) {
-									updateCharacter(
-										// omit non-mutable fields so they don't get sent to the server,
-										// otherwise we'll get a validation error
-										Character.assert(newCharacter),
-									)
-								}
-							}}
-						>
-							{remoteCharacters?.map((character) => (
-								<option key={character.key} value={character.key}>
-									{character.name || "Unnamed Character"}
-								</option>
-							))}
-						</select>
+						<CharacterSelect
+							characters={remoteCharacters ?? []}
+							selectedCharacterKey={character.key}
+							onChange={updateCharacter}
+						/>
 					</div>
 				</Authenticated>
 			</div>
@@ -437,6 +421,65 @@ export default function CharacterBuilderRoute({
 				</ToggleSection>
 			</div>
 		</div>
+	)
+}
+
+function CharacterSelect({
+	characters,
+	selectedCharacterKey,
+	onChange,
+}: {
+	characters: Character[]
+	selectedCharacterKey: string
+	onChange: (character: Character) => void
+}) {
+	const selectedCharacter = characters?.find(
+		(character) => character.key === selectedCharacterKey,
+	)
+
+	return (
+		<Ariakit.SelectProvider
+			placement="bottom-end"
+			value={selectedCharacterKey}
+			setValue={(newKey) => {
+				const newCharacter = characters?.find(
+					(character) => character.key === newKey,
+				)
+				if (newCharacter) {
+					onChange(Character.assert(newCharacter))
+				}
+			}}
+		>
+			<Ariakit.Select render={<Button />} className="w-48">
+				{selectedCharacter?.name || "Unnamed Character"}
+				<Icon icon="mingcute:down-fill" className="ml-auto" />
+			</Ariakit.Select>
+			<Ariakit.SelectPopover
+				portal
+				unmountOnHide
+				gutter={8}
+				className="
+					panel
+					min-w-[max(var(--popover-anchor-width),180px)]
+					max-h-[min(--spacing(80),calc(100dvh_-_--spacing(4)))]
+					overflow-y-auto
+					flex flex-col gap-1 p-1
+					transition
+					translate-y-1 data-enter:translate-y-0
+					opacity-0 data-enter:opacity-100
+				"
+			>
+				{characters?.map((character) => (
+					<Ariakit.SelectItem
+						key={character.key}
+						value={character.key}
+						className="flex shrink-0 items-center gap-2 px-3 py-2 hover:bg-primary-800/25 rounded-sm cursor-default transition"
+					>
+						{character.name || "Unnamed Character"}
+					</Ariakit.SelectItem>
+				))}
+			</Ariakit.SelectPopover>
+		</Ariakit.SelectProvider>
 	)
 }
 
