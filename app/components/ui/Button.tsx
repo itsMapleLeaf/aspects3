@@ -12,7 +12,7 @@ const appearanceClasses = {
 
 const sizeClasses = {
 	sm: { button: "px-2 py-1 text-sm gap-2", icon: "*:size-3 -mx-0.5" },
-	default: { button: "px-3 py-2 text-sm gap-2.5", icon: "*:size-4 -mx-1" },
+	default: { button: "px-3 py-2 text-base gap-2.5", icon: "*:size-4 -mx-1" },
 	lg: { button: "px-5 py-2 text-lg gap-3.5", icon: "*:size-5 -mx-1.5" },
 } as const
 
