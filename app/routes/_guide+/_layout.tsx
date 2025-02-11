@@ -1,9 +1,9 @@
-import Rulebook from "../../docs/lore.mdx"
+import { Outlet } from "react-router"
 
-export default function RulebookPage() {
+export default function RouteComponent() {
 	return (
 		<div className="prose prose-invert max-w-[unset]! pt-8 pb-12 text-gray-50 text-lg prose-headings:font-light">
-			<Rulebook />
+			<Outlet />
 		</div>
 	)
 }
