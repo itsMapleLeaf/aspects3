@@ -39,6 +39,7 @@ import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { pipe, timeoutPromise } from "~/lib/utils.ts"
 import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
 import { api } from "../../../convex/_generated/api"
+import { getPageMeta } from "../../meta.ts"
 import { UploadButton, useUploadThing } from "../api.images/components.ts"
 import type { Route } from "./+types/_index.ts"
 import { AspectArts } from "./AspectArts.tsx"
@@ -47,9 +48,13 @@ import { AttributeInput } from "./AttributeInput.tsx"
 import { CloudSaveCta } from "./CloudSaveCta.tsx"
 import { TraitSelection } from "./TraitSelection.tsx"
 
+export function meta() {
+	return getPageMeta("Character Builder")
+}
+
 const characterStorageKey = "character"
 
-export function clientLoader({ request }: Route.ClientLoaderArgs) {
+export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 	const url = new URL(request.url)
 	try {
 		return {

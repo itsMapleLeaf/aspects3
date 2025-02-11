@@ -22,6 +22,7 @@ export default defineConfig({
 				presets: ["@babel/preset-typescript"], // if you use TypeScript
 				plugins: ["babel-plugin-react-compiler"],
 			},
+			loader: "jsx",
 		}),
 		process.env.NETLIFY ? netlify() : [],
 	],

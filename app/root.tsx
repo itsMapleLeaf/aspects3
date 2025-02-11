@@ -14,8 +14,6 @@ import stylesheet from "./app.css?url"
 import { DiceTray } from "./components/DiceTray.tsx"
 import { convexClient } from "./lib/convex.ts"
 
-export const meta: Route.MetaFunction = () => [{ title: "Aspects of Nature" }]
-
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
 	{
@@ -52,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	)
 }
 
-export default function App() {
+export default function Root() {
 	return (
 		<ConvexAuthProvider client={convexClient}>
 			<Outlet />
