@@ -1,11 +1,12 @@
 import * as Ariakit from "@ariakit/react"
 import { useAuthActions } from "@convex-dev/auth/react"
-import { Authenticated, useConvex, useConvexAuth, useQuery } from "convex/react"
+import { useConvex, useConvexAuth, useQuery } from "convex/react"
 import {
 	useEffect,
 	useRef,
 	useState,
 	useTransition,
+	type ComponentProps,
 	type ReactNode,
 } from "react"
 import { useSearchParams } from "react-router"
@@ -123,61 +124,63 @@ function RemoteCharacterEditor({
 		})
 	}
 
+	const character =
+		updatedCharacter ?? selectedCharacter ?? createEmptyCharacter()
+
+	function setCharacter(character: Character) {
+		setUpdatedCharacters(
+			(prev) => new Map([...prev, [character.key, character]]),
+		)
+		setSelectedCharacterKey(character.key)
+	}
+
 	return (
-		<CharacterEditor
-			character={
-				updatedCharacter ?? selectedCharacter ?? createEmptyCharacter()
-			}
-			onChange={(character) => {
-				setUpdatedCharacters(
-					(prev) => new Map([...prev, [character.key, character]]),
-				)
-			}}
-			onNew={() => {
-				const character = createEmptyCharacter()
-				setSelectedCharacterKey(character.key)
-				setUpdatedCharacters(
-					(prev) => new Map([...prev, [character.key, character]]),
-				)
-			}}
-			onImport={(character) => {
-				setUpdatedCharacters(
-					(prev) => new Map([...prev, [character.key, character]]),
-				)
-				setSelectedCharacterKey(character.key)
-			}}
-			actions={
-				<Authenticated>
-					<div className="flex flex-wrap gap-2">
-						<SignOutButton />
+		<CharacterEditorLayout>
+			<CharacterEditorHeader>
+				<CharacterEditorActions
+					character={character}
+					onNew={() => {
+						setCharacter(createEmptyCharacter())
+					}}
+					onImport={setCharacter}
+				/>
 
-						<Button
-							icon={<Icon icon="mingcute:delete-3-fill" />}
-							onClick={deleteSelectedCharacter}
-							appearance="ghost"
-						>
-							Delete
-						</Button>
+				<div className="flex gap-2 items-end justify-end flex-wrap flex-1">
+					<SignOutButton />
 
-						<CharacterSelect
-							characters={[
-								...new Map([
-									...characters.map(
-										(character) => [character.key, character] as const,
-									),
-									// includes local characters in the list so that they're selectable before being synced
-									...updatedCharacters,
-								]).values(),
-							]}
-							selectedCharacterKey={
-								(updatedCharacter ?? selectedCharacter)?.key
-							}
-							onChange={(character) => setSelectedCharacterKey(character.key)}
-						/>
-					</div>
-				</Authenticated>
-			}
-		/>
+					<Button
+						icon={<Icon icon="mingcute:delete-3-fill" />}
+						onClick={deleteSelectedCharacter}
+						appearance="ghost"
+					>
+						Delete
+					</Button>
+
+					<CharacterSelect
+						characters={[
+							...new Map([
+								...characters.map(
+									(character) => [character.key, character] as const,
+								),
+								// includes local characters in the list so that they're selectable before being synced
+								...updatedCharacters,
+							]).values(),
+						]}
+						selectedCharacterKey={(updatedCharacter ?? selectedCharacter)?.key}
+						onChange={(character) => setSelectedCharacterKey(character.key)}
+					/>
+				</div>
+			</CharacterEditorHeader>
+
+			<CharacterEditor
+				character={character}
+				onChange={(character) => {
+					setUpdatedCharacters(
+						(prev) => new Map([...prev, [character.key, character]]),
+					)
+				}}
+			/>
+		</CharacterEditorLayout>
 	)
 }
 
@@ -191,13 +194,17 @@ function LocalCharacterEditor() {
 	useCharacterFromDataParam(setCharacter)
 
 	return (
-		<CharacterEditor
-			character={character}
-			onChange={setCharacter}
-			onImport={setCharacter}
-			onNew={() => setCharacter(createEmptyCharacter())}
-			actions={<CloudSaveCta />}
-		/>
+		<CharacterEditorLayout>
+			<CharacterEditorHeader>
+				<CharacterEditorActions
+					character={character}
+					onNew={() => setCharacter(createEmptyCharacter())}
+					onImport={setCharacter}
+				/>
+				<CloudSaveCta />
+			</CharacterEditorHeader>
+			<CharacterEditor character={character} onChange={setCharacter} />
+		</CharacterEditorLayout>
 	)
 }
 
@@ -226,18 +233,38 @@ function useCharacterFromDataParam(onParsed: (character: Character) => void) {
 	}, [dataParam])
 }
 
-function CharacterEditor({
+function CharacterEditorLayout(props: ComponentProps<"div">) {
+	return (
+		<div
+			{...props}
+			className={twMerge(
+				"py-6 @container flex flex-col gap-2",
+				props.className,
+			)}
+		/>
+	)
+}
+
+function CharacterEditorHeader(props: ComponentProps<"div">) {
+	return (
+		<div
+			{...props}
+			className={twMerge(
+				"flex flex-wrap items-start gap-2 justify-between",
+				props.className,
+			)}
+		/>
+	)
+}
+
+function CharacterEditorActions({
 	character,
-	onChange,
 	onNew,
 	onImport,
-	actions,
 }: {
 	character: Character
-	onChange: (character: Character) => void
 	onNew: () => void
 	onImport: (character: Character) => void
-	actions: ReactNode
 }) {
 	function downloadCharacter() {
 		const serialized = JSON.stringify(character, null, 2)
@@ -278,6 +305,35 @@ function CharacterEditor({
 		input.click()
 	}
 
+	return (
+		<div className="flex gap-2 items-end flex-wrap-reverse flex-1">
+			<Button onClick={onNew} icon={<Icon icon="mingcute:file-new-fill" />}>
+				New
+			</Button>
+			<Button
+				onClick={downloadCharacter}
+				icon={<Icon icon="mingcute:file-export-fill" />}
+			>
+				Export...
+			</Button>
+			<Button
+				onClick={importCharacter}
+				icon={<Icon icon="mingcute:file-import-fill" />}
+			>
+				Import...
+			</Button>
+			<ShareButton character={character} />
+		</div>
+	)
+}
+
+function CharacterEditor({
+	character,
+	onChange,
+}: {
+	character: Character
+	onChange: (character: Character) => void
+}) {
 	function updateAttribute(attr: AttributeName & string, value: string) {
 		onChange({
 			...character,
@@ -319,29 +375,7 @@ function CharacterEditor({
 		remainingTraits > 0 ? `Choose ${remainingTraits} more` : undefined
 
 	return (
-		<div className="py-6 @container flex flex-col gap-2">
-			<div className="flex flex-wrap justify-between gap-2">
-				<div className="flex gap-2 flex-wrap-reverse">
-					<Button onClick={onNew} icon={<Icon icon="mingcute:file-new-fill" />}>
-						New
-					</Button>
-					<Button
-						onClick={downloadCharacter}
-						icon={<Icon icon="mingcute:file-export-fill" />}
-					>
-						Export...
-					</Button>
-					<Button
-						onClick={importCharacter}
-						icon={<Icon icon="mingcute:file-import-fill" />}
-					>
-						Import...
-					</Button>
-					<ShareButton character={character} />
-				</div>
-				{actions}
-			</div>
-
+		<>
 			<div className="grid gap-2">
 				<NameInput
 					name={character.name}
@@ -446,7 +480,7 @@ function CharacterEditor({
 					<AspectArts character={character} />
 				</ToggleSection>
 			</div>
-		</div>
+		</>
 	)
 }
 
