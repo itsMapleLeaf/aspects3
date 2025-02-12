@@ -1,13 +1,14 @@
 import * as Ariakit from "@ariakit/react"
 import { useAuthActions } from "@convex-dev/auth/react"
+import { Authenticated, useConvex, useConvexAuth, useQuery } from "convex/react"
 import {
-	Authenticated,
-	Unauthenticated,
-	useConvexAuth,
-	useMutation,
-	useQuery,
-} from "convex/react"
-import { useEffect, useState, useTransition, type ReactNode } from "react"
+	useEffect,
+	useRef,
+	useState,
+	useTransition,
+	type ReactNode,
+} from "react"
+import { useSearchParams } from "react-router"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
@@ -39,9 +40,9 @@ import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { pipe, timeoutPromise } from "~/lib/utils.ts"
 import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
 import { api } from "../../../convex/_generated/api"
+import type { Doc } from "../../../convex/_generated/dataModel"
 import { getPageMeta } from "../../meta.ts"
 import { UploadButton, useUploadThing } from "../api.images/components.ts"
-import type { Route } from "./+types/_index.ts"
 import { AspectArts } from "./AspectArts.tsx"
 import { AspectInput } from "./AspectInput.tsx"
 import { AttributeInput } from "./AttributeInput.tsx"
@@ -52,106 +53,192 @@ export function meta() {
 	return getPageMeta("Character Builder")
 }
 
-const characterStorageKey = "character"
-
-export async function clientLoader({ request }: Route.ClientLoaderArgs) {
-	const url = new URL(request.url)
-	try {
-		return {
-			character: loadCharacterFromUrl(url) ?? loadCharacterFromStorage(),
-		}
-	} catch (error) {
-		alert("Failed to load character data: " + error)
-	}
-	return { character: createEmptyCharacter() }
-}
-
-function loadCharacterFromStorage() {
-	const serialized = localStorage.getItem(characterStorageKey)
-	if (!serialized) return
-	return Character.assert(JSON.parse(serialized))
-}
-
-function loadCharacterFromUrl(url: URL) {
-	const dataParam = url.searchParams.get("data")
-	if (!dataParam) return
-
-	const serialized = atob(dataParam)
-	return Character.assert(JSON.parse(serialized))
-}
-
-export default function CharacterBuilderRoute({
-	loaderData,
-}: Route.ComponentProps) {
+export default function CharacterBuilderRoute() {
 	const auth = useConvexAuth()
-
-	const remoteCharacters = useQuery(api.public.characters.listOwned)
-	const upsertRemoteCharacter = useMutation(api.public.characters.upsert)
-	const deleteRemoteCharacter = useMutation(api.public.characters.delete)
-
-	const [characterState, setCharacter] = useState<Character>()
-
-	const character = (() => {
-		if (characterState) return characterState
-
-		// if there's no local character, we should use the first remote character,
-		// or fall back to a new empty character
-		if (!loaderData.character) {
-			return remoteCharacters?.[0]
-				? Character.assert(remoteCharacters[0])
-				: createEmptyCharacter()
-		}
-
-		// attempt to find a remote character matching our stored key
-		// so that we don't overwrite the remote character with local changes
-		const fromRemote = remoteCharacters?.find(
-			(character) => character.key === loaderData.character?.key,
-		)
-		if (fromRemote) {
-			// remove non-mutable fields so they don't get sent to the server or saved,
-			// otherwise we'll get a validation error
-			return Character.assert(fromRemote)
-		}
-
-		// if there's no remote character matching our local key,
-		// use the local character
-		return loaderData.character
-	})()
-
-	// undefined when editing a character that doesn't yet exist on the server
-	const remoteCharacter = remoteCharacters?.find(
-		(it) => it.key === character.key,
+	const characters = useQuery(api.public.characters.listOwned) ?? []
+	return auth.isLoading ? (
+		<p>Loading...</p>
+	) : !auth.isAuthenticated ? (
+		<LocalCharacterEditor />
+	) : characters == null ? (
+		<p>Loading...</p>
+	) : (
+		<RemoteCharacterEditor characters={characters} />
 	)
+}
 
-	function updateCharacter(next: React.SetStateAction<Character>) {
-		setCharacter((prev = character) => {
-			return next instanceof Function ? next(prev) : { ...prev, ...next }
+function RemoteCharacterEditor({
+	characters,
+}: {
+	characters: Doc<"characters">[]
+}) {
+	const convex = useConvex()
+
+	const [selectedCharacterKey, setSelectedCharacterKey] = useState<string>()
+	const selectedCharacter = selectedCharacterKey
+		? characters.find((c) => c.key === selectedCharacterKey)
+		: characters[0]
+
+	const [updatedCharacters, setUpdatedCharacters] = useState<
+		Map<string, Character>
+	>(new Map())
+
+	const updatedCharacter = selectedCharacterKey
+		? updatedCharacters.get(selectedCharacterKey)
+		: null
+
+	useCharacterFromDataParam((character) => {
+		setUpdatedCharacters(
+			(prev) => new Map([...prev, [character.key, character]]),
+		)
+		setSelectedCharacterKey(character.key)
+	})
+
+	useEffect(() => {
+		if (updatedCharacter) {
+			convex.mutation(
+				api.public.characters.upsert,
+				Character.assert(updatedCharacter),
+			)
+		}
+	}, [updatedCharacter])
+
+	function deleteSelectedCharacter() {
+		if (!selectedCharacter) return
+
+		const yes = confirm(
+			"Are you sure you want to delete this character? This action cannot be undone.",
+		)
+		if (!yes) return
+
+		setUpdatedCharacters((prev) => {
+			const next = new Map(prev)
+			next.delete(selectedCharacter.key)
+			return next
+		})
+		setSelectedCharacterKey(undefined)
+
+		convex.mutation(api.public.characters.delete, {
+			id: selectedCharacter._id,
 		})
 	}
 
-	// to avoid re-syncing a remote character,
-	// we keep local changes separate from the remote data --
-	// when there are no local changes, state is undefined,
-	// so we skip the sync
+	return (
+		<CharacterEditor
+			character={
+				updatedCharacter ?? selectedCharacter ?? createEmptyCharacter()
+			}
+			onChange={(character) => {
+				setUpdatedCharacters(
+					(prev) => new Map([...prev, [character.key, character]]),
+				)
+			}}
+			onNew={() => {
+				const character = createEmptyCharacter()
+				setSelectedCharacterKey(character.key)
+				setUpdatedCharacters(
+					(prev) => new Map([...prev, [character.key, character]]),
+				)
+			}}
+			onImport={(character) => {
+				setUpdatedCharacters(
+					(prev) => new Map([...prev, [character.key, character]]),
+				)
+				setSelectedCharacterKey(character.key)
+			}}
+			actions={
+				<Authenticated>
+					<div className="flex flex-wrap gap-2">
+						<SignOutButton />
+
+						<Button
+							icon={<Icon icon="mingcute:delete-3-fill" />}
+							onClick={deleteSelectedCharacter}
+							appearance="ghost"
+						>
+							Delete
+						</Button>
+
+						<CharacterSelect
+							characters={[
+								...new Map([
+									...characters.map(
+										(character) => [character.key, character] as const,
+									),
+									// includes local characters in the list so that they're selectable before being synced
+									...updatedCharacters,
+								]).values(),
+							]}
+							selectedCharacterKey={
+								(updatedCharacter ?? selectedCharacter)?.key
+							}
+							onChange={(character) => setSelectedCharacterKey(character.key)}
+						/>
+					</div>
+				</Authenticated>
+			}
+		/>
+	)
+}
+
+function LocalCharacterEditor() {
+	const [character, setCharacter] = useLocalStorage(
+		"character",
+		createEmptyCharacter(),
+		Character.assert,
+	)
+
+	useCharacterFromDataParam(setCharacter)
+
+	return (
+		<CharacterEditor
+			character={character}
+			onChange={setCharacter}
+			onImport={setCharacter}
+			onNew={() => setCharacter(createEmptyCharacter())}
+			actions={<CloudSaveCta />}
+		/>
+	)
+}
+
+function useCharacterFromDataParam(onParsed: (character: Character) => void) {
+	const [searchParams, setSearchParams] = useSearchParams()
+	const dataParam = searchParams.get("data")
+
+	const onParsedRef = useRef(onParsed)
 	useEffect(() => {
-		if (characterState) {
-			localStorage.setItem(characterStorageKey, JSON.stringify(characterState))
-			upsertRemoteCharacter(characterState).catch(console.error)
+		onParsedRef.current = onParsed
+	})
+
+	useEffect(() => {
+		if (dataParam) {
+			const decoded = atob(dataParam)
+			const parsed = JSON.parse(decoded)
+			const character = Character.assert(parsed)
+
+			onParsedRef.current(character)
+
+			setSearchParams((params) => {
+				params.delete("data")
+				return params
+			})
 		}
-	}, [characterState])
+	}, [dataParam])
+}
 
-	async function createNew() {
-		const yes =
-			auth.isAuthenticated ||
-			confirm(
-				`Are you sure you want to create a new character? Make sure to export or share your current character before continuing.`,
-			)
-
-		if (!yes) return
-
-		updateCharacter(createEmptyCharacter())
-	}
-
+function CharacterEditor({
+	character,
+	onChange,
+	onNew,
+	onImport,
+	actions,
+}: {
+	character: Character
+	onChange: (character: Character) => void
+	onNew: () => void
+	onImport: (character: Character) => void
+	actions: ReactNode
+}) {
 	function downloadCharacter() {
 		const serialized = JSON.stringify(character, null, 2)
 		const url = URL.createObjectURL(
@@ -169,34 +256,21 @@ export default function CharacterBuilderRoute({
 		URL.revokeObjectURL(url)
 	}
 
-	function importCharacterFromFile() {
-		let yes
-
-		if (auth.isAuthenticated) {
-			// always creates a new character, no need to confirm
-			yes = true
-		} else {
-			yes = confirm(
-				"Importing a character will overwrite your current character. Are you sure you want to continue?",
-			)
-		}
-
-		if (!yes) return
-
+	function importCharacter() {
 		const input = document.createElement("input")
 		input.type = "file"
 		input.accept = ".json,application/json"
 		input.addEventListener("change", async () => {
 			const file = input.files?.[0]
 			if (!file) return
-
 			try {
 				const data = await file.text()
 				const parsed = JSON.parse(data)
-				updateCharacter({
+				const character = {
 					...Character.assert(parsed),
 					key: crypto.randomUUID(),
-				})
+				}
+				onImport(character)
 			} catch (error) {
 				alert(`Import failed: ${error}`)
 			}
@@ -205,32 +279,32 @@ export default function CharacterBuilderRoute({
 	}
 
 	function updateAttribute(attr: AttributeName & string, value: string) {
-		updateCharacter((prev) => ({
-			...prev,
+		onChange({
+			...character,
 			attributes: {
-				...prev.attributes,
+				...character.attributes,
 				[attr]: value,
 			},
-		}))
+		})
 	}
 
 	function updateAspect(aspect: string, value: string) {
-		updateCharacter((prev) => ({
-			...prev,
+		onChange({
+			...character,
 			aspects: {
-				...prev.aspects,
+				...character.aspects,
 				[aspect]: value,
 			},
-		}))
+		})
 	}
 
 	function toggleTrait(traitName: string) {
-		updateCharacter((prev) => ({
-			...prev,
-			traits: prev.traits.includes(traitName)
-				? prev.traits.filter((t) => t !== traitName)
-				: [...prev.traits, traitName],
-		}))
+		onChange({
+			...character,
+			traits: character.traits.includes(traitName)
+				? character.traits.filter((t) => t !== traitName)
+				: [...character.traits, traitName],
+		})
 	}
 
 	const selectedTraits = traits
@@ -248,10 +322,7 @@ export default function CharacterBuilderRoute({
 		<div className="py-6 @container flex flex-col gap-2">
 			<div className="flex flex-wrap justify-between gap-2">
 				<div className="flex gap-2 flex-wrap-reverse">
-					<Button
-						onClick={createNew}
-						icon={<Icon icon="mingcute:file-new-fill" />}
-					>
+					<Button onClick={onNew} icon={<Icon icon="mingcute:file-new-fill" />}>
 						New
 					</Button>
 					<Button
@@ -261,60 +332,20 @@ export default function CharacterBuilderRoute({
 						Export...
 					</Button>
 					<Button
-						onClick={importCharacterFromFile}
+						onClick={importCharacter}
 						icon={<Icon icon="mingcute:file-import-fill" />}
 					>
 						Import...
 					</Button>
 					<ShareButton character={character} />
 				</div>
-				<Unauthenticated>
-					<CloudSaveCta />
-				</Unauthenticated>
-				<Authenticated>
-					<div className="flex flex-wrap gap-2">
-						<SignOutButton />
-
-						<Button
-							icon={<Icon icon="mingcute:delete-3-fill" />}
-							onClick={() => {
-								if (!remoteCharacter) return
-
-								const yes = confirm(
-									"Are you sure you want to delete this character? This action cannot be undone.",
-								)
-								if (!yes) return
-
-								const nextSelection = remoteCharacters?.find(
-									(it) => it.key !== character.key,
-								)
-
-								updateCharacter(
-									nextSelection
-										? Character.assert(nextSelection)
-										: createEmptyCharacter(),
-								)
-
-								deleteRemoteCharacter({ id: remoteCharacter._id })
-							}}
-							appearance="ghost"
-						>
-							Delete
-						</Button>
-
-						<CharacterSelect
-							characters={remoteCharacters ?? []}
-							selectedCharacterKey={character.key}
-							onChange={updateCharacter}
-						/>
-					</div>
-				</Authenticated>
+				{actions}
 			</div>
 
 			<div className="grid gap-2">
 				<NameInput
 					name={character.name}
-					onChange={(name) => updateCharacter((prev) => ({ ...prev, name }))}
+					onChange={(name) => onChange({ ...character, name })}
 				/>
 				<TraitList traits={selectedTraits} />
 			</div>
@@ -322,9 +353,7 @@ export default function CharacterBuilderRoute({
 			<div className="@xl:hidden">
 				<CharacterImage
 					imageUrl={character.imageUrl}
-					onChangeUrl={(imageUrl) =>
-						updateCharacter((prev) => ({ ...prev, imageUrl }))
-					}
+					onChangeUrl={(imageUrl) => onChange({ ...character, imageUrl })}
 				/>
 			</div>
 
@@ -340,21 +369,15 @@ export default function CharacterBuilderRoute({
 					<div className="grid grid-cols-2 @md:grid-cols-3 gap-4">
 						<HitsBar
 							character={character}
-							onChange={(hits) =>
-								updateCharacter((prev) => ({ ...prev, hits }))
-							}
+							onChange={(hits) => onChange({ ...character, hits })}
 						/>
 						<FatigueBar
 							character={character}
-							onChange={(fatigue) =>
-								updateCharacter((prev) => ({ ...prev, fatigue }))
-							}
+							onChange={(fatigue) => onChange({ ...character, fatigue })}
 						/>
 						<ComebackCounter
 							value={character.comeback ?? "0"}
-							onChange={(comeback) =>
-								updateCharacter((prev) => ({ ...prev, comeback }))
-							}
+							onChange={(comeback) => onChange({ ...character, comeback })}
 						/>
 					</div>
 
@@ -363,10 +386,10 @@ export default function CharacterBuilderRoute({
 						placeholder="Character backstory, personality, or other notes."
 						value={character.details}
 						onChange={(event) =>
-							updateCharacter((prev) => ({
-								...prev,
+							onChange({
+								...character,
 								details: event.target.value,
-							}))
+							})
 						}
 					/>
 				</div>
@@ -374,9 +397,7 @@ export default function CharacterBuilderRoute({
 				<div className="hidden @xl:block w-80">
 					<CharacterImage
 						imageUrl={character.imageUrl}
-						onChangeUrl={(imageUrl) =>
-							updateCharacter((prev) => ({ ...prev, imageUrl }))
-						}
+						onChangeUrl={(imageUrl) => onChange({ ...character, imageUrl })}
 					/>
 				</div>
 			</div>
@@ -406,12 +427,12 @@ export default function CharacterBuilderRoute({
 								attribute={attribute}
 								character={character}
 								onToggleSkill={(skill) => {
-									updateCharacter((prev) => ({
-										...prev,
-										proficientSkills: prev.proficientSkills.includes(skill)
-											? prev.proficientSkills.filter((s) => s !== skill)
-											: [...prev.proficientSkills, skill],
-									}))
+									onChange({
+										...character,
+										proficientSkills: character.proficientSkills.includes(skill)
+											? character.proficientSkills.filter((s) => s !== skill)
+											: [...character.proficientSkills, skill],
+									})
 								}}
 							/>
 						))}
@@ -435,7 +456,7 @@ function CharacterSelect({
 	onChange,
 }: {
 	characters: Character[]
-	selectedCharacterKey: string
+	selectedCharacterKey: string | undefined
 	onChange: (character: Character) => void
 }) {
 	const selectedCharacter = characters?.find(
@@ -455,8 +476,12 @@ function CharacterSelect({
 				}
 			}}
 		>
-			<Ariakit.Select render={<Button />} className="w-48">
-				{selectedCharacter?.name || "Unnamed Character"}
+			<Ariakit.Select render={<Button />} className="w-48 truncate">
+				<span className="flex-1 text-start min-w-0">
+					{selectedCharacter == null
+						? "No character selected"
+						: selectedCharacter.name || "Unnamed Character"}
+				</span>
 				<Icon icon="mingcute:down-fill" className="ml-auto" />
 			</Ariakit.Select>
 			<Ariakit.SelectPopover
