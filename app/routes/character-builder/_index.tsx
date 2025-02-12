@@ -56,7 +56,7 @@ export function meta() {
 
 export default function CharacterBuilderRoute() {
 	const auth = useConvexAuth()
-	const characters = useQuery(api.public.characters.listOwned) ?? []
+	const characters = useQuery(api.public.characters.listOwned)
 	return auth.isLoading ? (
 		<p>Loading...</p>
 	) : !auth.isAuthenticated ? (
