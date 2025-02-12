@@ -63,7 +63,7 @@ export function AspectList() {
 					</p>
 					<ul className="list-disc list-inside">
 						{aspect.actions.map((action) => (
-							<li>
+							<li key={action.name}>
 								<strong>{action.name}</strong> - {action.description}
 								{action.failure && <span>; on failure, {action.failure}</span>}
 							</li>
