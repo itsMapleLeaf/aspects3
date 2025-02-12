@@ -1,0 +1,9 @@
+[dev]
+command = "bun run dev"
+publish = "public"
+
+[[redirects]]
+from = "/data.js"
+to = "https://cloud.umami.is/script.js"
+status = 200
+force = true

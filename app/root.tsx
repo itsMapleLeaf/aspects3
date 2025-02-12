@@ -38,7 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				{import.meta.env.PROD && (
 					<script
 						defer
-						src="https://cloud.umami.is/script.js"
+						src="/data.js"
 						data-website-id="9df97a88-b10c-4b2a-9c6f-19016b520a0a"
 					/>
 				)}
