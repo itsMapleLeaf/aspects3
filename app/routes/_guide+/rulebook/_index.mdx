@@ -1,4 +1,5 @@
-import { AttributeList, AspectList, TraitList } from "./data.tsx"
+import { Link } from "react-router"
+import { AspectList, AttributeList, TraitList } from "./data.tsx"
 
 export const handle = {
 	title: "Rulebook",
@@ -6,7 +7,7 @@ export const handle = {
 
 Aspects of Nature is a story-focused, rules-lite tabletop roleplaying game. Set in a world populated by several varieties of humanoid races, all are born with the ability to manipulate one or more elements of nature, or **Aspects**, to their will.
 
-## Game Flow
+## Gameplay Overview
 
 Players should first create their characters, assigning attributes, aspects, and traits that suit them.
 
@@ -46,143 +47,163 @@ It can also help to inject minor bits of trivia to diagetically add flavor to th
 >
 > She notices a pot that's nearly empty. After discarding the old coffee, she fetches a bag of beans and pours them in a grinder. You watch her blow softly into a compartment of the grinder, a small bit of wind art which prompts it to spin rapidly, chopping up the beans into coarse bits ready for a fresh pot.
 
-## Characters
+## Character Creation
 
-Define the following for your character:
+Characters in Aspects of Nature are often humans with traits that follow some sort of creature or fantasy lineage. Think cat-like humans with cat ears and long thin tails; part-dragons with horns, glowing eyes, and patches of scales on their bodies; part-lizards with scales and skin fading to green; or anything else you can think of.
 
-- Name
-- Attribute values: give each one a score from 1 to 6, and they should add to 18
-- Traits: choose three
-- Aspects: choose one or more and assign 6 points among them. to each aspect, add your character’s value for that aspect’s related attribute
+As mentioned in the [player guide](#players), you'll also want to think of your character's theme, goal, and/or background. You don't have to go into too much detail; that can be fleshed out as the game unfolds.
 
-Other values:
+Once you know what you want to go for, it's time to make your character sheet. <Link to="/character-builder">I recommend using the character builder here.</Link>
 
-- Hits: starts at 0
-- Toughness: equals strength + agility
-- Fatigue: starts at 0
-- Resolve: equals sense + intellect + wit
-- Comeback: starts at 0
+Alternatively, you can get out some paper, or open your favorite text editor. Then note down the following:
+
+1. Your character's name, background, and any other important details
+1. For each [attribute](#attributes) choose a value from 1 to 6. They should add up to 18.
+1. For each [aspect](#aspects), choose a value from 0 to 6. They should add up to 6.
+1. Pick three [traits](#traits). While picking traits, keep a tally of power dice added to your attributes and aspects.
+
+And you're done!
 
 ## Attributes
 
-Characters have a number in each attribute from 1 to 6, all adding to 18
+Attributes represent your character's core strengths of various capabilities or domains. Each player character should have a score for each attribute from 1 to 6. They should all add to 18.
 
 <AttributeList />
 
-## Traits
+### Hits & Toughness
 
-Each player character picks three traits for their character to have, and each trait specifies two related attributes which:
+Hits represent the damage you've taken, and your toughness is the number of hits you can take before you go down. Hits start at 0, and your toughness equals your Strength score plus your Agility score.
 
-- Adds a power die to rolls made with that attribute
-- Lets you pick a proficient skill for that attribute
+While down, you're unable to make action rolls. Narratively, this can be flavored depending on the scenario, like being knocked unconscious, or being physically paralyzed.
 
-Some aspects also favor certain traits, where said traits will give +1 power die to checks made with that aspect.
+### Fatigue & Resolve
 
-For example, let's say you give your character a long tail. This means that all Sense skills and all Agility skill checks will receive +1 power die. Wind aspect checks also receive +1 power die. Then you can pick a proficient skill from each of those categories, let's say Listen from Sense, and Dash from Agility. Your Listen and Dash checks both now have +2 power dice.
+Fatigue represents your mental stress, accumulated by performing particularly taxing actions, such as aspect art.
 
-The traits can come in whatever form you choose. For example, a tail could be long and thick like a lizard’s, or thin with a spaded tip like a devil's. You can add any number of additional traits beyond the first three for narrative flavor, even ones from this list, while specifying the ones that apply their attribute buffs.
+Resolve is the maximum amount of fatigue you can take. **Each point of fatigue you take beyond your resolve becomes a hit.**
 
-<TraitList />
+Fatigue starts at 0, and your resolve equals the sum of your Intellect, Sense, and Wit scores.
 
-## Hits & Toughness
+### Resting
 
-- Hits represent how many blows you’ve taken.
-- Toughness is the number of hits you can take.
-- Once your hits reach your toughness, you go down.
-- While down, you can’t make any actions.
-- Your hits cannot exceed your toughness.
-- Once your hits are healed, you are no longer down.
-- After combat, if you are down, you may attempt to succeed a Focus or Endurance skill check to heal 1 hit.
-
-## Fatigue & Resolve
-
-- Aspect art and other special actions require taking fatigue
-- You can only take up to your resolve, then you can no longer use abilities that require taking fatigue
-- 1 fatigue: for aspect art
-- 2 fatigue: to reroll a die (only once)
-- 2 fatigue: for an additional combat action (once per round)
-
-## Resting
-
-- Resting allows you to heal hits and fatigue, one each per in-game hour.
-
-## Actions
-
-Actions are the player's primary medium of interaction
-
-Some actions may require a dice roll, such as a skill check or an aspect check, which determines how well you do.
-
-### Attacks
-
-Attacks are a specific kind of action with the intent to damage another character. With the appropriate justification, they can be made with any skill. Successful attack checks will deal either 1 hit or 1 fatigue, depending on the manner of attack. For example, physical attacks like Strike or Shoot would deal 1 hit. Scaring someone into a corner or weakening their morale would deal 1 fatigue.
-
-## Comeback
-
-Players earn 1 comeback point when failing a roll. They can spend any number of them to reduce a roll’s result. They cannot use a comeback point on the same roll that gave it to them. Comeback points return to 0 at the end of a session.
-
-## Skills
-
-Skill checks:
-
-- Roll a d6, represents the difficult of the task
-- Success = equal or less than the character’s value in that skill
-- On a failure, you earn one comeback point
-
-Power & risk dice:
-
-- Added to skill checks via effects or situationally by the narrator
-- Power die: subtracts from the roll
-- Risk die: adds to the roll
-- d6, where:
-  - 1-3 = nothing
-  - 4-5 = adds or subtracts 1
-  - 6 = adds or subtracts 2
-- Can add any number of them to a roll
-
-Proficient skills:
-
-- Determined by your trait attributes
-- Gives +1 power die for skill checks made with that skill (_on top of_ trait bonuses)
-- Proficient skills must be unique; cannot make a skill proficient twice
-
-> **Tip:** Narrators should aim to make failures interesting. For example, consider a character tries to **Spy** for something they lost. On failure, instead of having nothing happen, maybe they find something that a friend lost instead!
+You may choose to rest for a number of in-game hours, recovering one hit and fatigue per hour.
 
 ## Aspects
 
-- Aspect art checks: same as skill checks, but with a d12 (power/risk dice are still d6)
+Aspects are the five elements of nature which characters may manipulate to their will.
 
-- Players can use any aspect art, but the cost depends on whether their character is _attuned_ with (has points in) the aspect.
+Every aspect is linked to a unique attribute. Characters with a high score in that attribute will have more success with the aspect. For example: high Strength characters would be naturally more proficient with Fire than those with low Strength.
 
-- If they are attuned:
+Every character has a base score for each Aspect from 0 to 6. They should add to 6. The total aspect score is the sum of the character's attribute score and their aspect score.
+For example: you give Wind a score of 3. Wind is linked to Agility. If your Agility has a score of 5, your total Wind score would be 8.
 
-  - small aspect arts are free
-  - aspect checks cost 1 fatigue
-
-- If they are _not_ attuned:
-
-  - small aspect arts cost 1 fatigue
-  - aspect checks cost 2 fatigue, and receive a risk die
-
-- Examples of small aspect arts:
-  - Light: making an orb of light
-  - Water: drying someone’s clothes
-  - Fire: heating a cup of tea
-  - Wind: making a gentle breeze
-  - Darkness: send a shiver down someone’s spine
-- For each action below, must succeed an aspect check for the primary effect to apply, otherwise the failure case applies
+Your character's **attuned** aspects are those with a base score of one or more. For example: if you assign 4 points to darkness and 2 points to water, you have two attuned aspects: darkness and water. Fire, light, and wind are unattuned.
 
 <AspectList />
 
-## Combat
+### Aspect Art
 
-- combat starts when a character acts adversarially against another (such as, but not limited to, making an attack)
-- to determine action order, everyone rolls a d6 and adds their choice of Agility (moving quick) or Wit (thinking quick), then every round resolves effects from highest to lowest
-- one action per round
-- every round, every participant chooses their action and their targets (if any) in secret
-- once everyone has written down their action, reveal actions once by one in initiative order, making any necessary rolls at the time of revealing them
-- a combat round lasts 5 seconds - for actions that specify "this round", they will last for 5 seconds out of combat
+The manipulation of aspects is called **aspect art**, of which there are two categories: **minor**, and **major**.
 
-## Luck
+Minor arts are more subtle, low-risk, and low-impact. Minor arts are the sorts of arts used in normal day-to-day life. Examples include:
+
+- Light: making an orb of light
+- Water: drying a set of clothes
+- Fire: heating a cup of tea
+- Wind: making a gentle breeze
+- Darkness: conjure an amusing illusion for fun
+
+Major aspect arts are more powerful and cost more to perform. They can be used to great effect, whether to help a friend or to cause a great deal of damage. Major aspect arts require an [aspect check](#aspect-checks). Examples include:
+
+- Light: healing the wounds of several injured friends
+- Water: parting a path through a lake
+- Wind: creating a deafening thunderclap
+- Fire: throwing a massive fireball at an enemy or obstacle
+- Darkness: turning silent and invisible to escape capture
+
+For attuned aspects, minor arts are free, while major arts cost **1 fatigue**.
+
+For unattuned aspects, minor arts cost **1 fatigue**, while major arts cost **2 fatigue**, while adding a risk die to the roll.
+
+## Action Rolls
+
+Action rolls are the core determinant of success or failure. The result of the die represents the difficulty of the task.
+
+Action rolls use a roll-under system. For a roll to succeed, it must be **equal or lower than the target value**, depending on the type of roll being made.
+
+**Only use action rolls when the action has some chance of failure.** Otherwise, the narrator should allow the action without a roll.
+
+### Skill Checks
+
+Skill checks are the most common type of action roll. Each attribute has a set of skills that map to various tasks. For example:
+
+- To spot something hidden, you would use Spy.
+- To try to sway a shopkeep for a discount, you would use Charm.
+- To try to weather a snowstorm, you would use Endure.
+
+Skill checks are made with a d6. The target is the character's value in the skill's attribute. For example: you want to make a Spy check, and your Sense score is 5. This means you must roll 5 or lower to succeed.
+
+> **Tip:** Narrators should aim to make failures interesting. For example, consider a character tries to **Spy** for something they lost. On failure, instead of having nothing happen, maybe they find something that a friend lost instead!
+
+import { SkillList } from "./data.tsx"
+
+<SkillList />
+
+### Aspect Checks
+
+An aspect check is a special kind of skill check to perform a major aspect art. The roll is made with **a d12 die** instead of a d6, and the target is the character's score in the corresponding aspect.
+
+For example: you want to use _Shield_, which is a water aspect art. If your total water score is 7 (Base 3 + Sense 4), you would need to roll a 7 or lower to succeed.
+
+Each aspect action has a success case, the base effect. If you fail the roll, then you'll instead apply the failure case, which **modifies** the base effect.
+
+For example: a successful check for _Inspire_ will add 2 power dice to a target's next roll. On failure, it will give them 1 power die instead.
+
+Below is a list of built-in aspect arts. Think of them as presets; you can still perform other "freeform" aspect arts not listed here.
+
+import { AspectSkillList } from "./data.tsx"
+
+<AspectSkillList />
+
+### Modifier dice
+
+Modifier dice are added to action rolls and can alter a roll's chance of success.
+
+- Power dice **subtract** from the roll, narratively making the roll easier.
+- Risk dice **add** to the roll, narratively making it harder.
+
+Modifier dice alter the roll's result depending on how they land:
+
+- 1-2, the modifier die does nothing
+- 3-5, adds or subtracts 1
+- 6, adds or subtracts 2
+
+An action roll can have any number of modifier dice.
+
+Modifier dice may be added by certain actions or effects, such as the _Inspire_ aspect art. They should also be added situationally by the narrator.
+
+Example: let's say you're attempting to ask someone for a favor. If they're a close friend, their predisposition may give you a power die. If they're a coworker with a negative opinion of you, that may give you a risk die.
+
+### Push Yourself
+
+For any action roll, you may **push yourself**, which allows you to spend 2 fatigue to reroll it.
+
+### Comeback
+
+You earn 1 comeback point when failing a roll. You can spend any number of points on **any** roll (including that of your teammates) to reduce its result by 1 per point and make it a success. Spending 3 comeback points would reduce the roll by 3.
+
+Example: let's say you have an Intellect score of 5. You make an Intuit check, and with a roll of 6, you fail and gain 1 comeback point. Later, you make an Operate check, and you roll 6, failing that roll again. You can use 1 comeback point earned earlier to lower the Operate roll by 1, making it a success.
+
+Additionally:
+
+- You cannot use a comeback point on the same roll that gave it to you.
+- All comeback points reset to 0 at the end of a session.
+
+### Attacks
+
+Attacks are a specific kind of action with the intent to damage another character. They can be made with any skill, but only with the appropriate justification. Successful attack checks will deal either 1 hit or 1 fatigue, depending on the manner of attack. For example, physical attacks like Strike or Shoot would deal 1 hit. Scaring someone into a corner or weakening their morale would deal 1 fatigue.
+
+### Luck
 
 To determine the outcome of things outside of player's control, players or the narrator may make a luck roll. Luck rolls are made with a d12, treating the result as a gradient from one possibility to another.
 
@@ -193,3 +214,160 @@ Example: a character needs to catch a train to work.
 - 6: construction required them to take a different route, but they know the city well enough for that to not be a problem
 - 3: it seems like the whole world doesn't want you to get to that train! they'll need to pass several skill checks to make it on time
 - 1: the train itself got delayed; they'll be late no matter what
+
+## Zones & Ranges
+
+Characters in a scene are placed in a 2D space divided into **zones**. Zones represent general spaces where characters can interact with other characters. A zone would be about 5 to 10 square meters in size. They might be smaller in a tighter space like a small office room, or larger in something like an open field. All characters can hear other characters within their zone clearly, as well as physically interact with them.
+
+A character's **range** to another character is the number of zones from one to the other:
+
+- Immediate: distance 0 (same zone)
+- Short: distance 1 (adjacent zone)
+- Medium: distance 2 (one zone between)
+- Long: distance 3-5
+- Very long: distance > 5
+
+A character's range affects their action rolls in the following ways:
+
+- Characters may only attack other characters with Strike in immediate range
+- If attacking with Throw, the other character must be in immediate to short range
+- If attacking with Shoot, the other character cannot be in immediate range, and cannot be at a distance further than your Sense score (e.g. if your sense is 5, they must be 5 or fewer zones away)
+- When making an aspect check with targets at medium to long range, add a risk die
+- Aspect art targets cannot be further than long range
+
+Zones can be laid out in any way you prefer, including but not limited to:
+
+- with vague narrative positioning in theater-of-the-mind
+- as distinct areas on a map
+- as cells on a grid
+
+## Traits
+
+All characters come from lineages which express traits that make them unique.
+
+Pick three traits for your character. Narratively, your character may possess as few or as many traits as you want, and you can narratively flavor these traits however you like. For example, a tail could be long and thick like a lizard’s, or thin with a spaded tip like a devil's.
+
+Each trait grants the following bonuses:
+
+- +1 power die for skill checks in 2 specific attributes
+- +1 power die for aspect checks in 1 specific aspect
+- your choice of two proficient skills: one for each of the trait's attributes
+
+A proficient skill gives you _an additional_ power die.
+
+**Trait bonuses stack.** If you pick two traits which both give a power die to Sense, then your Sense rolls have 2 additional power dice, plus an extra if you're rolling a proficient skill.
+
+### Example
+
+You're making a bird-like character. You pick the following traits:
+
+- Wings - a set of feathered wings sprout from their back
+- Long tail - a feathered tail matching the wings
+- Claws - sharp nail-like claws for doing _definitely_ legal and moral things
+
+Looking at the attributes and aspect for each trait, you would gain the following bonuses:
+
+- Intellect: +1 power die (Wings)
+- Sense: +1 power die (Long tail)
+- Agility: +2 power dice (Wings, long tail)
+- Strength: +1 power die (Claws)
+- Wit: +1 power die (Claws)
+- Wind: +2 power dice (Wings, long tail)
+- Fire: +1 power die (Claws)
+
+Additionally, you can pick 6 proficient skills: one for each of your trait's attributes.
+
+In this case, your combination of tratits let you pick one proficiency in every attribute, except for Agility, which gives you _2 proficiencies_, due to the overlap from your wings and tail!
+
+In Intellect, you decide to pick Operate. This gives you an additional power die for that skill, _on top of_ the one from your wings. These are your final Intellect skill bonuses:
+
+- Intuit: +1 power die
+- Recall: +1 power die
+- Aid: +1 power die
+- Operate: +2 power dice
+- Tinker: +1 power die
+
+In Agility, you decide to pick Maneuver and Dodge, giving you an additional power die on top of those from your traits. These would be your total Agility skill bonuses:
+
+- Dash: +2 power dice
+- Jump: +2 power dice
+- Climb: +2 power dice
+- Dodge: +3 power dice
+- Maneuver: +3 power dice
+
+---
+
+You can find a list of available traits below.
+
+<TraitList />
+
+## Combat
+
+Combat starts after a character acts adversarially against another. This'll happen most often through an attack. Other ways include being spotted by enemies after a failed stealth attempt, and similar others.
+
+When combat starts, everyone should roll an initiative number to determine turn order. Every character should roll a D6, then add their choice of Agility (moving quick) or Wit (thinking quick) to the result. To break ties, the person with the higher chosen attribute goes first, or you can resolve via another flat dice roll.
+
+Example:
+
+- Allison rolls 4. They have an Agility of 3 and Wit of 5, so they'll choose Wit. Their initiative number is 9.
+- Winter rolls 6. They add their Agility of 1, making their number is 7.
+- Ivory rolls 3. They add their Wit of 4, making 7.
+- Since Winter and Ivory both got 7, they'll break the tie using their chosen initiative stat: Ivory's Wit 4 and Winter's Agility 1. Ivory goes before Winter.
+- The order is: Allison, Ivory, Winter.
+
+After that, combat runs round after round until all adversarial acts end. This usually means when every involved character does not make a harmful action against enemies, but combat can end in any narrative way that makes sense. Maybe the enemies fell off a bridge!
+
+After combat ends, if any present characters are down, you may attempt to succeed a Focus or Endurance skill check to heal 1 hit.
+
+### Combat Rounds
+
+Combat rounds simulate the simultaneous, fast-paced nature of real-time combat encounters. To do this, each round is divided into two phases: the **decision phase**, and the **action phase**, in that order.
+
+By default, **each character has one action per round**. Several other mechanics can change this, such as the _Surge_ wind art, [adrenaline](#adrenaline), or the _Cancel_ darkness art.
+
+### The Decision Phase
+
+During the decision phase, everyone decides the action they want their character(s) to make in secret. Use sticky notes, note cards, whiteboards, or similar. Write down your action, then put it face down to commit your action.
+
+**All necessary information to execute your action should be written down**, such as targets and whatever other choices your action allows. For example:
+
+- If you want to use the _Surge_ aspect art, decide which character you want to apply it to during this phase.
+- For _Adapt_, specify the attributes being swapped, and the other action you're taking[^surge-following-action].
+
+[^surge-following-action]: The failure case of surge disallows you to immediately take another action. In this case, you can change the action you take on the following turn, and that action will be made with the swapped attributes you chose.
+
+**Do not make dice rolls or random selections during this phase.** The decision phase should only include **deterministic intentions**: matters within your control. Since you can't control the outcome of dice rolls or random selections, those should not be made during this phase.
+
+**Adding hits or fatigue should also be avoided in this phase**. Some factors may prevent you from making your action at all, such as the _Cancel_ aspect art.
+
+Additionally:
+
+- **Players cannot communicate with each other _or_ the narrator during the decision phase.** In real-time scenarios, you don't get a minute to stop and make a game plan.
+
+- **Once the action is written down and committed, you cannot go back and change it[^changing-actions-exceptions].**
+
+  If you make a mistake, such as forgetting to specify a target, because actions earlier in the round may influence your choices, your action is invalid and cannot be made this round.
+
+  However your group might want more leniency here, especially if you're learning. For example, the narrator could allow you to correct your mistake for a fatigue point. It's up to you how strictly your group wants to follow this.
+
+[^changing-actions-exceptions]: An exception: some mechanics may explicitly allow a character to change their action. Notably, the _Foresight_ aspect art.
+
+### The Action Phase
+
+After all players have made their decision, resolve actions in initiative order, including dice rolls, random selections, fatigue, hits, and all other side effects.
+
+### Movement
+
+You may move one zone in a combat round. Movement does not use an action; you can move and use an aspect art in the same round, for example.
+
+Optionally, you can choose to make a Dash check as an action[^dash-with-surge]. On success, you can move one additional zone.
+
+[^dash-with-surge]: While regular movement is not an action and can't be used with the Surge wind art, a combat dash _is_ an action, and it works as you might expect; you'll get three additional zone movements with a successful aspect check.
+
+Movement should be written down during the decision phase.
+
+### Adrenaline
+
+Adrenaline allows you to take **2 fatigue** for **1 additional action** in combat. You may use adrenaline only once per round.
+
+When using adrenaline, write it down during the decision phase, along with the additional action you're making with it. Only deduct the fatigue during the action phase if you were able to carry out adrenaline action.

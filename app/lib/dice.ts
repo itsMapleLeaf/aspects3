@@ -27,7 +27,7 @@ export function numericDie(sides: number): Die {
 export function powerDie(): Die {
 	return {
 		faces: range(1, modifierSideCount + 1).map((value) => ({
-			value: value <= 3 ? 0 : value <= 5 ? -1 : -2,
+			value: value <= 2 ? 0 : value <= 5 ? -1 : -2,
 			symbol: "⚡",
 		})),
 	}
@@ -36,7 +36,7 @@ export function powerDie(): Die {
 export function riskDie(): Die {
 	return {
 		faces: range(1, modifierSideCount + 1).map((value) => ({
-			value: value <= 3 ? 0 : value <= 5 ? 1 : 2,
+			value: value <= 2 ? 0 : value <= 5 ? 1 : 2,
 			symbol: "⚠️",
 		})),
 	}

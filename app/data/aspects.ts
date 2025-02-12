@@ -174,3 +174,7 @@ export const aspects: Record<AspectName, AspectInfo> = {
 		],
 	},
 }
+
+export function listAspects() {
+	return aspectNames.map((aspect) => ({ ...aspects[aspect], id: aspect }))
+}

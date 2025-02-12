@@ -66,7 +66,7 @@ const dice: Die[] = [
 			let value
 			if (sideNumber === 6) {
 				value = 2
-			} else if (sideNumber >= 4) {
+			} else if (sideNumber >= 3) {
 				value = 1
 			} else {
 				value = 0
@@ -105,7 +105,7 @@ const dice: Die[] = [
 			let value
 			if (sideNumber === 6) {
 				value = 2
-			} else if (sideNumber >= 4) {
+			} else if (sideNumber >= 3) {
 				value = 1
 			} else {
 				value = 0

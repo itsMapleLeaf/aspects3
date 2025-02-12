@@ -107,6 +107,10 @@ export const attributes: Record<AttributeName, AttributeInfo> = {
 	},
 }
 
+export function listAttributes() {
+	return attributeNames.map((id) => ({ ...attributes[id], id }))
+}
+
 export function getSkill(name: string) {
 	for (const attribute of Object.values(attributes)) {
 		const skill = attribute.skills.find(

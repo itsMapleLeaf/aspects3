@@ -1,6 +1,35 @@
-import { aspects, type AspectName } from "~/data/aspects.ts"
-import { attributes, type AttributeName } from "~/data/attributes.ts"
+import { aspects, listAspects, type AspectName } from "~/data/aspects.ts"
+import {
+	attributes,
+	listAttributes,
+	type AttributeName,
+} from "~/data/attributes.ts"
 import { traits } from "~/data/traits.ts"
+
+export function AttributeList() {
+	return (
+		<ul>
+			{listAttributes().map((attribute) => (
+				<li key={attribute.id}>
+					<strong>{attribute.name}</strong> - <em>{attribute.description}</em>
+				</li>
+			))}
+		</ul>
+	)
+}
+
+export function AspectList() {
+	return (
+		<ul>
+			{listAspects().map((aspect) => (
+				<li key={aspect.id}>
+					<strong>{aspect.name}</strong> ({attributes[aspect.attribute].name}) -{" "}
+					<em>{aspect.description}</em>
+				</li>
+			))}
+		</ul>
+	)
+}
 
 export function TraitList() {
 	return (
@@ -23,7 +52,7 @@ export function TraitList() {
 	)
 }
 
-export function AttributeList() {
+export function SkillList() {
 	return (
 		<>
 			{(
@@ -32,10 +61,9 @@ export function AttributeList() {
 					(typeof attributes)[AttributeName],
 				][]
 			).map(([id, attribute]) => (
-				<section key={id} className="mb-4">
-					<h3 className="font-medium mb-1">{attribute.name}</h3>
-					<p className="mb-2">{attribute.description}</p>
-					<ul className="list-disc list-inside">
+				<section key={id}>
+					<h4>{attribute.name}</h4>
+					<ul>
 						{attribute.skills.map((skill) => (
 							<li key={skill.name}>
 								<strong>{skill.name}</strong> - {skill.description}
@@ -48,29 +76,20 @@ export function AttributeList() {
 	)
 }
 
-export function AspectList() {
+export function AspectSkillList() {
 	return (
-		<>
-			{(
-				Object.entries(aspects) as [AspectName, (typeof aspects)[AspectName]][]
-			).map(([id, aspect]) => (
-				<section key={id} className="mb-4">
-					<h3 className="font-medium mb-1">{aspect.name}</h3>
-					<p className="mb-2">
-						vibe: {aspect.description}
-						<br />
-						attribute: {aspect.attribute}
-					</p>
-					<ul className="list-disc list-inside">
-						{aspect.actions.map((action) => (
-							<li key={action.name}>
-								<strong>{action.name}</strong> - {action.description}
-								{action.failure && <span>; on failure, {action.failure}</span>}
-							</li>
-						))}
-					</ul>
-				</section>
-			))}
-		</>
-	)
+		Object.entries(aspects) as [AspectName, (typeof aspects)[AspectName]][]
+	).map(([id, aspect]) => (
+		<section key={id}>
+			<h4>{aspect.name}</h4>
+			<ul>
+				{aspect.actions.map((action) => (
+					<li key={action.name}>
+						<strong>{action.name}</strong> - {action.description}
+						{action.failure && <span>; on failure, {action.failure}</span>}
+					</li>
+				))}
+			</ul>
+		</section>
+	))
 }
