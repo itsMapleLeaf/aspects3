@@ -35,4 +35,12 @@ export default defineSchema({
 		.index("ownerId", ["ownerId"])
 		.index("ownerId_name", ["ownerId", "name"])
 		.index("ownerId_key", ["ownerId", "key"]),
+
+	rooms: defineTable({
+		name: v.string(),
+		slug: v.string(),
+		ownerId: v.id("users"),
+	})
+		.index("ownerId", ["ownerId"])
+		.index("slug", ["slug"]),
 })

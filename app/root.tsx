@@ -30,6 +30,10 @@ export const links: Route.LinksFunction = () => [
 	},
 	{ rel: "stylesheet", href: font },
 	{ rel: "stylesheet", href: stylesheet },
+	{
+		rel: "icon",
+		href: "/favicon.svg",
+	},
 ]
 
 export function Layout({ children }: { children: React.ReactNode }) {

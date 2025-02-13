@@ -69,3 +69,9 @@ export function randomItem<T>(items: Iterable<T>) {
 	const itemsArray = Array.from(items)
 	return itemsArray[randomInt(itemsArray.length)]
 }
+
+export function toSlug(name: string) {
+	return [...name.matchAll(/[a-z]+/gi)]
+		.map((match) => match[0].toLowerCase())
+		.join("-")
+}

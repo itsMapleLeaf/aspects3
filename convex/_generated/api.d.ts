@@ -19,6 +19,7 @@ import type * as db from "../db.js";
 import type * as http from "../http.js";
 import type * as public_auth from "../public/auth.js";
 import type * as public_characters from "../public/characters.js";
+import type * as public_rooms from "../public/rooms.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "public/auth": typeof public_auth;
   "public/characters": typeof public_characters;
+  "public/rooms": typeof public_rooms;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
