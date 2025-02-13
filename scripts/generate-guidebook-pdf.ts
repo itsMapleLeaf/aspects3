@@ -8,9 +8,9 @@ const baseUrl = process.env.URL || "https://aspects.mapleleaf.dev"
 console.info("Server port:", port)
 console.info("Base URL:", baseUrl)
 
-const isServerOpen = await fetch(`http://localhost:${port}`).then(
-	(response) => response.ok,
-)
+const isServerOpen = await fetch(`http://localhost:${port}`)
+	.then((response) => response.ok)
+	.catch(() => false)
 
 let server
 
