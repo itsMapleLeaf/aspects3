@@ -1,4 +1,5 @@
 import { Link } from "react-router"
+import { Callout } from "../Callout.tsx"
 import { AspectList, AttributeList, TraitList } from "./data.tsx"
 
 export const handle = {
@@ -143,7 +144,12 @@ Skill checks are the most common type of action roll. Each attribute has a set o
 
 Skill checks are made with a d6. The target is the character's value in the skill's attribute. For example: you want to make a Spy check, and your Sense score is 5. This means you must roll 5 or lower to succeed.
 
-> **Tip:** Narrators should aim to make failures interesting. For example, consider a character tries to **Spy** for something they lost. On failure, instead of having nothing happen, maybe they find something that a friend lost instead!
+<Callout>
+	**Tip:** Narrators should aim to make failures interesting. For example,
+	consider a character tries to **Spy** for something they lost. On failure,
+	instead of having nothing happen, maybe they find something that a friend lost
+	instead!
+</Callout>
 
 import { SkillList } from "./data.tsx"
 
@@ -164,6 +170,12 @@ Below is a list of built-in aspect arts. Think of them as presets; you can still
 import { AspectSkillList } from "./data.tsx"
 
 <AspectSkillList />
+
+<Callout>
+	You may have noticed that attributes and aspects set to their max level of 6
+	and 12 would effectively make them always pass, but in this case, you can
+	still fail a roll through risk dice, explained in the next section.
+</Callout>
 
 ### Modifier dice
 
