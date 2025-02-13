@@ -1,6 +1,7 @@
 import { NavLink } from "react-router"
+import { twMerge } from "tailwind-merge"
 
-export function Navigation() {
+export function Navigation({ className = "" }) {
 	const links = [
 		{ to: "/rulebook", label: "Rulebook" },
 		{ to: "/lore", label: "World Lore" },
@@ -8,7 +9,12 @@ export function Navigation() {
 	]
 
 	return (
-		<nav className="sticky top-0 z-10 bg-gray-950/25 backdrop-blur-md print:hidden">
+		<nav
+			className={twMerge(
+				"bg-gray-950/25 backdrop-blur-md print:hidden",
+				className,
+			)}
+		>
 			<div className="page-container">
 				<div className="-mx-3 flex flex-wrap items-center gap-2 py-3">
 					{links.map((link) => (

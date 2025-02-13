@@ -34,7 +34,7 @@ export function CloudSaveCta() {
 				backdrop={
 					<div className="fixed inset-0 bg-black/50 opacity-0 backdrop-blur-sm transition duration-200 data-enter:opacity-100" />
 				}
-				className="group absolute top-1/2 left-1/2 z-10 max-w-lg -translate-x-1/2 -translate-y-1/2 opacity-0 transition data-enter:opacity-100 [:root:has(&[data-open])]:overflow-hidden"
+				className="group absolute top-1/2 left-1/2 max-w-lg -translate-x-1/2 -translate-y-1/2 opacity-0 transition data-enter:opacity-100 [:root:has(&[data-open])]:overflow-hidden"
 				preventBodyScroll={false}
 			>
 				<div className="panel flex translate-y-2 flex-col items-center gap-4 p-3 transition group-data-enter:translate-y-0">

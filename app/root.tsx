@@ -49,10 +49,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
-				<Navigation />
-				<DiceTray>
-					<div className="page-container">{children}</div>
-				</DiceTray>
+				<div className="isolate">
+					<Navigation className="sticky top-0 z-10 shadow-lg" />
+					<div className="page-container">
+						<DiceTray>{children}</DiceTray>
+					</div>
+				</div>
 				<ScrollRestoration />
 				<Scripts />
 			</body>
