@@ -12,14 +12,13 @@ const isServerOpen = await fetch(`http://localhost:${port}`)
 	.then((response) => response.ok)
 	.catch(() => false)
 
-let server
-
+// defer server creation and await it when we need to connect
+let serverPromise
 if (isServerOpen) {
 	console.info("Reusing existing server")
 } else {
 	console.info("Starting a new server")
-	server = await createServer()
-	await server.listen()
+	serverPromise = createServer().then((server) => server.listen(port))
 }
 
 const browser = await chromium.launch({
@@ -31,6 +30,9 @@ const browser = await chromium.launch({
 	},
 })
 const page = await browser.newPage()
+
+const server = await serverPromise
+
 await page.goto(`http://localhost:${port}/rulebook`)
 
 // ensure PDF links point to the given site URL
