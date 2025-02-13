@@ -29,7 +29,7 @@ export function StatInput({
 				id={id}
 			/>
 			<div className="flex items-center gap-1 text-center">
-				<label htmlFor={id} className="text-sm font-semibold">
+				<label htmlFor={id} className="text-sm font-semibold whitespace-nowrap">
 					{label}
 				</label>
 				{description && (
