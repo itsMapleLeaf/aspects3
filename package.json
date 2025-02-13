@@ -7,7 +7,7 @@
 		"node": "22 || 23"
 	},
 	"scripts": {
-		"build": "react-router build",
+		"build": "node scripts/generate-guidebook-pdf.ts && react-router build",
 		"deploy": "convex deploy --cmd \"bun run build\"",
 		"dev": "convex dev --until-success && run-p --race 'dev:*'",
 		"dev:app": "react-router dev",
