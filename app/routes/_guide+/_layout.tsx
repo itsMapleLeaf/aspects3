@@ -1,23 +1,6 @@
-import { type } from "arktype"
-import { Outlet, useMatches } from "react-router"
-import { getDocumentTitle } from "../../meta.ts"
-
-const RouteHandle = type({
-	"title?": "string",
-})
-
-function getPageTitle(matches: ({ handle?: unknown } | undefined)[]) {
-	const handle = matches
-		.toReversed()
-		.map((match) => match?.handle)
-		.find(RouteHandle.allows)
-	return handle?.title
-}
+import { Outlet } from "react-router"
 
 export default function RouteComponent() {
-	const pageTitle = getPageTitle(useMatches()) ?? ""
-	const documentTitle = getDocumentTitle(pageTitle)
-
 	return (
 		<div
 			className="
@@ -55,8 +38,6 @@ export default function RouteComponent() {
 				prose-headings:target:outline-none
 			"
 		>
-			<title>{documentTitle}</title>
-			<h1>{pageTitle}</h1>
 			<Outlet />
 		</div>
 	)

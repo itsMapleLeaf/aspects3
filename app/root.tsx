@@ -13,6 +13,9 @@ import type { Route } from "./+types/root"
 import stylesheet from "./app.css?url"
 import { DiceTray } from "./components/DiceTray.tsx"
 import { convexClient } from "./lib/convex.ts"
+import { getPageMeta } from "./meta.ts"
+
+export const meta: Route.MetaFunction = () => getPageMeta()
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
