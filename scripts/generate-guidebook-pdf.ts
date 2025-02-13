@@ -1,5 +1,5 @@
-import { chromium } from "@playwright/test"
 import { resolve } from "node:path"
+import { chromium } from "playwright"
 import { createServer } from "vite"
 
 const port = 5173
