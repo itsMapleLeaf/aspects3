@@ -1,34 +1,18 @@
-import {
-	Dialog,
-	DialogDescription,
-	DialogDisclosure,
-	DialogDismiss,
-	DialogHeading,
-	DialogProvider,
-} from "@ariakit/react"
+import * as Ariakit from "@ariakit/react"
 import { useAuthActions } from "@convex-dev/auth/react"
 import { useTransition } from "react"
 import { useLocation } from "react-router"
 import { Button } from "../../components/ui/Button.tsx"
 import { Icon } from "../../components/ui/Icon.tsx"
 
-export function CloudSaveCta() {
+export function CloudSaveDialog({ children }: { children: React.ReactNode }) {
 	const { signIn } = useAuthActions()
 	const [pending, startTransition] = useTransition()
 	const location = useLocation()
 	return (
-		<DialogProvider>
-			<DialogDisclosure
-				render={
-					<Button
-						icon={<Icon icon="mingcute:upload-3-fill" />}
-						appearance="ghost"
-					/>
-				}
-			>
-				Cloud Save
-			</DialogDisclosure>
-			<Dialog
+		<Ariakit.DialogProvider>
+			{children}
+			<Ariakit.Dialog
 				portal
 				unmountOnHide
 				backdrop={
@@ -38,16 +22,16 @@ export function CloudSaveCta() {
 				preventBodyScroll={false}
 			>
 				<div className="panel flex translate-y-2 flex-col items-center gap-4 p-3 transition group-data-enter:translate-y-0">
-					<DialogHeading className="-mb-2 text-2xl font-light">
+					<Ariakit.DialogHeading className="-mb-2 text-2xl font-light">
 						Save to Cloud
-					</DialogHeading>
-					<DialogDescription className="space-y-2 px-4 text-center text-pretty">
+					</Ariakit.DialogHeading>
+					<Ariakit.DialogDescription className="space-y-2 px-4 text-center text-pretty">
 						<p>Sign in to save your characters to the cloud.</p>
 						<p>
 							Export your current character first, then import it after signing
 							in.
 						</p>
-					</DialogDescription>
+					</Ariakit.DialogDescription>
 					<div className="flex flex-wrap gap-2">
 						<Button
 							icon={<Icon icon="mingcute:discord-fill" />}
@@ -62,7 +46,7 @@ export function CloudSaveCta() {
 						>
 							Sign in with Discord
 						</Button>
-						<DialogDismiss
+						<Ariakit.DialogDismiss
 							render={
 								<Button
 									icon={<Icon icon="mingcute:close-fill" />}
@@ -71,10 +55,12 @@ export function CloudSaveCta() {
 							}
 						>
 							Never mind
-						</DialogDismiss>
+						</Ariakit.DialogDismiss>
 					</div>
 				</div>
-			</Dialog>
-		</DialogProvider>
+			</Ariakit.Dialog>
+		</Ariakit.DialogProvider>
 	)
 }
+
+CloudSaveDialog.Button = Ariakit.DialogDisclosure

@@ -1,6 +1,6 @@
+import * as Ariakit from "@ariakit/react"
 import { omit } from "es-toolkit"
-import { type ComponentProps, type ReactNode } from "react"
-import { Link } from "react-router"
+import { type ReactNode } from "react"
 import { Icon } from "~/components/ui/Icon.tsx"
 
 const appearanceClasses = {
@@ -21,17 +21,14 @@ const shapeClasses = {
 	circle: "rounded-full aspect-square",
 }
 
-type ButtonProps = {
+export interface ButtonProps extends Ariakit.ButtonProps {
 	appearance?: keyof typeof appearanceClasses
 	size?: keyof typeof sizeClasses
 	shape?: keyof typeof shapeClasses
 	icon?: ReactNode
 	as?: "button" | "link"
 	pending?: boolean
-} & (
-	| ({ as?: "button" } & ComponentProps<"button">)
-	| ({ as: "link" } & ComponentProps<typeof Link>)
-)
+}
 
 export function Button({
 	appearance = "default",
@@ -64,15 +61,13 @@ export function Button({
 		</>
 	)
 
-	// we don't destructure here because TS can't narrow the union otherwise,
-	// and we omit `as` to prevent passing it
-	return props.as === "link" ? (
-		<Link className={combinedClasses} {...omit(props, ["as"])}>
+	return (
+		<Ariakit.Button
+			className={combinedClasses}
+			type="button"
+			{...omit(props, ["as"])}
+		>
 			{content}
-		</Link>
-	) : (
-		<button className={combinedClasses} type="button" {...omit(props, ["as"])}>
-			{content}
-		</button>
+		</Ariakit.Button>
 	)
 }

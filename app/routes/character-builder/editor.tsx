@@ -1,15 +1,14 @@
-import {
-	useState,
-	useTransition,
-	type ComponentProps,
-	type ReactNode,
-} from "react"
+import * as Ariakit from "@ariakit/react"
+import { useAuthActions } from "@convex-dev/auth/react"
+import { useConvexAuth } from "convex/react"
+import { type ComponentProps, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 import { Input } from "~/components/ui/Input.tsx"
+import { SquareIconButton } from "~/components/ui/SquareIconButton.tsx"
 import { TextArea } from "~/components/ui/TextArea.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { aspectNames } from "~/data/aspects.ts"
@@ -30,20 +29,23 @@ import {
 } from "~/data/characters.ts"
 import { traits } from "~/data/traits.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
-import { pipe, timeoutPromise } from "~/lib/utils.ts"
 import { UploadButton, useUploadThing } from "~/routes/api.images/components.ts"
 import { AspectArts } from "~/routes/character-builder/AspectArts.tsx"
 import { AspectInput } from "~/routes/character-builder/AspectInput.tsx"
 import { AttributeInput } from "~/routes/character-builder/AttributeInput.tsx"
+import { useCopyCharacterShareUrl } from "~/routes/character-builder/share.tsx"
 import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
 import { TraitSelection } from "~/routes/character-builder/TraitSelection.tsx"
+import { CloudSaveDialog } from "./CloudSaveCta.tsx"
 
 export function CharacterEditor({
 	character,
 	onChange,
+	actions,
 }: {
 	character: Character
 	onChange: (character: Character) => void
+	actions: ReactNode
 }) {
 	function updateAttribute(attr: AttributeName & string, value: string) {
 		onChange({
@@ -87,10 +89,14 @@ export function CharacterEditor({
 
 	return (
 		<>
-			<NameInput
-				name={character.name}
-				onChange={(name) => onChange({ ...character, name })}
-			/>
+			<div className="flex items-center gap-2">
+				<NameInput
+					className="flex-1"
+					name={character.name}
+					onChange={(name) => onChange({ ...character, name })}
+				/>
+				{actions}
+			</div>
 
 			<div className="@xl:hidden">
 				<CharacterImage
@@ -216,15 +222,21 @@ export function CharacterEditorHeader(props: ComponentProps<"div">) {
 	)
 }
 
-export function CharacterEditorActions({
+export function CharacterEditorMenu({
 	character,
 	onNew,
 	onImport,
+	onDelete,
 }: {
 	character: Character
 	onNew: () => void
 	onImport: (character: Character) => void
+	onDelete: (() => void) | null
 }) {
+	const share = useCopyCharacterShareUrl(character)
+	const auth = useConvexAuth()
+	const { signOut } = useAuthActions()
+
 	function downloadCharacter() {
 		const serialized = JSON.stringify(character, null, 2)
 		const url = URL.createObjectURL(
@@ -265,24 +277,73 @@ export function CharacterEditorActions({
 	}
 
 	return (
-		<div className="flex flex-1 flex-wrap-reverse items-end gap-2">
-			<Button onClick={onNew} icon={<Icon icon="mingcute:file-new-fill" />}>
-				New
-			</Button>
-			<Button
-				onClick={downloadCharacter}
-				icon={<Icon icon="mingcute:file-export-fill" />}
+		<Ariakit.MenuProvider placement="bottom-end">
+			<SquareIconButton
+				icon={<Icon icon="mingcute:menu-fill" />}
+				render={<Ariakit.MenuButton />}
 			>
-				Export...
-			</Button>
-			<Button
-				onClick={importCharacter}
-				icon={<Icon icon="mingcute:file-import-fill" />}
+				Menu
+			</SquareIconButton>
+
+			<Ariakit.Menu
+				className="menu-panel"
+				portal
+				gutter={8}
+				unmountOnHide={false} // keep nested dialog open
 			>
-				Import...
-			</Button>
-			<ShareButton character={character} />
-		</div>
+				<Ariakit.MenuItem className="menu-item" onClick={onNew}>
+					<Icon icon="mingcute:file-new-fill" /> New
+				</Ariakit.MenuItem>
+				<Ariakit.MenuItem className="menu-item" onClick={downloadCharacter}>
+					<Icon icon="mingcute:file-export-fill" /> Export...
+				</Ariakit.MenuItem>
+				<Ariakit.MenuItem className="menu-item" onClick={importCharacter}>
+					<Icon icon="mingcute:file-import-fill" /> Import...
+				</Ariakit.MenuItem>
+
+				<Ariakit.MenuItem
+					className="menu-item"
+					onClick={share.copyUrl}
+					disabled={share.success}
+					hideOnClick={false}
+				>
+					{share.success ? (
+						<Icon icon="mingcute:check-fill" />
+					) : share.pending ? (
+						<Icon icon="mingcute:loading-3-fill" />
+					) : (
+						<Icon icon="mingcute:link-fill" />
+					)}
+					{share.success
+						? "Copied URL"
+						: share.pending
+							? "Copying..."
+							: "Share"}
+				</Ariakit.MenuItem>
+
+				{onDelete && (
+					<Ariakit.MenuItem className="menu-item" onClick={onDelete}>
+						<Icon icon="mingcute:delete-3-fill" /> Delete
+					</Ariakit.MenuItem>
+				)}
+
+				{auth.isAuthenticated ? (
+					<Ariakit.MenuItem className="menu-item" onClick={signOut}>
+						<Icon icon="mingcute:exit-door-fill" /> Sign out
+					</Ariakit.MenuItem>
+				) : (
+					<CloudSaveDialog>
+						<Ariakit.MenuItem
+							render={<CloudSaveDialog.Button />}
+							className="menu-item"
+							onClick={signOut}
+						>
+							<Icon icon="mingcute:upload-3-fill" /> Cloud save
+						</Ariakit.MenuItem>
+					</CloudSaveDialog>
+				)}
+			</Ariakit.Menu>
+		</Ariakit.MenuProvider>
 	)
 }
 
@@ -356,12 +417,15 @@ function StatSection({ title, hint, children }: StatSectionProps) {
 	)
 }
 
-type NameInputProps = {
+function NameInput({
+	name,
+	onChange,
+	className,
+}: {
 	name: string
 	onChange: (name: string) => void
-}
-
-function NameInput({ name, onChange }: NameInputProps) {
+	className?: string
+}) {
 	return (
 		<Input
 			aria-label="Character Name"
@@ -369,7 +433,7 @@ function NameInput({ name, onChange }: NameInputProps) {
 			value={name}
 			onChange={(event) => onChange(event.target.value)}
 			placeholder="Unnamed Character"
-			className="flex-1 text-xl"
+			className={twMerge("text-xl", className)}
 		/>
 	)
 }
@@ -684,51 +748,5 @@ function CharacterImage({ imageUrl, onChangeUrl }: CharacterImageProps) {
 				/>
 			</div>
 		</div>
-	)
-}
-
-function ShareButton({ character }: { character: Character }) {
-	const [pending, startTransition] = useTransition()
-	const [success, setSuccess] = useState(false)
-
-	const copyUrl = () => {
-		startTransition(async () => {
-			try {
-				const url = pipe(
-					character,
-					(data) => JSON.stringify(data),
-					(data) => btoa(data),
-					(data) => new URL(`/character-builder?data=${data}`, location.origin),
-				)
-				await navigator.clipboard.writeText(url.href)
-				setSuccess(true)
-				await timeoutPromise(2000)
-				setSuccess(false)
-			} catch (error) {
-				alert(error)
-			}
-		})
-	}
-
-	if (success) {
-		return (
-			<Button
-				disabled
-				icon={<Icon icon="mingcute:check-fill" />}
-				onClick={copyUrl}
-			>
-				Copied URL!
-			</Button>
-		)
-	}
-
-	return (
-		<Button
-			pending={pending}
-			icon={<Icon icon="mingcute:link-fill" />}
-			onClick={copyUrl}
-		>
-			Share
-		</Button>
 	)
 }
