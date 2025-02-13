@@ -20,7 +20,6 @@ import {
 } from "~/data/attributes.ts"
 import {
 	Character,
-	formatTraitList,
 	getAspectTotal,
 	getAttributeTotal,
 	getAttributeValue,
@@ -88,13 +87,10 @@ export function CharacterEditor({
 
 	return (
 		<>
-			<div className="grid gap-2">
-				<NameInput
-					name={character.name}
-					onChange={(name) => onChange({ ...character, name })}
-				/>
-				<TraitList traits={selectedTraits} />
-			</div>
+			<NameInput
+				name={character.name}
+				onChange={(name) => onChange({ ...character, name })}
+			/>
 
 			<div className="@xl:hidden">
 				<CharacterImage
@@ -376,11 +372,6 @@ function NameInput({ name, onChange }: NameInputProps) {
 			className="flex-1 text-xl"
 		/>
 	)
-}
-
-function TraitList({ traits }: { traits: string[] }) {
-	const formattedTraits = formatTraitList(traits)
-	return <p className="-mt-1 min-h-6 text-gray-400">{formattedTraits}</p>
 }
 
 type AttributeInputListProps = {
