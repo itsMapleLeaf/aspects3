@@ -47,7 +47,7 @@ export function StatMeter({
 					}}
 					min={0}
 					max={max}
-					className={`transition w-full h-12 text-center text-2xl border rounded-lg focus:outline-none focus:ring-2 ${colorClasses} ${className}`}
+					className={`h-12 w-full rounded-lg border text-center text-2xl transition focus:ring-2 focus:outline-none ${colorClasses} ${className}`}
 					autoFocus
 				/>
 				<label className="text-sm font-semibold" htmlFor={inputId}>
@@ -66,10 +66,7 @@ export function StatMeter({
 					setIsEditing(true)
 					onChange(parseNumber(value, 0, max).toString())
 				}}
-				className={`
-					relative w-full h-12 text-center text-2xl border rounded-lg transition overflow-clip
-					${colorClasses} ${className}
-				`}
+				className={`relative h-12 w-full overflow-clip rounded-lg border text-center text-2xl transition ${colorClasses} ${className} `}
 			>
 				{max != null && (
 					<div
@@ -77,8 +74,8 @@ export function StatMeter({
 							color === "red"
 								? "bg-red-500/20"
 								: color === "purple"
-								? "bg-violet-500/20"
-								: "bg-blue-500/20"
+									? "bg-violet-500/20"
+									: "bg-blue-500/20"
 						}`}
 						style={{ width: `${fillPercentage}%` }}
 					/>

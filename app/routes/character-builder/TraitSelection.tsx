@@ -29,29 +29,26 @@ export function TraitSelection({
 				return (
 					<div
 						key={trait.name}
-						className={`
-							flex items-center justify-between gap-4 px-3 py-2.5 rounded-lg border transition
-							${
-								isSelected
-									? "bg-primary-900/20 border-primary-700"
-									: isDisabled
-									? "opacity-50 bg-gray-900/20 border-gray-700"
-									: "hover:bg-gray-900/20 hover:border-gray-600 border-gray-700"
-							}
-						`}
+						className={`flex items-center justify-between gap-4 rounded-lg border px-3 py-2.5 transition ${
+							isSelected
+								? "bg-primary-900/20 border-primary-700"
+								: isDisabled
+									? "border-gray-700 bg-gray-900/20 opacity-50"
+									: "border-gray-700 hover:border-gray-600 hover:bg-gray-900/20"
+						} `}
 					>
 						<div>
-							<h3 className="font-medium mb-1">{trait.name}</h3>
+							<h3 className="mb-1 font-medium">{trait.name}</h3>
 							<div className="flex flex-wrap gap-x-2 gap-y-1">
 								{trait.attributes.map(({ attribute, description }) => (
 									<div key={attribute} className="flex items-center gap-1">
-										<span className="text-sm text-primary-400">
+										<span className="text-primary-400 text-sm">
 											{attributes[attribute].name}
 										</span>
 										<IconTooltip content={description} className="size-4" />
 									</div>
 								))}
-								<span className={`text-sm text-primary-400`}>
+								<span className={`text-primary-400 text-sm`}>
 									{aspects[trait.aspect].name}
 								</span>
 							</div>

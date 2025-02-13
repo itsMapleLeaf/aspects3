@@ -45,27 +45,27 @@
 @layer base {
 	html,
 	body {
-		@apply bg-gray-950 overflow-x-clip selection:bg-primary-800/50;
+		@apply selection:bg-primary-800/50 overflow-x-clip bg-gray-950;
 		scrollbar-color: var(--color-gray-700) var(--color-gray-950);
 		scrollbar-gutter: stable;
 		color-scheme: dark;
 	}
 
 	.footnotes {
-		@apply text-sm text-gray-300 border-t border-gray-700;
+		@apply border-t border-gray-700 text-sm text-gray-300;
 	}
 }
 
 @utility panel {
-	@apply bg-primary-dark border border-primary-900 rounded-lg;
+	@apply bg-primary-dark border-primary-900 rounded-lg border;
 }
 
 @utility page-container {
-	@apply max-w-page-body px-4 w-full mx-auto;
+	@apply max-w-page-body mx-auto w-full px-4;
 }
 
 @utility button-base {
-	@apply flex items-center transition border border-solid font-medium shadow-sm focus:outline-none focus:ring-2 rounded-md px-3 py-2;
+	@apply flex items-center rounded-md border border-solid px-3 py-2 font-medium shadow-sm transition focus:ring-2 focus:outline-none;
 }
 
 @utility button-solid {

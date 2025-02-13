@@ -25,10 +25,10 @@ export function StatInput({
 				value={value}
 				onChange={onChange}
 				min={min}
-				className={`transition w-full h-12 text-center text-2xl border rounded-lg focus:outline-none focus:ring-2 ${className}`}
+				className={`h-12 w-full rounded-lg border text-center text-2xl transition focus:ring-2 focus:outline-none ${className}`}
 				id={id}
 			/>
-			<div className="text-center flex items-center gap-1">
+			<div className="flex items-center gap-1 text-center">
 				<label htmlFor={id} className="text-sm font-semibold">
 					{label}
 				</label>

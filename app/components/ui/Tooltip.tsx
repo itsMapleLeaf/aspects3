@@ -22,7 +22,7 @@ export function Tooltip({
 			<Ariakit.TooltipAnchor
 				store={tooltip}
 				className={twMerge(
-					"inline-block rounded-md focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-primary-400",
+					"focus-visible:ring-primary-400 inline-block rounded-md focus-visible:ring-2 focus-visible:outline-none",
 					className,
 				)}
 			>
@@ -34,25 +34,7 @@ export function Tooltip({
 				portal
 				unmountOnHide
 				fixed
-				className="
-					data-[enter]:translate-y-0
-					data-[enter]:opacity-100
-					data-[leave]:translate-y-1
-					data-[leave]:opacity-0
-					translate-y-1
-					opacity-0
-					transition
-					duration-200
-					rounded
-					bg-gray-900
-					px-2
-					py-1
-					text-sm
-					text-white
-					dark:bg-gray-700
-					shadow
-					max-w-sm
-				"
+				className="max-w-sm translate-y-1 rounded bg-gray-900 px-2 py-1 text-sm text-white opacity-0 shadow transition duration-200 data-[enter]:translate-y-0 data-[enter]:opacity-100 data-[leave]:translate-y-1 data-[leave]:opacity-0 dark:bg-gray-700"
 			>
 				{content}
 			</Ariakit.Tooltip>

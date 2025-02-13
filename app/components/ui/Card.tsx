@@ -13,11 +13,11 @@ export function Card({
 	...props
 }: CardProps) {
 	return (
-		<div className={`shadow overflow-clip rounded-lg ${className}`} {...props}>
+		<div className={`overflow-clip rounded-lg shadow ${className}`} {...props}>
 			{(title || subtitle) && (
 				<div className="">
 					{title && (
-						<h3 className="text-3xl font-light mb-3 text-gray-100">{title}</h3>
+						<h3 className="mb-3 text-3xl font-light text-gray-100">{title}</h3>
 					)}
 					{subtitle && <p className="mt-1 text-sm text-gray-400">{subtitle}</p>}
 				</div>

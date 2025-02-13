@@ -8,15 +8,15 @@ export function Navigation() {
 	]
 
 	return (
-		<nav className="z-10 sticky top-0 bg-gray-950/25 backdrop-blur-md print:hidden">
+		<nav className="sticky top-0 z-10 bg-gray-950/25 backdrop-blur-md print:hidden">
 			<div className="page-container">
-				<div className="-mx-3 items-center flex gap-2 py-3 flex-wrap">
+				<div className="-mx-3 flex flex-wrap items-center gap-2 py-3">
 					{links.map((link) => (
 						<NavLink
 							key={link.to}
 							to={link.to}
 							className={({ isActive }) =>
-								`text-lg px-3 py-1 rounded-full transition whitespace-nowrap hover:bg-primary-800/20 ${
+								`hover:bg-primary-800/20 rounded-full px-3 py-1 text-lg whitespace-nowrap transition ${
 									isActive ? "text-primary-300" : ""
 								}`
 							}

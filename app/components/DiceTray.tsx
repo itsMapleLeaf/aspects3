@@ -232,7 +232,7 @@ export function DiceTray({ children }: { children: ReactNode }) {
 				setOpen={setOpen}
 			>
 				<div className="fixed right-4 bottom-4 print:hidden">
-					<div className="flex gap-2 items-start">
+					<div className="flex items-start gap-2">
 						<div className="contents" ref={controlsRef}>
 							{target != null && (
 								<Tooltip content="Target (Click to remove)">
@@ -292,7 +292,7 @@ export function DiceTray({ children }: { children: ReactNode }) {
 						<DiceRollElement key={result.id} result={result} />
 					))}
 
-					<div className="flex items-center gap-2 flex-wrap">
+					<div className="flex flex-wrap items-center gap-2">
 						{dice.map((die) => {
 							const count = counts.get(die.name) ?? 0
 							return (
@@ -356,13 +356,13 @@ function DiceButton({
 						onDecrement()
 					}}
 				>
-					<div className="*:size-8 size-8">
+					<div className="size-8 *:size-8">
 						{count > 0 ? die.activeIcon : die.inactiveIcon}
 					</div>
 				</Button>
 			</Tooltip>
 			{count > 0 && (
-				<div className="absolute top-0 left-1/2 bg-primary-950 border-primary-500 border w-6 rounded-md text-center text-sm -translate-y-1/2 -translate-x-1/2">
+				<div className="bg-primary-950 border-primary-500 absolute top-0 left-1/2 w-6 -translate-x-1/2 -translate-y-1/2 rounded-md border text-center text-sm">
 					{count}
 				</div>
 			)}
@@ -391,7 +391,7 @@ function DiceRollElement(props: { result: DiceRoll }) {
 	const isFailure = props.result.target != null && total > props.result.target
 
 	return (
-		<div className="bg-primary-950/50 border-primary-500 border rounded-md px-2 py-2 flex flex-col">
+		<div className="bg-primary-950/50 border-primary-500 flex flex-col rounded-md border px-2 py-2">
 			{props.result.target && <small>Target: {props.result.target}</small>}
 			<div className="flex items-center">
 				<div className="flex max-w-[240px] flex-wrap">
@@ -399,10 +399,10 @@ function DiceRollElement(props: { result: DiceRoll }) {
 						<Fragment key={roll.id}>
 							<Tooltip content={`${die.name}: ${side.name}`}>
 								<div className="relative cursor-default">
-									<div className="*:size-10 size-10">
+									<div className="size-10 *:size-10">
 										{die.resultIcon || die.activeIcon}
 									</div>
-									<div className="absolute inset-0 flex items-center justify-center text-primary-900 font-bold text-lg">
+									<div className="text-primary-900 absolute inset-0 flex items-center justify-center text-lg font-bold">
 										{side?.symbol}
 									</div>
 								</div>
@@ -410,10 +410,10 @@ function DiceRollElement(props: { result: DiceRoll }) {
 						</Fragment>
 					))}
 				</div>
-				<Icon icon="mingcute:pause-line" className="rotate-90 mx-1" />
+				<Icon icon="mingcute:pause-line" className="mx-1 rotate-90" />
 				<span
 					className={twMerge(
-						"text-2xl ml-1 gap-1 tabular-nums font-semibold flex items-center",
+						"ml-1 flex items-center gap-1 text-2xl font-semibold tabular-nums",
 						isSuccess && "text-green-300",
 						isFailure && "text-red-300",
 					)}

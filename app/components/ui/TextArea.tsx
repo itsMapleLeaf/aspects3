@@ -23,8 +23,8 @@ export function TextArea({
 	const stateClasses = readOnly
 		? "border-gray-700"
 		: error
-		? "border-red-300 focus:border-red-500 focus:ring-red-500"
-		: "border-gray-700"
+			? "border-red-300 focus:border-red-500 focus:ring-red-500"
+			: "border-gray-700"
 
 	const id = useId()
 
@@ -33,14 +33,14 @@ export function TextArea({
 			{label && (
 				<label
 					htmlFor={id}
-					className="flex items-center gap-1 mb-0.5 text-sm text-gray-300"
+					className="mb-0.5 flex items-center gap-1 text-sm text-gray-300"
 				>
 					<p className="font-semibold">{label}</p>
 					{hint && (
 						<Tooltip content={hint}>
 							<Icon
 								icon="mingcute:information-line"
-								className="w-4 h-4 text-gray-400 hover:text-gray-100 transition"
+								className="h-4 w-4 text-gray-400 transition hover:text-gray-100"
 								aria-hidden
 							/>
 						</Tooltip>

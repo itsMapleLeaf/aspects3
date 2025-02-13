@@ -3,6 +3,7 @@ import { Outlet } from "react-router"
 export default function RouteComponent() {
 	return (
 		<div
+			// prettier-ignore
 			className="
 				prose pt-8 pb-12 max-w-[unset]!
 				not-print:prose-invert

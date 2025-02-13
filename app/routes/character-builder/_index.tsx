@@ -145,7 +145,7 @@ function RemoteCharacterEditor({
 					onImport={setCharacter}
 				/>
 
-				<div className="flex gap-2 items-end justify-end flex-wrap flex-1">
+				<div className="flex flex-1 flex-wrap items-end justify-end gap-2">
 					<SignOutButton />
 
 					<Button
@@ -238,7 +238,7 @@ function CharacterEditorLayout(props: ComponentProps<"div">) {
 		<div
 			{...props}
 			className={twMerge(
-				"py-6 @container flex flex-col gap-2",
+				"@container flex flex-col gap-2 py-6",
 				props.className,
 			)}
 		/>
@@ -250,7 +250,7 @@ function CharacterEditorHeader(props: ComponentProps<"div">) {
 		<div
 			{...props}
 			className={twMerge(
-				"flex flex-wrap items-start gap-2 justify-between",
+				"flex flex-wrap items-start justify-between gap-2",
 				props.className,
 			)}
 		/>
@@ -306,7 +306,7 @@ function CharacterEditorActions({
 	}
 
 	return (
-		<div className="flex gap-2 items-end flex-wrap-reverse flex-1">
+		<div className="flex flex-1 flex-wrap-reverse items-end gap-2">
 			<Button onClick={onNew} icon={<Icon icon="mingcute:file-new-fill" />}>
 				New
 			</Button>
@@ -391,8 +391,8 @@ function CharacterEditor({
 				/>
 			</div>
 
-			<div className="grid gap-8 grid-cols-1 @xl:grid-cols-[1fr_auto]">
-				<div className="space-y-6 min-w-0 @container">
+			<div className="grid grid-cols-1 gap-8 @xl:grid-cols-[1fr_auto]">
+				<div className="@container min-w-0 space-y-6">
 					<AttributeInputList
 						attributes={character.attributes}
 						onChange={updateAttribute}
@@ -400,7 +400,7 @@ function CharacterEditor({
 
 					<AspectInputList character={character} onChange={updateAspect} />
 
-					<div className="grid grid-cols-2 @md:grid-cols-3 gap-4">
+					<div className="grid grid-cols-2 gap-4 @md:grid-cols-3">
 						<HitsBar
 							character={character}
 							onChange={(hits) => onChange({ ...character, hits })}
@@ -428,7 +428,7 @@ function CharacterEditor({
 					/>
 				</div>
 
-				<div className="hidden @xl:block w-80">
+				<div className="hidden w-80 @xl:block">
 					<CharacterImage
 						imageUrl={character.imageUrl}
 						onChangeUrl={(imageUrl) => onChange({ ...character, imageUrl })}
@@ -441,7 +441,7 @@ function CharacterEditor({
 				tooltip="Character features that offer attribute bonuses."
 				description={traitsDescription}
 			>
-				<div className="grid gap-4 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
+				<div className="grid grid-cols-1 gap-4 @md:grid-cols-2 @2xl:grid-cols-3">
 					<TraitSelection
 						selectedTraits={selectedTraits}
 						onTraitToggle={toggleTrait}
@@ -454,7 +454,7 @@ function CharacterEditor({
 					title="Skills"
 					tooltip="Various actions you can make in the game."
 				>
-					<div className="grid gap-8 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3">
+					<div className="grid grid-cols-1 gap-8 @md:grid-cols-2 @2xl:grid-cols-3">
 						{attributeNames.map((attribute) => (
 							<SkillList
 								key={attribute}
@@ -511,7 +511,7 @@ function CharacterSelect({
 			}}
 		>
 			<Ariakit.Select render={<Button />} className="w-48 truncate">
-				<span className="flex-1 text-start min-w-0">
+				<span className="min-w-0 flex-1 text-start">
 					{selectedCharacter == null
 						? "No character selected"
 						: selectedCharacter.name || "Unnamed Character"}
@@ -522,22 +522,13 @@ function CharacterSelect({
 				portal
 				unmountOnHide
 				gutter={8}
-				className="
-					panel
-					min-w-[max(var(--popover-anchor-width),180px)]
-					max-h-[min(--spacing(80),calc(100dvh_-_--spacing(4)))]
-					overflow-y-auto
-					flex flex-col gap-1 p-1
-					transition
-					translate-y-1 data-enter:translate-y-0
-					opacity-0 data-enter:opacity-100
-				"
+				className="panel flex max-h-[min(--spacing(80),calc(100dvh_-_--spacing(4)))] min-w-[max(var(--popover-anchor-width),180px)] translate-y-1 flex-col gap-1 overflow-y-auto p-1 opacity-0 transition data-enter:translate-y-0 data-enter:opacity-100"
 			>
 				{characters?.map((character) => (
 					<Ariakit.SelectItem
 						key={character.key}
 						value={character.key}
-						className="flex shrink-0 items-center gap-2 px-3 py-2 hover:bg-primary-800/25 rounded-sm cursor-default transition"
+						className="hover:bg-primary-800/25 flex shrink-0 cursor-default items-center gap-2 rounded-sm px-3 py-2 transition"
 					>
 						{character.name || "Unnamed Character"}
 					</Ariakit.SelectItem>
@@ -583,29 +574,19 @@ function ToggleSection({
 
 	return (
 		<details
-			className={`mt-6 group ${className}`}
+			className={`group mt-6 ${className}`}
 			open={visible}
 			onToggle={(event) => setVisible(event.currentTarget.open)}
 		>
-			<summary
-				className="
-					mb-3 flex w-full items-center gap-4 text-start flex-wrap rounded-lg
-					relative isolate
-					before:absolute before:rounded-lg before:bg-primary-800/20 before:-inset-x-3 before:-inset-y-1.5 before:-z-10
-					before:opacity-0
-					hover:before:opacity-100
-					before:transition
-					select-none
-				"
-			>
-				<h3 className="text-2xl font-light flex-1 items-center flex gap-1.5">
+			<summary className="before:bg-primary-800/20 relative isolate mb-3 flex w-full flex-wrap items-center gap-4 rounded-lg text-start select-none before:absolute before:-inset-x-3 before:-inset-y-1.5 before:-z-10 before:rounded-lg before:opacity-0 before:transition hover:before:opacity-100">
+				<h3 className="flex flex-1 items-center gap-1.5 text-2xl font-light">
 					{title}
 					{tooltip && <IconTooltip content={tooltip} className="size-5" />}
 				</h3>
 				{description && <p className="text-gray-400">{description}</p>}
 				<Icon
 					icon="mingcute:up-line"
-					className="size-6 group-open:-rotate-180 transition duration-200"
+					className="size-6 transition duration-200 group-open:-rotate-180"
 				/>
 			</summary>
 			{children}
@@ -622,7 +603,7 @@ type StatSectionProps = {
 function StatSection({ title, hint, children }: StatSectionProps) {
 	return (
 		<section>
-			<h3 className="flex items-center gap-2 text-lg font-light mb-1">
+			<h3 className="mb-1 flex items-center gap-2 text-lg font-light">
 				{title}
 				{hint && (
 					<Tooltip content={hint}>
@@ -633,7 +614,7 @@ function StatSection({ title, hint, children }: StatSectionProps) {
 					</Tooltip>
 				)}
 			</h3>
-			<div className="grid gap-2 grid-cols-1 @-[12rem]:grid-cols-2 @xs:grid-cols-3 @md:grid-cols-5">
+			<div className="grid grid-cols-1 gap-2 @-[12rem]:grid-cols-2 @xs:grid-cols-3 @md:grid-cols-5">
 				{children}
 			</div>
 		</section>
@@ -653,14 +634,14 @@ function NameInput({ name, onChange }: NameInputProps) {
 			value={name}
 			onChange={(event) => onChange(event.target.value)}
 			placeholder="Unnamed Character"
-			className="text-xl flex-1"
+			className="flex-1 text-xl"
 		/>
 	)
 }
 
 function TraitList({ traits }: { traits: string[] }) {
 	const formattedTraits = formatTraitList(traits)
-	return <p className="text-gray-400 min-h-6 -mt-1">{formattedTraits}</p>
+	return <p className="-mt-1 min-h-6 text-gray-400">{formattedTraits}</p>
 }
 
 type AttributeInputListProps = {
@@ -779,7 +760,7 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 			<h3 className="font-medium">
 				{attributes[attribute].name}
 				{neededProficiencies > 0 && (
-					<span className="text-sm text-gray-400 ml-2">
+					<span className="ml-2 text-sm text-gray-400">
 						Pick {neededProficiencies}{" "}
 						{neededProficiencies === 1 ? "proficiency" : "proficiencies"}
 					</span>
@@ -797,7 +778,7 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 					return (
 						<li key={skill.name}>
 							<div
-								className={`w-full gap-1 flex items-center -mx-2 px-2 py-1 rounded transition`}
+								className={`-mx-2 flex w-full items-center gap-1 rounded px-2 py-1 transition`}
 							>
 								<span className="flex flex-1 items-center gap-1.5">
 									{skill.name}
@@ -806,23 +787,20 @@ function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
 										className="translate-y-px"
 									/>
 								</span>
-								<span className="tabular-nums grid text-end grid-flow-col items-center">
+								<span className="grid grid-flow-col items-center text-end tabular-nums">
 									<span>{attributeValue}</span>
 									{powerDice > 0 && (
 										<span className="text-primary-400 w-7">+{powerDice}</span>
 									)}
 
-									<div className="flex justify-end w-7">
+									<div className="flex w-7 justify-end">
 										{canToggle && (
 											<div
-												className={`
-												size-5 rounded-full border transition
-												${
+												className={`size-5 rounded-full border transition ${
 													isProficient
 														? "border-primary-400 bg-primary-400/20"
 														: "border-gray-400 hover:bg-gray-300/20"
-												}
-											`}
+												} `}
 											>
 												<input
 													type="checkbox"
@@ -923,24 +901,24 @@ function CharacterImage({ imageUrl, onChangeUrl }: CharacterImageProps) {
 					key={imageUrl}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="block w-full aspect-[3/4] relative border border-gray-700 rounded-lg bg-black/20 overflow-hidden"
+					className="relative block aspect-[3/4] w-full overflow-hidden rounded-lg border border-gray-700 bg-black/20"
 				>
 					<img
 						src={imageUrl}
 						alt=""
-						className="absolute size-full inset-0 object-cover brightness-50 blur-lg opacity-0"
+						className="absolute inset-0 size-full object-cover opacity-0 blur-lg brightness-50"
 						ref={fadeOnLoad}
 					/>
 					<img
 						src={imageUrl}
 						alt=""
-						className="absolute size-full inset-0 object-contain opacity-0"
+						className="absolute inset-0 size-full object-contain opacity-0"
 						ref={fadeOnLoad}
 					/>
 				</a>
 			) : (
-				<div className="w-full aspect-[3/4] border border-gray-700 rounded-lg bg-black/20 flex items-center justify-center">
-					<div className="w-full max-w-32 aspect-square opacity-25">
+				<div className="flex aspect-[3/4] w-full items-center justify-center rounded-lg border border-gray-700 bg-black/20">
+					<div className="aspect-square w-full max-w-32 opacity-25">
 						<Icon icon="mingcute:pic-fill" className="size-full" />
 					</div>
 				</div>
@@ -957,31 +935,14 @@ function CharacterImage({ imageUrl, onChangeUrl }: CharacterImageProps) {
 				<UploadButton
 					endpoint="imageUploader"
 					config={{ cn: twMerge }}
-					className="
-						flex-col-reverse items-start
-
-						ut-button:button-solid
-						ut-button:w-[unset]
-						ut-button:h-[unset]
-						ut-button:py-2
-						ut-button:px-3
-						ut-button:focus-within:ring-offset-0
-						ut-button:focus-within:ring-primary-500/50
-						ut-button:ut-uploading:after:bg-primary-500/50
-						hover:ut-button:button-solid-active
-
-						ut-allowed-content:text-gray-400
-						ut-allowed-content:font-semibold
-						ut-allowed-content:transition
-						hover:ut-allowed-content:text-primary-300/90
-					"
+					className="ut-button:button-solid ut-button:w-[unset] ut-button:h-[unset] ut-button:py-2 ut-button:px-3 ut-button:focus-within:ring-offset-0 ut-button:focus-within:ring-primary-500/50 ut-button:ut-uploading:after:bg-primary-500/50 hover:ut-button:button-solid-active ut-allowed-content:text-gray-400 ut-allowed-content:font-semibold ut-allowed-content:transition hover:ut-allowed-content:text-primary-300/90 flex-col-reverse items-start"
 					content={{
 						button: (args) =>
 							args.isUploading
 								? `${args.uploadProgress}%`
 								: args.ready
-								? "Upload"
-								: "Preparing...",
+									? "Upload"
+									: "Preparing...",
 						allowedContent: () =>
 							routeConfig?.image?.maxFileSize &&
 							`Max ${routeConfig.image.maxFileSize}`,

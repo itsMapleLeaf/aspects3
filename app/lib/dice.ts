@@ -47,10 +47,12 @@ export type DiceRollParseResult =
 	| { valid: false; input: string; message: string }
 
 /**
- * Parses a string of dice rolls into an array of objects with sides and count properties.
+ * Parses a string of dice rolls into an array of objects with sides and count
+ * properties.
  *
  * @param input The string to parse, in the format of `[X]dY [...[X]dY]`.
- * @returns An array of result objects for each roll, or an error object if the input is invalid.
+ * @returns An array of result objects for each roll, or an error object if the
+ *   input is invalid.
  */
 export function* parseDiceRollStringInput(
 	inputArg: string,

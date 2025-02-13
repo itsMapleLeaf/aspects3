@@ -123,7 +123,7 @@ export function formatTraitList(selectedTraits: string[]) {
 		? new Intl.ListFormat("en", {
 				style: "long",
 				type: "conjunction",
-		  })
+			})
 				.format(traitList)
 				.toLocaleLowerCase()
 		: ""

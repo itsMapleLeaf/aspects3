@@ -32,23 +32,23 @@ export function CloudSaveCta() {
 				portal
 				unmountOnHide
 				backdrop={
-					<div className="fixed inset-0 bg-black/50 backdrop-blur-sm data-enter:opacity-100 opacity-0 transition duration-200" />
+					<div className="fixed inset-0 bg-black/50 opacity-0 backdrop-blur-sm transition duration-200 data-enter:opacity-100" />
 				}
-				className="absolute left-1/2 top-1/2 max-w-lg -translate-x-1/2 -translate-y-1/2 [:root:has(&[data-open])]:overflow-hidden group transition opacity-0 data-enter:opacity-100 z-10"
+				className="group absolute top-1/2 left-1/2 z-10 max-w-lg -translate-x-1/2 -translate-y-1/2 opacity-0 transition data-enter:opacity-100 [:root:has(&[data-open])]:overflow-hidden"
 				preventBodyScroll={false}
 			>
-				<div className="panel p-3 flex flex-col items-center gap-4 transition translate-y-2 group-data-enter:translate-y-0">
-					<DialogHeading className="text-2xl font-light -mb-2">
+				<div className="panel flex translate-y-2 flex-col items-center gap-4 p-3 transition group-data-enter:translate-y-0">
+					<DialogHeading className="-mb-2 text-2xl font-light">
 						Save to Cloud
 					</DialogHeading>
-					<DialogDescription className="text-center px-4 text-pretty space-y-2">
+					<DialogDescription className="space-y-2 px-4 text-center text-pretty">
 						<p>Sign in to save your characters to the cloud.</p>
 						<p>
 							Export your current character first, then import it after signing
 							in.
 						</p>
 					</DialogDescription>
-					<div className="flex gap-2 flex-wrap">
+					<div className="flex flex-wrap gap-2">
 						<Button
 							icon={<Icon icon="mingcute:discord-fill" />}
 							pending={pending}

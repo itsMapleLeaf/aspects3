@@ -67,16 +67,16 @@ export function AspectArtList({
 						<div>
 							<h3
 								className={twMerge(
-									"text-lg font-medium capitalize transition-colors flex items-center",
+									"flex items-center text-lg font-medium capitalize transition-colors",
 									color,
 								)}
 							>
 								{aspect.name}
-								<span className="opacity-75 ml-1">({total})</span>
+								<span className="ml-1 opacity-75">({total})</span>
 								{hasAspect ? (
 									<IconTooltip
 										content="attuned"
-										className="opacity-60 size-4 ml-1.5 translate-y-px"
+										className="ml-1.5 size-4 translate-y-px opacity-60"
 									>
 										<Icon icon="mingcute:check-circle-fill" />
 									</IconTooltip>
@@ -91,14 +91,14 @@ export function AspectArtList({
 								<div
 									key={action.name}
 									className={twMerge(
-										"px-3 py-2 rounded-lg border transition-all",
+										"rounded-lg border px-3 py-2 transition-all",
 										color,
 										bgColor,
 									)}
 								>
 									<div>
 										<span
-											className={`font-medium text-lg flex-1 capitalize ${color}`}
+											className={`flex-1 text-lg font-medium capitalize ${color}`}
 										>
 											{action.name}
 										</span>

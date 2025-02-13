@@ -22,13 +22,13 @@ export function Input({
 	const stateClasses = readOnly
 		? "border-gray-700"
 		: error
-		? "border-red-300 focus:border-red-500 focus:ring-red-500"
-		: "border-gray-700"
+			? "border-red-300 focus:border-red-500 focus:ring-red-500"
+			: "border-gray-700"
 
 	return (
 		<div className={`min-w-0 ${className}`}>
 			{label && (
-				<label className="flex items-center gap-1 mb-0.5 text-sm text-gray-300">
+				<label className="mb-0.5 flex items-center gap-1 text-sm text-gray-300">
 					<p className="font-semibold">{label}</p>
 					{hint && <IconTooltip content={hint} className="size-4" />}
 				</label>
