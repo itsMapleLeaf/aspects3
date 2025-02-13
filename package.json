@@ -51,6 +51,7 @@
 		"@babel/preset-typescript": "^7.26.0",
 		"@mdx-js/rollup": "^3.1.0",
 		"@netlify/vite-plugin-react-router": "^1.0.0",
+		"@playwright/browser-chromium": "^1.50.1",
 		"@playwright/test": "^1.50.1",
 		"@react-router/dev": "^7.1.5",
 		"@react-router/remix-routes-option-adapter": "^7.1.5",
