@@ -61,21 +61,22 @@ Once you know what you want to go for, it's time to make your character sheet. <
 Alternatively, you can get out some paper, or open your favorite text editor. Then note down the following:
 
 1. Your character's name, background, and any other important details
-1. For each [attribute](#attributes) choose a value from 1 to 6. They should add up to 18.
-1. For each [aspect](#aspects), choose a value from 0 to 6. They should add up to 6.
+1. Your character's [level](#levels-and-progression), which determines how many stat points you get. Your group can start at any level you like.
+1. Assign each [attribute](#attributes) a number from 1 to 6. The sum depends on your [starting level](#levels-and-progression).
+1. Assign each [aspect](#aspects) a number from 0 to 6. The sum depends on your [starting level](#levels-and-progression).
 1. Pick three [traits](#traits). While picking traits, keep a tally of power dice added to your attributes and aspects.
 1. Pick proficient skills based on your traits.
-1. Hits, starting at 0
-1. Toughness, equal to your Strength + Agility
-1. Fatigue, starting at 0
-1. Resolve, equal to your Intellect + Sense + Wit
-1. Comeback points, starting at 0
+1. [Hits](#hits--toughness), starting at 0
+1. [Toughness](#hits--toughness), equal to your Strength + Agility
+1. [Fatigue](#fatigue--resolve), starting at 0
+1. [Resolve](#fatigue--resolve), equal to your Intellect + Sense + Wit
+1. [Comeback](#comeback) points, starting at 0
 
 And you're done!
 
 ## Attributes
 
-Attributes represent your character's core strengths of various capabilities or domains. Each player character should have a score for each attribute from 1 to 6. They should all add to 18.
+Attributes represent your character's core strengths of various capabilities or domains. Each player character should have a score for each attribute from 1 to 6, adding to a sum depending on your [level](#levels-and-progression).
 
 <AttributeList />
 
@@ -103,10 +104,11 @@ Aspects are the five elements of nature which characters may manipulate to their
 
 Every aspect is linked to a unique attribute. Characters with a high score in that attribute will have more success with the aspect. For example: high Strength characters would be naturally more proficient with Fire than those with low Strength.
 
-Every character has a base score for each Aspect from 0 to 6. They should add to 6. The total aspect score is the sum of the character's attribute score and their aspect score.
+Every character has a base score for each Aspect from 0 to 6, adding to a sum depending on your [level](#levels-and-progression). Then add the character's score for the aspect's linked attribute to get the aspect's total score.
+
 For example: you give Wind a score of 3. Wind is linked to Agility. If your Agility has a score of 5, your total Wind score would be 8.
 
-Your character's **attuned** aspects are those with a base score of one or more. For example: if you assign 4 points to darkness and 2 points to water, you have two attuned aspects: darkness and water. Fire, light, and wind are unattuned.
+Your character's **attuned** aspects are those with a base score of one or more. For example: if you assign 4 points to darkness and 2 points to water, your attuned aspects are darkness and water. Fire, light, and wind are unattuned.
 
 <AspectList />
 
@@ -133,6 +135,32 @@ Major aspect arts are more powerful and cost more to perform. They can be used t
 For attuned aspects, minor arts are free, while major arts cost **1 fatigue**.
 
 For unattuned aspects, minor arts cost **1 fatigue**, while major arts cost **2 fatigue**, while adding a risk die to the roll.
+
+## Levels & Progression
+
+<Callout>This has not yet been implemented on character sheets.</Callout>
+
+Your character's level represents their experience and development. All character levels in a group should be the same, and you can start at any level you like. Your level increases on each **milestone**, such as a pivotal plot point, major accomplishment, or notable checkpoint.
+
+Example: your party is working to dismantle a large, powerful crime syndicate. You find and confront the leader. They end up escaping, but you manage to throw a huge wrench in their operations. With that, your party takes a well-deserved rest, and a well-deserved level up!
+
+See the table below for the reward gained at each level. Once you reach the highest level shown, you cannot level up any further.
+
+| Level | Attribute points | Aspect points |
+| ----- | ---------------- | ------------- |
+| 1     | 15               | 3             |
+| 2     |                  |               |
+| 3     | 16               | 4             |
+| 4     |                  |               |
+| 5     | 17               | 5             |
+| 6     |                  |               |
+| 7     | 18               | 6             |
+| 8     |                  |               |
+| 9     | 19               | 7             |
+| 10    |                  |               |
+| 11    | 20               | 8             |
+| 12    |                  |               |
+| 13    | 21               | 9             |
 
 ## Action Rolls
 
