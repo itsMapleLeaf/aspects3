@@ -226,7 +226,9 @@ export function addCommands(
 							return
 						}
 
-						const deferred = await interaction.deferReply()
+						const deferred = await interaction.deferReply({
+							flags: [Discord.MessageFlags.SuppressEmbeds],
+						})
 
 						const character = await context.findCharacterByUser({
 							user: interaction.user,
@@ -337,7 +339,9 @@ export function addCommands(
 							return
 						}
 
-						const deferred = await interaction.deferReply()
+						const deferred = await interaction.deferReply({
+							flags: [Discord.MessageFlags.SuppressEmbeds],
+						})
 
 						const character = await context.findCharacterByUser({
 							user: interaction.user,
