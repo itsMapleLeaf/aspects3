@@ -5,4 +5,5 @@ cmds = ['bun install --filter "./workspaces/bot" --production']
 cmds = []
 
 [start]
-cmd = 'bun run --filter "./workspaces/bot" start'
+# avoid --filter here because bun prefixes log lines and it can't be disabled 🙃
+cmd = 'cd ./workspaces/bot && bun start'
