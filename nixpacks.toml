@@ -1,5 +1,5 @@
 [phases.install]
-cmds = ['bun install --filter "./workspaces/web"']
+cmds = ['bun install --filter "./workspaces/web" --production']
 
 [phases.build]
 cmds = []
