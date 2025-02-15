@@ -1,8 +1,8 @@
 [phases.install]
-cmds = ['bun install --filter "./workspaces/web" --production']
+cmds = ['bun install --filter "./workspaces/bot" --production']
 
 [phases.build]
 cmds = []
 
 [start]
-cmd = 'bun run --filter "./workspaces/web" start:bot'
+cmd = 'bun run --filter "./workspaces/bot" start'

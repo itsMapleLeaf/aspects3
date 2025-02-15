@@ -1,5 +1,5 @@
-import type { AspectName } from "~/data/aspects.ts"
-import type { AttributeName } from "~/data/attributes.ts"
+import type { AspectName } from "./aspects.ts"
+import type { AttributeName } from "./attributes.ts"
 
 export type Trait = {
 	name: string

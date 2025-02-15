@@ -1,9 +1,9 @@
+import type { Character } from "@workspace/shared/characters"
 import { expect, mock, test } from "bun:test"
 import * as Discord from "discord.js"
-import type { Character } from "../data/characters.ts"
-import { createInteractionRouter } from "../lib/interactions/router.ts"
 import { addCommands } from "./commands.ts"
 import { type CommandContext } from "./context.ts"
+import { createInteractionRouter } from "./router.ts"
 
 const dummyCharacterData: Character = {
 	name: "Test",

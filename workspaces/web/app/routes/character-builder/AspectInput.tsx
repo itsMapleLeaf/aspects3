@@ -1,6 +1,6 @@
-import { aspects, type AspectName } from "~/data/aspects.ts"
-import type { Character } from "~/data/characters.ts"
-import { getAttributeValue } from "~/data/characters.ts"
+import { aspects, type AspectName } from "@workspace/shared/aspects"
+import type { Character } from "@workspace/shared/characters"
+import { getAttributeValue } from "@workspace/shared/characters"
 import { StatInput } from "./StatInput.tsx"
 
 const aspectColors = {

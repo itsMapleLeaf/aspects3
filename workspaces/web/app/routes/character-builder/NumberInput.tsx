@@ -1,5 +1,5 @@
+import { parseNumber } from "@workspace/shared/utils"
 import { type ComponentProps } from "react"
-import { parseNumber } from "~/lib/utils"
 
 type NumberInputProps = {
 	value: string

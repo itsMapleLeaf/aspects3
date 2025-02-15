@@ -1,6 +1,6 @@
+import { Character } from "@workspace/shared/characters"
 import { useEffect, useRef } from "react"
 import { useSearchParams } from "react-router"
-import { Character } from "~/data/characters.ts"
 
 export function useCharacterFromDataParam(
 	onParsed: (character: Character) => void,

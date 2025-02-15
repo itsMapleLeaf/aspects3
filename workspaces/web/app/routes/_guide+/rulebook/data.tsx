@@ -1,10 +1,14 @@
-import { aspects, listAspects, type AspectName } from "~/data/aspects.ts"
+import {
+	aspects,
+	listAspects,
+	type AspectName,
+} from "@workspace/shared/aspects"
 import {
 	attributes,
 	listAttributes,
 	type AttributeName,
-} from "~/data/attributes.ts"
-import { traits } from "~/data/traits.ts"
+} from "@workspace/shared/attributes"
+import { traits } from "@workspace/shared/traits"
 
 export function AttributeList() {
 	return (

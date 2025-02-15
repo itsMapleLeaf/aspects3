@@ -1,6 +1,6 @@
 import * as Discord from "discord.js"
 import type { Except } from "type-fest"
-import { logger } from "../logger.ts"
+import { logger } from "./logger.ts"
 
 export type InteractionRouter = ReturnType<typeof createInteractionRouter>
 

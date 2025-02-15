@@ -1,6 +1,6 @@
+import { Character } from "@workspace/shared/characters"
+import { api } from "@workspace/web/convex/_generated/api.js"
 import { ConvexHttpClient } from "convex/browser"
-import { Character } from "~/data/characters.ts"
-import { api } from "../../convex/_generated/api"
 
 type DiscordUser = {
 	id: string

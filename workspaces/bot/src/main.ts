@@ -1,8 +1,8 @@
 import * as Discord from "discord.js"
-import { addCommands } from "./bot/commands.ts"
-import { createConvexContext } from "./bot/context.ts"
-import { createInteractionRouter } from "./lib/interactions/router.ts"
-import { console } from "./lib/logger.ts"
+import { addCommands } from "./commands.ts"
+import { createConvexContext } from "./context.ts"
+import { console } from "./logger.ts"
+import { createInteractionRouter } from "./router.ts"
 
 const token = process.env.DISCORD_BOT_TOKEN
 if (!token) {

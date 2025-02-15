@@ -1,13 +1,14 @@
-import * as Discord from "discord.js"
-import { range, startCase } from "es-toolkit"
-import { matchSorter } from "match-sorter"
-import { aspectNames, aspects, type AspectName } from "~/data/aspects.ts"
+import {
+	aspectNames,
+	aspects,
+	type AspectName,
+} from "@workspace/shared/aspects"
 import {
 	attributeNames,
 	attributes,
 	getAttributeBySkill,
 	getSkill,
-} from "~/data/attributes.ts"
+} from "@workspace/shared/attributes"
 import {
 	Character,
 	getAspectPowerDice,
@@ -15,17 +16,20 @@ import {
 	getAttributeValue,
 	getCharacterUrl,
 	getSkillPowerDice,
-} from "~/data/characters.ts"
+} from "@workspace/shared/characters"
 import {
 	numericDie,
 	parseDiceRollStringInput,
 	powerDie,
 	riskDie,
 	rollDice,
-} from "../lib/dice.ts"
-import type { InteractionRouter } from "../lib/interactions/router.ts"
-import { logger } from "../lib/logger.ts"
+} from "@workspace/shared/dice"
+import * as Discord from "discord.js"
+import { range, startCase } from "es-toolkit"
+import { matchSorter } from "match-sorter"
 import type { CommandContext } from "./context.ts"
+import { logger } from "./logger.ts"
+import type { InteractionRouter } from "./router.ts"
 
 export function addCommands(
 	router: InteractionRouter,

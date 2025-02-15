@@ -1,5 +1,5 @@
+import { type AttributeName, attributes } from "@workspace/shared/attributes"
 import { type ComponentProps } from "react"
-import { type AttributeName, attributes } from "~/data/attributes"
 import { StatInput } from "./StatInput.tsx"
 
 const ATTRIBUTE_COLORS: Record<AttributeName, string> = {

@@ -1,6 +1,6 @@
+import { Character } from "@workspace/shared/characters"
+import { pipe, timeoutPromise } from "@workspace/shared/utils"
 import { useState, useTransition } from "react"
-import { Character } from "~/data/characters.ts"
-import { pipe, timeoutPromise } from "~/lib/utils.ts"
 
 export function useCopyCharacterShareUrl(character: Character) {
 	const [pending, startTransition] = useTransition()

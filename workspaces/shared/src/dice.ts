@@ -1,5 +1,5 @@
 import { range } from "es-toolkit"
-import { randomItem } from "./utils.ts"
+import { randomItem } from "./utils"
 
 const modifierSideCount = 6
 const maxInputDice = 100

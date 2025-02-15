@@ -1,5 +1,22 @@
 import * as Ariakit from "@ariakit/react"
 import { useAuthActions } from "@convex-dev/auth/react"
+import { aspectNames } from "@workspace/shared/aspects"
+import {
+	attributeNames,
+	attributes,
+	type AttributeName,
+} from "@workspace/shared/attributes"
+import {
+	Character,
+	getAspectTotal,
+	getAttributeTotal,
+	getAttributeValue,
+	getAvailableProficiencies,
+	getResolve,
+	getSkillPowerDice,
+	getToughness,
+} from "@workspace/shared/characters"
+import { traits } from "@workspace/shared/traits"
 import { useConvexAuth } from "convex/react"
 import { type ComponentProps, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
@@ -11,23 +28,6 @@ import { Input } from "~/components/ui/Input.tsx"
 import { SquareIconButton } from "~/components/ui/SquareIconButton.tsx"
 import { TextArea } from "~/components/ui/TextArea.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
-import { aspectNames } from "~/data/aspects.ts"
-import {
-	attributeNames,
-	attributes,
-	type AttributeName,
-} from "~/data/attributes.ts"
-import {
-	Character,
-	getAspectTotal,
-	getAttributeTotal,
-	getAttributeValue,
-	getAvailableProficiencies,
-	getResolve,
-	getSkillPowerDice,
-	getToughness,
-} from "~/data/characters.ts"
-import { traits } from "~/data/traits.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { UploadButton, useUploadThing } from "~/routes/api.images/components.ts"
 import { AspectArts } from "~/routes/character-builder/AspectArts.tsx"

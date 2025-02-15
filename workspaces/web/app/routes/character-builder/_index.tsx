@@ -1,5 +1,5 @@
+import { Character, createEmptyCharacter } from "@workspace/shared/characters"
 import { useConvexAuth, useQuery } from "convex/react"
-import { Character, createEmptyCharacter } from "~/data/characters.ts"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { api } from "../../../convex/_generated/api"
 import { getPageMeta } from "../../meta.ts"

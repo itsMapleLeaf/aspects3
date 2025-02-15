@@ -1,4 +1,5 @@
 import * as Ariakit from "@ariakit/react"
+import { createEmitter } from "@workspace/shared/utils"
 import { randomInt, range, sum, sumBy } from "es-toolkit"
 import {
 	createContext,
@@ -11,7 +12,6 @@ import {
 	type RefObject,
 } from "react"
 import { twMerge } from "tailwind-merge"
-import { createEmitter } from "~/lib/utils.ts"
 import { Button } from "./ui/Button.tsx"
 import { Icon } from "./ui/Icon.tsx"
 import { Tooltip } from "./ui/Tooltip.tsx"

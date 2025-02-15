@@ -1,8 +1,8 @@
+import type { Character } from "@workspace/shared/characters"
+import { pipe, timeoutPromise } from "@workspace/shared/utils"
 import { useState, useTransition } from "react"
 import { Button } from "../../components/ui/Button.tsx"
 import { Icon } from "../../components/ui/Icon.tsx"
-import type { Character } from "../../data/characters.ts"
-import { pipe, timeoutPromise } from "../../lib/utils.ts"
 
 export function CharacterShareButton({ character }: { character: Character }) {
 	const [pending, startTransition] = useTransition()

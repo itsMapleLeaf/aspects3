@@ -1,12 +1,15 @@
+import { aspects } from "@workspace/shared/aspects"
+import type { Character } from "@workspace/shared/characters"
+import {
+	getAspectPowerDice,
+	getAttributeValue,
+} from "@workspace/shared/characters"
+import { parseNumber } from "@workspace/shared/utils"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"
 import { Button } from "~/components/ui/Button.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
-import { aspects } from "~/data/aspects.ts"
-import type { Character } from "~/data/characters.ts"
-import { getAspectPowerDice, getAttributeValue } from "~/data/characters.ts"
-import { parseNumber } from "~/lib/utils"
 
 const aspectColors = {
 	light: "text-yellow-300",

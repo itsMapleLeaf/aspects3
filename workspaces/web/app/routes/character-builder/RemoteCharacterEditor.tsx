@@ -1,11 +1,11 @@
 import * as Ariakit from "@ariakit/react"
+import { Character, createEmptyCharacter } from "@workspace/shared/characters"
 import { useConvex } from "convex/react"
 import { useEffect, useState, useTransition } from "react"
 import { api } from "../../../convex/_generated/api"
 import type { Doc } from "../../../convex/_generated/dataModel"
 import { Icon } from "../../components/ui/Icon.tsx"
 import { SquareIconButton } from "../../components/ui/SquareIconButton.tsx"
-import { Character, createEmptyCharacter } from "../../data/characters.ts"
 import {
 	CharacterEditor,
 	CharacterEditorLayout,
