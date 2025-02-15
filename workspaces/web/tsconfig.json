@@ -1,0 +1,10 @@
+{
+	"extends": "@workspace/shared/tsconfig.json",
+	"exclude": ["**/node_modules", "build"],
+	"compilerOptions": {
+		"rootDirs": [".", "./.react-router/types"],
+		"paths": {
+			"~/*": ["./app/*"]
+		}
+	}
+}

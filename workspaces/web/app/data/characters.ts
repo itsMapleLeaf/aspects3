@@ -1,7 +1,7 @@
 import { type } from "arktype"
 import { aspects, type AspectName } from "./aspects.ts"
-import { getAttributeBySkill, type AttributeName } from "./attributes"
-import { traits } from "./traits"
+import { getAttributeBySkill, type AttributeName } from "./attributes.ts"
+import { traits } from "./traits.ts"
 
 export type Character = typeof Character.infer
 export const Character = type({

@@ -1,0 +1,5 @@
+/.react-router/
+/build/
+/public/rulebook.pdf
+test-results/
+playwright-report/

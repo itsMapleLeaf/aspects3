@@ -9,7 +9,7 @@ import {
 	ScrollRestoration,
 } from "react-router"
 import { Navigation } from "~/components/Navigation"
-import type { Route } from "./+types/root"
+import type { Route } from "./+types/root.ts"
 import stylesheet from "./app.css?url"
 import { DiceTray } from "./components/DiceTray.tsx"
 import { convexClient } from "./lib/convex.ts"

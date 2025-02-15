@@ -1,19 +1,4 @@
-.DS_Store
-/node_modules/
-
-# React Router
-/.react-router/
-/build/
-/public/rulebook.pdf
-
-.env
-
-prisma/*.db
-
-.env.local
-
-test-results/
-playwright-report/
-
-# Local Netlify folder
 .netlify
+.DS_Store
+node_modules/
+.env*
