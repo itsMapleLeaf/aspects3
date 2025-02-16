@@ -1,0 +1,40 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "dev",
+			"detail": "run all apps in dev mode",
+			"dependsOn": ["dev:web", "dev:bot", "typecheck:watch"],
+			"dependsOrder": "parallel",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "dev:web",
+			"detail": "run web app in dev mode",
+			"type": "shell",
+			"command": ["bun", "dev"],
+			"options": {
+				"cwd": "workspaces/web"
+			}
+		},
+		{
+			"label": "dev:bot",
+			"detail": "run bot in dev mode",
+			"type": "shell",
+			"command": ["bun", "dev"],
+			"options": {
+				"cwd": "workspaces/bot"
+			}
+		},
+		{
+			"label": "typecheck:watch",
+			"detail": "run tsc in watch mode",
+			"type": "shell",
+			"command": ["bunx", "tsc", "-b", "--watch"],
+			"problemMatcher": "$tsc-watch"
+		}
+	]
+}
