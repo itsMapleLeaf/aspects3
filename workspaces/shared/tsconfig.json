@@ -13,6 +13,8 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
-		"allowImportingTsExtensions": true
+		"allowImportingTsExtensions": true,
+		"incremental": true,
+		"composite": true
 	}
 }

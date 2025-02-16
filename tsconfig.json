@@ -1,0 +1,8 @@
+{
+	"files": [],
+	"references": [
+		{ "path": "workspaces/web" },
+		{ "path": "workspaces/bot" },
+		{ "path": "workspaces/shared" }
+	]
+}

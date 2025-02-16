@@ -13,7 +13,7 @@
 		"dev": "bun run --filter '*' dev",
 		"preview": "bun run --filter '*' preview",
 		"test": "bun run --filter '*' test",
-		"typecheck": "bun run --filter '*' typecheck",
+		"typecheck": "tsc -b",
 		"format": "prettier --write --list-different ."
 	},
 	"dependencies": {
