@@ -20,6 +20,7 @@ export const get = query({
 })
 
 export const listOwned = query({
+	args: {},
 	handler: async (ctx) => {
 		try {
 			const userId = await ensureAuthUserId(ctx)
@@ -35,6 +36,7 @@ export const listOwned = query({
 })
 
 export const create = mutation({
+	args: {},
 	handler: async (ctx) => {
 		const userId = await ensureAuthUserId(ctx)
 

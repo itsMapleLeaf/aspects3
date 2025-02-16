@@ -43,6 +43,7 @@ export const getByKey = query({
 })
 
 export const getFallback = query({
+	args: {},
 	handler: async (ctx) => {
 		try {
 			const userId = await ensureAuthUserId(ctx)
@@ -58,6 +59,7 @@ export const getFallback = query({
 })
 
 export const listOwned = query({
+	args: {},
 	handler: async (ctx) => {
 		try {
 			const userId = await ensureAuthUserId(ctx)
