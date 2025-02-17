@@ -1,20 +1,15 @@
 import { Link } from "react-router"
 import { getPageMeta } from "../../../meta.ts"
-import { Callout } from "../Callout.tsx"
+import { Callout } from "../.components/Callout.tsx"
 import { AspectList, AttributeList, TraitList } from "./data.tsx"
 
-export const title = "Rulebook"
-export const meta = getPageMeta(title)
-
-# {title}
-
-Aspects of Nature is a story-focused, rules-lite tabletop roleplaying game. Set in a world populated by several varieties of humanoid races, all are born with the ability to manipulate one or more elements of nature, or **Aspects**, to their will.
+**Aspects of Nature** is a story-focused, rules-lite tabletop roleplaying game. Set in a world populated by several varieties of humanoid races, all are born with the ability to manipulate one or more elements of nature, or **Aspects**, to their will.
 
 ## Gameplay Overview
 
 Players should first create their characters, assigning attributes, aspects, and traits that suit them.
 
-The narrator[^narrator] should prepare a scenario for the players to play through, whether it’s a single-session one-shot, or a campaign spanning over dozens of sessions. Sessions can last anywhere around 1 to 3 hours, depending on the energy levels, attention span, and/or available time for those playing.
+The narrator[^narrator] should prepare a scenario for the players to play through, whether it’s a single-session one-shot, or a campaign spanning over dozens of sessions. Sessions can last anywhere around 1 to 3 hours.
 
 The game starts and runs as a back-and-forth between players and the narrator.
 
@@ -22,37 +17,37 @@ The game starts and runs as a back-and-forth between players and the narrator.
 
 ### Players
 
-When building your character, aside from their personality and overall vibe, one of the things you'll want to give them is a goal. It can be something concrete, such as wanting to find a lost sibling, or it can be a general north star that guides their decisions. Examples:
+When building your character, aside from their personality and overall vibe, one of the things you'll want to give them is a goal. It can be something concrete, such as wanting to find a lost sibling, or it can be some other set of values that guides their decisions. Examples:
 
 - A doctor who lost someone close to them. This leads them to try to help others when they can, even to the detriment of themselves.
 - A rogueish drifter who's felt betrayal by those they thought they trusted. They now only view others as resources to take advantage of.
 - A business owner who always tries to steer themselves towards opportunities for profit. With a weakened sense of self damaged by their upbringing, they know no other means of proving their own worth.
 
-During gameplay, you'll tell the narrator what you would like your character to do in any given scene. You'll usually make actions that fit with your character's strengths. For example, as a strong brute type character, a lot of your problem solving would involve Strength checks. As a charming social butterfly, a lot of your actions would involve Wit.
+During gameplay, you'll tell the narrator what you would like your character to do in any given scene. You'll usually make actions that fit with your character's strengths. For example, as a strong brute type character, a lot of your problem solving would involve strength-focused rolls. As a charming social butterfly, a lot of your actions would involve social-focused rolls.
 
 ### Narrator
 
 As the narrator, start by describing the scene to the characters. Describe the look and feel and mention any other NPCs who might be present, as well as any points of interest.
 
-When players want to do something, think about whether it's something that could fail. If so, ask for a skill check, picking the appropriate skill.
+When players want to do something, think about whether it's something that could fail. If so, ask for a [skill check](#skill-checks), picking the appropriate skill.
 
 Although players will attempt to lean on their character's strengths, it can make things interesting to put them in situations that force them to make unfavorable compromises.
 
-Additionally, consider the scenario, and whether there are factors that might help or hinder their attempt. If so, apply power or risk dice as appropriate. If a player is asking a favor from an NPC, asking a helpful long-time friend might give them a power dice, but asking an irritable, unfriendly stranger might give them one or more risk dice instead.
+Additionally, consider the scenario, and whether there are factors that might help or hinder their attempt. If so, apply [modifier dice](#modifier-dice) as appropriate. If a player is asking a favor from an NPC, asking a helpful long-time friend might give them a power dice, but asking an irritable, unfriendly stranger might give them one or more risk dice instead.
 
 For a compelling, immersive game, consider parallel story threads or imminent events that may be happening in the background, and how they might affect the player's current situation.
 
-It can also help to inject minor bits of trivia to diagetically add flavor to the world. Here's an example:
+It can also help to inject minor bits of trivia to add flavor to the world. Here's an example:
 
 > You walk into a café at night. The interior is warmly lit with light aspect crystals lining the walls and hanging from the ceiling. The tables and chairs sport the dark greenish color of the tall trees that border your town.
 >
 > Behind the counter, you see a brown-skinned barista with a set of panda ears, tail, and small stubby horns that suggest a mixed lineage. You watch as she operates a small metal brewery range, sending heat through it to keep her pots of coffee and tea steaming hot.
 >
-> She notices a pot that's nearly empty. After discarding the old coffee, she fetches a bag of beans and pours them in a grinder. You watch her blow softly into a compartment of the grinder, a small bit of wind art which prompts it to spin rapidly, chopping up the beans into coarse bits ready for a fresh pot.
+> She notices a pot that's nearly empty. After discarding the sliver of remaining coffee, she fetches a bag of beans and pours them in a grinder. You watch her blow softly into a compartment of the grinder, a small bit of wind art which prompts it to spin rapidly, chopping up the beans into coarse bits ready for a fresh pot.
 
 ## Character Creation
 
-Characters in Aspects of Nature are often humans with traits that follow some sort of creature or fantasy lineage. Think cat-like humans with cat ears and long thin tails; part-dragons with horns, glowing eyes, and patches of scales on their bodies; part-lizards with scales and skin fading to green; or anything else you can think of.
+Characters in this world are often humans with traits that follow some sort of creature or fantasy lineage. Think cat-like humans with cat ears and long thin tails; part-dragons with horns, glowing eyes, and patches of scales on their bodies; part-lizards with scales and skin fading to green; or anything else you can think of.
 
 As mentioned in the [player guide](#players), you'll also want to think of your character's theme, goal, and/or background. You don't have to go into too much detail; that can be fleshed out as the game unfolds.
 
@@ -61,9 +56,9 @@ Once you know what you want to go for, it's time to make your character sheet. <
 Alternatively, you can get out some paper, or open your favorite text editor. Then note down the following:
 
 1. Your character's name, background, and any other important details
-1. Your character's [level](#levels-and-progression), which determines how many stat points you get. Your group can start at any level you like.
-1. Assign each [attribute](#attributes) a number from 1 to 6. The sum depends on your [starting level](#levels-and-progression).
-1. Assign each [aspect](#aspects) a number from 0 to 6. The sum depends on your [starting level](#levels-and-progression).
+1. Your character's [level](#levels--progression), which determines how many stat points you get. Your group can start at any level you like.
+1. Assign each [attribute](#attributes) a number from 1 to 6. The sum depends on your [starting level](#levels--progression).
+1. Assign each [aspect](#aspects) a number from 0 to 6. The sum depends on your [starting level](#levels--progression).
 1. Pick three [traits](#traits). While picking traits, keep a tally of power dice added to your attributes and aspects.
 1. Pick proficient skills based on your traits.
 1. [Hits](#hits--toughness), starting at 0
@@ -76,7 +71,7 @@ And you're done!
 
 ## Attributes
 
-Attributes represent your character's core strengths of various capabilities or domains. Each player character should have a score for each attribute from 1 to 6, adding to a sum depending on your [level](#levels-and-progression).
+Attributes represent your character's core strengths of various capabilities or domains. Each player character should have a score for each attribute from 1 to 6, adding to a sum depending on your [level](#levels--progression).
 
 <AttributeList />
 
@@ -96,21 +91,19 @@ Fatigue starts at 0, and your resolve equals the sum of your Intellect, Sense, a
 
 ### Resting
 
-You may choose to rest for a number of in-game hours, recovering one hit and fatigue per hour.
+You may choose to rest for a number of in-game hours, which heals one hit and fatigue per hour rested.
 
 ## Aspects
 
 Aspects are the five elements of nature which characters may manipulate to their will.
 
+<AspectList />
+
 Every aspect is linked to a unique attribute. Characters with a high score in that attribute will have more success with the aspect. For example: high Strength characters would be naturally more proficient with Fire than those with low Strength.
 
-Every character has a base score for each Aspect from 0 to 6, adding to a sum depending on your [level](#levels-and-progression). Then add the character's score for the aspect's linked attribute to get the aspect's total score.
+Every character has a base score for each Aspect from 0 to 6, adding to a sum depending on your [level](#levels--progression). Then add the character's score for the aspect's linked attribute to get the aspect's total score.
 
 For example: you give Wind a score of 3. Wind is linked to Agility. If your Agility has a score of 5, your total Wind score would be 8.
-
-Your character's **attuned** aspects are those with a base score of one or more. For example: if you assign 4 points to darkness and 2 points to water, your attuned aspects are darkness and water. Fire, light, and wind are unattuned.
-
-<AspectList />
 
 ### Aspect Art
 
@@ -132,9 +125,9 @@ Major aspect arts are more powerful and cost more to perform. They can be used t
 - Fire: throwing a massive fireball at an enemy or obstacle
 - Darkness: turning silent and invisible to escape capture
 
-For attuned aspects, minor arts are free, while major arts cost **1 fatigue**.
+### Attunement
 
-For unattuned aspects, minor arts cost **1 fatigue**, while major arts cost **2 fatigue**, while adding a risk die to the roll.
+Your character's **attuned** aspects are those with a base score of one or more. For example: if you assign 4 points to darkness and 2 points to water, your attuned aspects are darkness and water. Fire, light, and wind are unattuned.
 
 ## Levels & Progression
 
@@ -195,17 +188,17 @@ import { SkillList } from "./data.tsx"
 
 An aspect check is a special kind of skill check to perform a major aspect art. The roll is made with **a d12 die** instead of a d6, and the target is the character's score in the corresponding aspect.
 
-For example: you want to use _Shield_, which is a water aspect art. If your total water score is 7 (Base 3 + Sense 4), you would need to roll a 7 or lower to succeed.
+import { AspectSkillList } from "./data.tsx"
+
+<AspectSkillList />
+
+Example: you want to use _Shield_, which is a water aspect art. If your total water score is 7 (Base 3 + Sense 4), you would need to roll a 7 or lower to succeed.
 
 Each aspect action has a success case, the base effect. If you fail the roll, then you'll instead apply the failure case, which **modifies** the base effect.
 
 For example: a successful check for _Inspire_ will add 2 power dice to a target's next roll. On failure, it will give them 1 power die instead.
 
 Below is a list of built-in aspect arts. Think of them as presets; you can still perform other "freeform" aspect arts not listed here.
-
-import { AspectSkillList } from "./data.tsx"
-
-<AspectSkillList />
 
 <Callout>
 	You may have noticed that attributes and aspects set to their max level of 6

@@ -1,6 +1,6 @@
 {
 	"extends": "../shared/tsconfig.json",
-	"include": ["**/*", ".react-router/**/*"],
+	"include": ["**/*", ".react-router/**/*", "app/**/.*"],
 	"exclude": ["**/node_modules", "build"],
 	"compilerOptions": {
 		"rootDirs": [".", "./.react-router/types"],

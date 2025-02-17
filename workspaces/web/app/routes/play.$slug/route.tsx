@@ -7,7 +7,7 @@ import {
 import { api } from "../../../convex/_generated/api"
 import { DiscordSignInButton } from "../../components/DiscordSignInButton.tsx"
 import { Icon } from "../../components/ui/Icon.tsx"
-import type { Route } from "./+types/_index.ts"
+import type { Route } from "./+types/route.ts"
 
 export default function PlaySlugRoute({ params }: Route.ComponentProps) {
 	return (
