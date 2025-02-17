@@ -14,6 +14,11 @@ export default function RouteComponent() {
 				prose-a:hover:text-primary-300
 				prose-a:hover:no-underline
 
+				prose-h4:text-[22px]
+				prose-h3:text-[26px]
+				prose-h2:text-[32px]
+				prose-h1:text-[40px]
+
 				prose-headings:font-light print:prose-headings:text-gray-900 print:prose-headings:font-semibold
 				prose-headings:pt-20 prose-headings:-mt-16
 				prose-headings:target:text-primary-300
