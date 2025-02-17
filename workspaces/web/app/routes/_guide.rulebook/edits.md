@@ -18,7 +18,7 @@ Aspects
 
 Action Rolls
 [x] "has some chance of failure" - also flip side, some chance of success, no rolling for things that are clearly impossible
-[ ] roll under - might be easier to digest it if framed as, your score needs to be higher than the roll (especially if the narrator is the one to roll, because then you are trying "beat" the narrator's roll)
+[x] roll under - might be easier to digest it if framed as, your score needs to be higher than the roll (especially if the narrator is the one to roll, because then you are trying "beat" the narrator's roll)
 
 Zones
 [ ] 2D, so how is the vertical axis handled? When a plane flies directly overhead, is it in my immediate zone and I can strike it?
