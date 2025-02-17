@@ -1,10 +1,10 @@
-import { getPageMeta } from "../../../meta.ts"
+import { getPageMeta } from "../../meta.ts"
 import Content from "./content.mdx"
 
-export const title = "Rulebook"
+export const title = "World Lore"
 export const meta = () => getPageMeta(title)
 
-export default function RulebookRoute() {
+export default function LoreRoute() {
 	return (
 		<>
 			<h1>{title}</h1>
