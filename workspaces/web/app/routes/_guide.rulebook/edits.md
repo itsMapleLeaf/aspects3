@@ -21,9 +21,8 @@ Action Rolls
 [x] roll under - might be easier to digest it if framed as, your score needs to be higher than the roll (especially if the narrator is the one to roll, because then you are trying "beat" the narrator's roll)
 
 Zones
-[ ] 2D, so how is the vertical axis handled? When a plane flies directly overhead, is it in my immediate zone and I can strike it?
-[ ] "A character's range affects their action rolls in the following ways:" the bullets under this are difficult to parse, perhaps you could bold the actions and/or reformat a bit
-[ ] "Zones can be laid out in any way you prefer" - I'm almost envisioning a sidescroller, where players are in zone 0 and there's zones 1-5 to the left and right where you place enemies (anything 5+ offscreen)
+[x] 2D, so how is the vertical axis handled? When a plane flies directly overhead, is it in my immediate zone and I can strike it?
+[x] "A character's range affects their action rolls in the following ways:" the bullets under this are difficult to parse, perhaps you could bold the actions and/or reformat a bit
 
 [ ] re: Adrenaline. The fact that this section comes after Action Phase makes it feel to me like it's an afterthought. Maybe put Adrenaline and Movement before Action Phase to make it clear that these need to be set during Decision Phase? (Also, does the player decide the order of their actions and movement during decision phase or can that be changed during Action Phase? If I had chosen Strike and Move but the opponent went first and moved out of striking distance, could I do Move then Strike?)
 
