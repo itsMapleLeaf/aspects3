@@ -14,11 +14,11 @@ Character Creation
 
 Aspects
 [x] I would put the bulleted list immediately after the first line
-[ ] it's unclear as written if the risk die applies to all unattuned aspects or only major ones
+[x] it's unclear as written if the risk die applies to all unattuned aspects or only major ones
 
 Action Rolls
+[x] "has some chance of failure" - also flip side, some chance of success, no rolling for things that are clearly impossible
 [ ] roll under - might be easier to digest it if framed as, your score needs to be higher than the roll (especially if the narrator is the one to roll, because then you are trying "beat" the narrator's roll)
-[ ] "has some chance of failure" - also flip side, some chance of success, no rolling for things that are clearly impossible
 
 Zones
 [ ] 2D, so how is the vertical axis handled? When a plane flies directly overhead, is it in my immediate zone and I can strike it?

@@ -39,11 +39,11 @@ For a compelling, immersive game, consider parallel story threads or imminent ev
 
 It can also help to inject minor bits of trivia to add flavor to the world. Here's an example:
 
-> You walk into a café at night. The interior is warmly lit with light aspect crystals lining the walls and hanging from the ceiling. The tables and chairs sport the dark greenish color of the tall trees that border your town.
+> You walk into a café at night. The interior is warmly lit with Light aspect crystals lining the walls and hanging from the ceiling. The tables and chairs sport the dark greenish color of the tall trees that border your town.
 >
 > Behind the counter, you see a brown-skinned barista with a set of panda ears, tail, and small stubby horns that suggest a mixed lineage. You watch as she operates a small metal brewery range, sending heat through it to keep her pots of coffee and tea steaming hot.
 >
-> She notices a pot that's nearly empty. After discarding the sliver of remaining coffee, she fetches a bag of beans and pours them in a grinder. You watch her blow softly into a compartment of the grinder, a small bit of wind art which prompts it to spin rapidly, chopping up the beans into coarse bits ready for a fresh pot.
+> She notices a pot that's nearly empty. After discarding the sliver of remaining coffee, she fetches a bag of beans and pours them in a grinder. You watch her blow softly into a compartment of the grinder, a small bit of Wind art which prompts it to spin rapidly, chopping up the beans into coarse bits ready for a fresh pot.
 
 ## Character Creation
 
@@ -93,118 +93,13 @@ Fatigue starts at 0, and your resolve equals the sum of your Intellect, Sense, a
 
 You may choose to rest for a number of in-game hours, which heals one hit and fatigue per hour rested.
 
-## Aspects
-
-Aspects are the five elements of nature which characters may manipulate to their will.
-
-<AspectList />
-
-Every aspect is linked to a unique attribute. Characters with a high score in that attribute will have more success with the aspect. For example: high Strength characters would be naturally more proficient with Fire than those with low Strength.
-
-Every character has a base score for each Aspect from 0 to 6, adding to a sum depending on your [level](#levels--progression). Then add the character's score for the aspect's linked attribute to get the aspect's total score.
-
-For example: you give Wind a score of 3. Wind is linked to Agility. If your Agility has a score of 5, your total Wind score would be 8.
-
-### Aspect Art
-
-The manipulation of aspects is called **aspect art**, of which there are two categories: **minor**, and **major**.
-
-Minor arts are more subtle, low-risk, and low-impact. Minor arts are the sorts of arts used in normal day-to-day life. Examples include:
-
-- Light: making an orb of light
-- Water: drying a set of clothes
-- Fire: heating a cup of tea
-- Wind: making a gentle breeze
-- Darkness: conjure an amusing illusion for fun
-
-Major aspect arts are more powerful and cost more to perform. They can be used to great effect, whether to help a friend or to cause a great deal of damage. Major aspect arts require an [aspect check](#aspect-checks). Examples include:
-
-- Light: healing the wounds of several injured friends
-- Water: parting a path through a lake
-- Wind: creating a deafening thunderclap
-- Fire: throwing a massive fireball at an enemy or obstacle
-- Darkness: turning silent and invisible to escape capture
-
-### Attunement
-
-Your character's **attuned** aspects are those with a base score of one or more. For example: if you assign 4 points to darkness and 2 points to water, your attuned aspects are darkness and water. Fire, light, and wind are unattuned.
-
-## Levels & Progression
-
-<Callout>This has not yet been implemented in the character builder.</Callout>
-
-Your character's level represents their experience and development. All character levels in a group should be the same, and you can start at any level you like. Your level increases on each **milestone**, such as a pivotal plot point, major accomplishment, or notable checkpoint.
-
-Example: your party is working to dismantle a large, powerful crime syndicate. You find and confront the leader. They end up escaping, but you manage to throw a huge wrench in their operations. With that, your party takes a well-deserved rest, and a well-deserved level up!
-
-See the table below for the reward gained at each level. Once you reach the highest level shown, you cannot level up any further.
-
-| Level | Attribute points | Aspect points |
-| ----- | ---------------- | ------------- |
-| 1     | 15               | 3             |
-| 2     |                  |               |
-| 3     | 16               | 4             |
-| 4     |                  |               |
-| 5     | 17               | 5             |
-| 6     |                  |               |
-| 7     | 18               | 6             |
-| 8     |                  |               |
-| 9     | 19               | 7             |
-| 10    |                  |               |
-| 11    | 20               | 8             |
-| 12    |                  |               |
-| 13    | 21               | 9             |
-
 ## Action Rolls
 
 Action rolls are the core determinant of success or failure. The result of the die represents the difficulty of the task.
 
 Action rolls use a roll-under system. For a roll to succeed, it must be **equal or lower than the target value**, depending on the type of roll being made.
 
-**Only use action rolls when the action has some chance of failure.** Otherwise, the narrator should allow the action without a roll.
-
-### Skill Checks
-
-Skill checks are the most common type of action roll. Each attribute has a set of skills that map to various tasks. For example:
-
-- To spot something hidden, you would use Spy.
-- To try to sway a shopkeep for a discount, you would use Charm.
-- To try to weather a snowstorm, you would use Endure.
-
-Skill checks are made with a d6. The target is the character's value in the skill's attribute. For example: you want to make a Spy check, and your Sense score is 5. This means you must roll 5 or lower to succeed.
-
-<Callout>
-	**Tip:** Narrators should aim to make failures interesting. For example,
-	consider a character tries to **Spy** for something they lost. On failure,
-	instead of having nothing happen, maybe they find something that a friend lost
-	instead!
-</Callout>
-
-import { SkillList } from "./data.tsx"
-
-<SkillList />
-
-### Aspect Checks
-
-An aspect check is a special kind of skill check to perform a major aspect art. The roll is made with **a d12 die** instead of a d6, and the target is the character's score in the corresponding aspect.
-
-import { AspectSkillList } from "./data.tsx"
-
-<AspectSkillList />
-
-Example: you want to use _Shield_, which is a water aspect art. If your total water score is 7 (Base 3 + Sense 4), you would need to roll a 7 or lower to succeed.
-
-Each aspect action has a success case, the base effect. If you fail the roll, then you'll instead apply the failure case, which **modifies** the base effect.
-
-For example: a successful check for _Inspire_ will add 2 power dice to a target's next roll. On failure, it will give them 1 power die instead.
-
-Below is a list of built-in aspect arts. Think of them as presets; you can still perform other "freeform" aspect arts not listed here.
-
-<Callout>
-	You may have noticed that attributes and aspects set to their max level of 6
-	and 12 would effectively make them always pass, but in this case, you can
-	still fail a roll through risk dice, explained in the next section.
-</Callout>
+**Only use action rolls when the action has some chance of success or failure.** If the action would always succeed or always fail, the action should carry out without a roll.
 
 ### Modifier dice
 
@@ -224,6 +119,35 @@ An action roll can have any number of modifier dice.
 Modifier dice may be added by certain actions or effects, such as the _Inspire_ aspect art. They should also be added situationally by the narrator.
 
 Example: let's say you're attempting to ask someone for a favor. If they're a close friend, their predisposition may give you a power die. If they're a coworker with a negative opinion of you, that may give you a risk die.
+
+### Skill Checks
+
+Skill checks are the most common type of action roll. Each attribute has a set of skills that map to various tasks. For example:
+
+- To spot something hidden, you would use Spy.
+- To try to sway a shopkeep for a discount, you would use Charm.
+- To try to weather a snowstorm, you would use Endure.
+
+Skill checks are made with a d6. The target is the character's value in the skill's attribute. For example: you want to make a Spy check, and your Sense score is 5. This means you must roll 5 or lower to succeed.
+
+<Callout>
+	**Tip:** Narrators should aim to make failures interesting. For example,
+	consider a character tries to **Spy** for something they lost. On failure,
+	instead of having nothing happen, maybe they find something that a friend lost
+	instead!
+</Callout>
+
+<Callout>
+
+You may have noticed that an attribute set to its max level of 6 would effectively make it always pass, but you can always fail a roll through risk dice.
+
+That being said, a 5 _always_ has a failure condition without modifiers, where a 6 _needs_ a modifier to have a failure chance. So a 6 is still a significant upgrade from a 5.
+
+</Callout>
+
+import { SkillList } from "./data.tsx"
+
+<SkillList />
 
 ### Push Yourself
 
@@ -255,6 +179,118 @@ Example: a character needs to catch a train to work.
 - 6: construction required them to take a different route, but they know the city well enough for that to not be a problem
 - 3: it seems like the whole world doesn't want you to get to that train! they'll need to pass several skill checks to make it on time
 - 1: the train itself got delayed; they'll be late no matter what
+
+## Aspects
+
+Aspects are the five elements of nature which characters may manipulate to their will.
+
+<AspectList />
+
+Every aspect is linked to a unique attribute. Characters with a high score in that attribute will have more success with the aspect. For example: high Strength characters would be naturally more proficient with Fire than those with low Strength.
+
+Every character has a base score for each Aspect from 0 to 6, adding to a sum depending on your [level](#levels--progression). Add the character's score for the aspect's linked attribute to get the aspect's **total score**.
+
+For example: you give Wind a score of 3. Wind is linked to Agility. If your Agility has a score of 5, your total Wind score would be 8.
+
+An aspect is **attuned** when you have points assigned to it. If you assign 2 points to Wind and 4 to Water, then Wind and Water would be your attuned aspects. Fire, Light, and Darkness would be unattuned.
+
+<Callout>
+
+If you're familiar with other elemental systems, you might ask: where's earth?
+
+A lot of what you might do with an earth aspect can be covered by Wind or Fire. Example:
+
+- Levitating rock: lifting and/or moving it around with Wind
+- Bending metal: heating it in specific parts to make it more flexible
+- Breaking rock: applying pressure with Wind, or cracking it with Fire's heat
+
+</Callout>
+
+### Aspect Art
+
+The manipulation of aspects is called **aspect art**. At any time in the game, you can make an action that describes how you're making use of any given aspect. It can literally be anything that fits the relevant aspect; you have lots of room for creativity here!
+
+Aspect art comes in two categories: **minor**, and **major**.
+
+Minor arts are subtle, low-risk, and low-impact. Minor arts are the sorts of arts used in normal day-to-day life. Examples include:
+
+- Light: making an orb of light
+- Water: drying a set of clothes
+- Fire: heating a cup of tea
+- Wind: making a gentle breeze
+- Darkness: conjure an amusing illusion for fun
+
+When attuned: minor aspect arts are free.<br/>
+When unattuned: minor aspect arts cost 1 fatigue.
+
+Major aspect arts are more powerful and cost more to perform. They can be used to great effect, whether to help a friend or to cause a great deal of damage. Examples include:
+
+- Light: healing the wounds of several injured friends
+- Water: parting a path through a lake
+- Wind: creating a deafening thunderclap
+- Fire: throwing a massive Fireball at an enemy or obstacle
+- Darkness: turning silent and invisible to escape capture
+
+Major aspect arts always require an **aspect check**: an action roll for performing aspect art. It works the same as a skill check, but the roll is made with **a d12 die** instead of a d6, and the target is the character's **total score** for the corresponding aspect.
+
+When attuned: major aspect arts cost 1 fatigue.<br/>
+When unattuned: major aspect arts cost 2 fatigue and include +1 risk die on aspect checks.
+
+Below is a list of built-in major aspect art actions. Think of them as presets; you can still perform other "freeform" aspect arts not listed here.
+
+import { AspectSkillList } from "./data.tsx"
+
+<AspectSkillList />
+
+Each aspect action has a success case, the base effect. If you fail the roll, then you'll instead apply the failure case, which **modifies** the base effect.
+
+Example: you want to use _Shield_, which is a Water aspect art. If your total Water score is 7 (Base 3 + Sense 4), you would need to roll a 7 or lower to succeed. If you do succeed, you skip your next action in combat. If you _don't_ succeed, you have to skip your next _two_ actions in combat, but you'll still prevent hits on your allies.
+
+<Callout>
+
+Remember: the scope of every aspect reaches further than its physical component. Especially Darkness, which is less of a physical _thing_, and more of a _concept_ for the lack of physical light.
+
+- Light covers healing and strengthening through various means.
+- Water can cover ice, water vapor, cooling, and any non-water liquids as well.
+- Wind covers air, which could include depriving someone of oxygen, but also sound, like for creating shockwaves, or completely blocking the travel of sound in an area for stealth.
+- Fire covers anything related to heat, like heating an object, melting metal, or making rock into magma.
+- Darkness encompasses illusions, psychology, and reality bending. This can include using illusion art to make a clever disguise, walking through walls by bending reality, or strongly influencing someone's line of thought through psychological manipulation, to make them do something they normally wouldn't.
+
+Whatever supernatural phenomenon you want to carry out, it's very likely _some_ aspect would fit it.
+
+Some tasks might fit more than one aspect. If so, try to pick the one that fits the most. Alternatively, if it's something particularly powerful, like summoning a wind storm, asking for a success on several aspect checks might be appropriate.
+
+</Callout>
+
+## Levels & Progression
+
+<Callout>This has not yet been implemented in the character builder.</Callout>
+
+Your character's level represents their experience and development. All character levels in a group should be the same, and you can start at any level you like.
+
+See the table below for the reward gained at each level. Once you reach the highest level shown, you cannot level up any further.
+
+| Level | Attribute points | Aspect points |
+| ----- | ---------------- | ------------- |
+| 1     | 15               | 3             |
+| 2     |                  |               |
+| 3     | 16               | 4             |
+| 4     |                  |               |
+| 5     | 17               | 5             |
+| 6     |                  |               |
+| 7     | 18               | 6             |
+| 8     |                  |               |
+| 9     | 19               | 7             |
+| 10    |                  |               |
+| 11    | 20               | 8             |
+| 12    |                  |               |
+| 13    | 21               | 9             |
+
+Empty spaces do not give rewards at that level, e.g. at level 2, use the values for level 1.
+
+Your level increases on each **milestone**, such as a pivotal plot point, major accomplishment, or notable checkpoint.
+
+Example: your party is working to dismantle a large, powerful crime syndicate. You find and confront the leader. They end up escaping, but you manage to throw a huge wrench in their operations. With that, your party takes a well-deserved rest, and a well-deserved level up!
 
 ## Zones & Ranges
 
@@ -364,7 +400,7 @@ After combat ends, if any present characters are down, you may attempt to succee
 
 Combat rounds simulate the simultaneous, fast-paced nature of real-time combat encounters. To do this, each round is divided into two phases: the **decision phase**, and the **action phase**, in that order.
 
-By default, **each character has one action per round**. Several other mechanics can change this, such as the _Surge_ wind art, [adrenaline](#adrenaline), or the _Cancel_ darkness art.
+By default, **each character has one action per round**. Several other mechanics can change this, such as the _Surge_ Wind art, [adrenaline](#adrenaline), or the _Cancel_ Darkness art.
 
 ### The Decision Phase
 
@@ -403,7 +439,7 @@ You may move one zone in a combat round. Movement does not use an action; you ca
 
 Optionally, you can choose to make a Dash check as an action[^dash-with-surge]. On success, you can move one additional zone.
 
-[^dash-with-surge]: While regular movement is not an action and can't be used with the Surge wind art, a combat dash _is_ an action, and it works as you might expect; you'll get three additional zone movements with a successful aspect check.
+[^dash-with-surge]: While regular movement is not an action and can't be used with the Surge Wind art, a combat dash _is_ an action, and it works as you might expect; you'll get three additional zone movements with a successful aspect check.
 
 Movement should be written down during the decision phase.
 
