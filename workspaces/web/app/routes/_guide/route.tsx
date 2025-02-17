@@ -1,6 +1,6 @@
 import { Outlet } from "react-router"
 
-export default function RouteComponent() {
+export default function GuideLayout() {
 	return (
 		<div
 			// prettier-ignore
