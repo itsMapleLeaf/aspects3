@@ -1,6 +1,7 @@
 import { ConvexAuthProvider } from "@convex-dev/auth/react"
 import font from "@fontsource-variable/quicksand?url"
-import { useEffect } from "react"
+import { ConvexReactClient } from "convex/react"
+import { useEffect, useState, type ReactNode } from "react"
 import {
 	isRouteErrorResponse,
 	Links,
@@ -13,7 +14,6 @@ import { Navigation } from "~/components/Navigation"
 import type { Route } from "./+types/root.ts"
 import { DiceTray } from "./components/DiceTray.tsx"
 import { ToastProvider, useToastContext } from "./components/toasts.tsx"
-import { convexClient } from "./lib/convex.ts"
 import { getPageMeta } from "./meta.ts"
 import styles from "./styles/index.css?url"
 
@@ -55,16 +55,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
-				<ConvexAuthProvider client={convexClient}>
-					<DiceTray>
-						<ToastProvider className="absolute inset-y-0 left-0">
+				<ConvexProvider>
+					<ToastProvider className="absolute inset-y-0 left-0">
+						<DiceTray>
 							<div className="isolate">
 								<Navigation className="sticky top-0 z-10 shadow-lg" />
 								<div className="page-container">{children}</div>
 							</div>
-						</ToastProvider>
-					</DiceTray>
-				</ConvexAuthProvider>
+						</DiceTray>
+					</ToastProvider>
+				</ConvexProvider>
 				<ScrollRestoration />
 				<Scripts />
 			</body>
@@ -125,4 +125,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 			)}
 		</main>
 	)
+}
+
+function ConvexProvider({ children }: { children: ReactNode }) {
+	const [convex] = useState(
+		() => new ConvexReactClient(import.meta.env.VITE_CONVEX_URL),
+	)
+	return <ConvexAuthProvider client={convex}>{children}</ConvexAuthProvider>
 }
