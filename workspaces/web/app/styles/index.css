@@ -51,7 +51,7 @@
 @layer base {
 	html,
 	body {
-		@apply selection:bg-primary-800/50 overflow-x-clip bg-gray-950;
+		@apply selection:bg-primary-950 overflow-x-clip bg-gray-950;
 		scrollbar-color: var(--color-gray-700) var(--color-gray-950);
 		scrollbar-gutter: stable;
 		color-scheme: dark;
