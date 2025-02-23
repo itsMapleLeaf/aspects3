@@ -402,12 +402,8 @@ test("clone - clones character if logged in and character owner", async () => {
 		return await ctx.db.insert("characters", originalCharacter)
 	})
 
-	const clonedId = await user.mutation(api.public.characters.clone, {
+	const clonedCharacter = await user.mutation(api.public.characters.clone, {
 		id,
-	})
-
-	const clonedCharacter = await t.run(async (ctx) => {
-		return await ctx.db.get(clonedId)
 	})
 
 	expect(clonedCharacter?.name).toContain(originalCharacter.name)
