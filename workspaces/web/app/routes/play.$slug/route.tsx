@@ -52,9 +52,9 @@ function RoomRouteContent({ slug }: { slug: string }) {
 				<Heading className="heading-3xl mb-4">{room?.name}</Heading>
 				<div className="flex flex-col gap-4 md:flex-row">
 					<section className="flex w-72 flex-col gap-3">
-						<RoomCharacterList roomId={room?._id} />
+						<RoomCharacterList room={room} />
 						<p>
-							<AddCharacterButton roomId={room?._id} />
+							<AddCharacterButton roomId={room._id} />
 						</p>
 					</section>
 					<section>other stuff here eventually</section>
@@ -64,26 +64,37 @@ function RoomRouteContent({ slug }: { slug: string }) {
 	)
 }
 
-function RoomCharacterList({ roomId }: { roomId: Id<"rooms"> }) {
-	const characters = useQuery(api.public.rooms.listCharacters, { roomId })
+function RoomCharacterList({ room }: { room: Doc<"rooms"> }) {
+	const characters = useQuery(api.public.rooms.listCharacters, {
+		roomId: room._id,
+	})
 	return (
 		<ul className="flex flex-col gap-3">
 			{characters?.map((character) => (
 				<li key={character._id}>
-					<RoomCharacterCard character={character} />
+					<RoomCharacterCard character={character} room={room} />
 				</li>
 			))}
 		</ul>
 	)
 }
 
-function RoomCharacterCard({ character }: { character: Doc<"characters"> }) {
+function RoomCharacterCard({
+	character,
+	room,
+}: {
+	character: Doc<"characters">
+	room: Doc<"rooms">
+}) {
+	const me = useQuery(api.public.auth.me)
 	return (
 		<div className="panel py-2 pr-2 pl-3">
 			<HeadingLevel>
 				<div className="flex items-start justify-between">
 					<Heading className="heading-xl">{character.name}</Heading>
-					<RoomCharacterMenuButton character={character} />
+					{(me?._id === character.ownerId || me?._id === room.ownerId) && (
+						<RoomCharacterMenuButton character={character} roomId={room._id} />
+					)}
 				</div>
 				<div className="flex items-center gap-3">
 					<Tooltip
@@ -118,8 +129,10 @@ function RoomCharacterCard({ character }: { character: Doc<"characters"> }) {
 
 function RoomCharacterMenuButton({
 	character,
+	roomId,
 }: {
 	character: Doc<"characters">
+	roomId: Id<"rooms">
 }) {
 	const convex = useConvex()
 	return (
@@ -131,9 +144,9 @@ function RoomCharacterMenuButton({
 			<MenuPanel gutter={12}>
 				<MenuItem
 					onClick={() =>
-						convex.mutation(api.public.characters.update, {
-							id: character._id,
-							data: { roomId: null },
+						convex.mutation(api.public.rooms.unlinkCharacter, {
+							roomId,
+							characterId: character._id,
 						})
 					}
 				>

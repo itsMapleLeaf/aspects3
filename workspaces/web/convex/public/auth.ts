@@ -7,6 +7,6 @@ export const me = query({
 	handler: async (ctx) => {
 		const userId = await getAuthUserId(ctx)
 		const user = userId && (await ctx.db.get(userId))
-		return user && pick(user, ["name", "image"])
+		return user && pick(user, ["_id", "name", "image"])
 	},
 })

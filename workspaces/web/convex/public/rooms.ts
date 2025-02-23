@@ -1,6 +1,6 @@
 import { toSlug } from "@workspace/shared/utils"
 import { partial } from "convex-helpers/validators"
-import { v } from "convex/values"
+import { ConvexError, v } from "convex/values"
 import { omit, startCase } from "es-toolkit"
 import { adjective, noun, spaceSlug } from "space-slug"
 import type { Id } from "../_generated/dataModel"
@@ -90,6 +90,23 @@ const delete_ = mutation({
 	handler: async (ctx, args) => {
 		await ensureViewerOwnedRoom(ctx, args.id)
 		await ctx.db.delete(args.id)
+	},
+})
+
+export const unlinkCharacter = mutation({
+	args: {
+		roomId: v.id("rooms"),
+		characterId: v.id("characters"),
+	},
+	handler: async (ctx, { roomId, characterId }) => {
+		const userId = await ensureAuthUserId(ctx)
+		const room = await ensureDoc(ctx, roomId)
+		const character = await ensureDoc(ctx, characterId)
+		const isAllowed = room.ownerId === userId || character.ownerId === userId
+		if (!isAllowed) {
+			throw new ConvexError("Unauthorized")
+		}
+		await ctx.db.patch(character._id, { roomId: null })
 	},
 })
 
