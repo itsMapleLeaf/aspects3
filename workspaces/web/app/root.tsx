@@ -1,5 +1,6 @@
 import { ConvexAuthProvider } from "@convex-dev/auth/react"
 import font from "@fontsource-variable/quicksand?url"
+import { ConvexQueryCacheProvider } from "convex-helpers/react/cache"
 import { ConvexReactClient } from "convex/react"
 import { useEffect, useState, type ReactNode } from "react"
 import {
@@ -131,5 +132,9 @@ function ConvexProvider({ children }: { children: ReactNode }) {
 	const [convex] = useState(
 		() => new ConvexReactClient(import.meta.env.VITE_CONVEX_URL),
 	)
-	return <ConvexAuthProvider client={convex}>{children}</ConvexAuthProvider>
+	return (
+		<ConvexAuthProvider client={convex}>
+			<ConvexQueryCacheProvider>{children}</ConvexQueryCacheProvider>
+		</ConvexAuthProvider>
+	)
 }
