@@ -99,7 +99,7 @@ export const update = mutation({
 })
 
 export const upsert = mutation({
-	args: omit(schema.tables.characters.validator.fields, ["ownerId"]),
+	args: omit(schema.tables.characters.validator.fields, ["ownerId", "roomId"]),
 	handler: async (ctx, args) => {
 		const userId = await ensureAuthUserId(ctx)
 

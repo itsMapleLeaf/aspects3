@@ -29,12 +29,14 @@ export default defineSchema({
 		proficientSkills: v.array(v.string()),
 		aspects: v.record(v.string(), v.string()),
 		imageUrl: v.string(),
-		ownerId: v.id("users"),
 		key: v.string(), // client-defined key for consistent upsert
+		ownerId: v.id("users"),
+		roomId: v.optional(v.union(v.id("rooms"), v.null())),
 	})
 		.index("ownerId", ["ownerId"])
 		.index("ownerId_name", ["ownerId", "name"])
-		.index("ownerId_key", ["ownerId", "key"]),
+		.index("ownerId_key", ["ownerId", "key"])
+		.index("roomId", ["roomId", "name"]),
 
 	rooms: defineTable({
 		name: v.string(),

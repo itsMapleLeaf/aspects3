@@ -88,6 +88,11 @@ export default function Root() {
 						type: "error",
 						content: "An error occurred. Check the console for details.",
 					})
+				} else {
+					showToast({
+						type: "error",
+						content: "Oops, something went wrong.",
+					})
 				}
 			},
 			{ signal: controller.signal },

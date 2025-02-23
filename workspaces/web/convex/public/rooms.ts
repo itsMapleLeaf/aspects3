@@ -35,6 +35,18 @@ export const listOwned = query({
 	},
 })
 
+export const listCharacters = query({
+	args: {
+		roomId: v.id("rooms"),
+	},
+	handler: async (ctx, { roomId }) => {
+		return await ctx.db
+			.query("characters")
+			.withIndex("roomId", (q) => q.eq("roomId", roomId))
+			.collect()
+	},
+})
+
 export const create = mutation({
 	args: {},
 	handler: async (ctx) => {

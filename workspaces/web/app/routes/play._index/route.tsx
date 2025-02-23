@@ -6,10 +6,9 @@ import {
 	Unauthenticated,
 	useConvex,
 } from "convex/react"
-import type { ComponentProps, ReactNode } from "react"
 import { NavLink, useNavigate } from "react-router"
-import { twMerge } from "tailwind-merge"
 import { ContentState } from "~/components/ui/ContentState.tsx"
+import { IconLabel } from "~/components/ui/IconLabel.tsx"
 import { api } from "../../../convex/_generated/api"
 import { DiscordSignInButton } from "../../components/DiscordSignInButton.tsx"
 import { Button } from "../../components/ui/Button.tsx"
@@ -100,19 +99,5 @@ function RoomList() {
 				</li>
 			))}
 		</ul>
-	)
-}
-
-function IconLabel({
-	icon,
-	children,
-	className,
-	...props
-}: ComponentProps<"span"> & { icon: ReactNode; children: ReactNode }) {
-	return (
-		<span className={twMerge("flex items-center gap-1", className)} {...props}>
-			<span>{icon}</span>
-			<span>{children}</span>
-		</span>
 	)
 }
