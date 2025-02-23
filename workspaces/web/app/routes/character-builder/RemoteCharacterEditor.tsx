@@ -2,6 +2,7 @@ import * as Ariakit from "@ariakit/react"
 import { Character, createEmptyCharacter } from "@workspace/shared/characters"
 import { useConvex } from "convex/react"
 import { useEffect, useState, useTransition } from "react"
+import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { api } from "../../../convex/_generated/api"
 import type { Doc } from "../../../convex/_generated/dataModel"
 import { Icon } from "../../components/ui/Icon.tsx"
@@ -20,7 +21,12 @@ export function RemoteCharacterEditor({
 }) {
 	const convex = useConvex()
 
-	const [selectedCharacterKey, setSelectedCharacterKey] = useState<string>()
+	const [selectedCharacterKey, setSelectedCharacterKey] = useLocalStorage(
+		"RemoteCharacterEditor:selectedCharacterKey",
+		null,
+		(input) => (input === null ? null : String(input)),
+	)
+
 	const selectedCharacter = selectedCharacterKey
 		? characters.find((c) => c.key === selectedCharacterKey)
 		: characters[0]
@@ -62,7 +68,7 @@ export function RemoteCharacterEditor({
 			next.delete(selectedCharacter.key)
 			return next
 		})
-		setSelectedCharacterKey(undefined)
+		setSelectedCharacterKey(null)
 
 		convex.mutation(api.public.characters.delete, {
 			id: selectedCharacter._id,
