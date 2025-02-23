@@ -4,12 +4,13 @@
 @plugin "tailwindcss-animate";
 
 @import "uploadthing/tw/v4";
-@source "../node_modules/@uploadthing/react/dist";
+@source "../../node_modules/@uploadthing/react/dist";
 
-@import "./styles/layout.css";
-@import "./styles/panel.css";
-@import "./styles/button.css";
-@import "./styles/menu.css";
+@import "./layout.css";
+@import "./typography.css";
+@import "./panel.css";
+@import "./button.css";
+@import "./menu.css";
 
 @theme {
 	--default-font-family: "Quicksand Variable";

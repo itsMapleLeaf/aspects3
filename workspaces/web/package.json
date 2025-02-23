@@ -24,6 +24,7 @@
 		"@auth/core": "^0.37.4",
 		"@convex-dev/auth": "^0.0.80",
 		"@fontsource-variable/quicksand": "^5.1.1",
+		"@formkit/auto-animate": "^0.8.2",
 		"@iconify/react": "^5.2.0",
 		"@react-router/node": "^7.1.5",
 		"@react-router/serve": "^7.1.5",

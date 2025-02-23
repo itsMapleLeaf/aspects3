@@ -42,6 +42,7 @@
         "@auth/core": "^0.37.4",
         "@convex-dev/auth": "^0.0.80",
         "@fontsource-variable/quicksand": "^5.1.1",
+        "@formkit/auto-animate": "^0.8.2",
         "@iconify/react": "^5.2.0",
         "@react-router/node": "^7.1.5",
         "@react-router/serve": "^7.1.5",
@@ -250,6 +251,8 @@
     "@floating-ui/utils": ["@floating-ui/utils@0.2.9", "", {}, "sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg=="],
 
     "@fontsource-variable/quicksand": ["@fontsource-variable/quicksand@5.1.1", "", {}, "sha512-FVyhFT7QgcTf95ZR1TOowU2mtuoLWvkKw1oVhOXGsZ0/0IXJmx1/ibWbOUkAm6MPGJt8HEjcpMDZsE3WCYsJcw=="],
+
+    "@formkit/auto-animate": ["@formkit/auto-animate@0.8.2", "", {}, "sha512-SwPWfeRa5veb1hOIBMdzI+73te5puUBHmqqaF1Bu7FjvxlYSz/kJcZKSa9Cg60zL0uRNeJL2SbRxV6Jp6Q1nFQ=="],
 
     "@iconify/react": ["@iconify/react@5.2.0", "", { "dependencies": { "@iconify/types": "^2.0.0" }, "peerDependencies": { "react": ">=16" } }, "sha512-7Sdjrqq3fkkQNks9SY3adGC37NQTHsBJL2PRKlQd455PoDi9s+Es9AUTY+vGLFOYs5yO9w9yCE42pmxCwG26WA=="],
 

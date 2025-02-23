@@ -1,5 +1,6 @@
 import { ConvexAuthProvider } from "@convex-dev/auth/react"
 import font from "@fontsource-variable/quicksand?url"
+import { useEffect } from "react"
 import {
 	isRouteErrorResponse,
 	Links,
@@ -10,10 +11,11 @@ import {
 } from "react-router"
 import { Navigation } from "~/components/Navigation"
 import type { Route } from "./+types/root.ts"
-import stylesheet from "./app.css?url"
 import { DiceTray } from "./components/DiceTray.tsx"
+import { ToastProvider, useToastContext } from "./components/toasts.tsx"
 import { convexClient } from "./lib/convex.ts"
 import { getPageMeta } from "./meta.ts"
+import styles from "./styles/index.css?url"
 
 export const meta: Route.MetaFunction = () => getPageMeta()
 
@@ -29,7 +31,7 @@ export const links: Route.LinksFunction = () => [
 		href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
 	},
 	{ rel: "stylesheet", href: font },
-	{ rel: "stylesheet", href: stylesheet },
+	{ rel: "stylesheet", href: styles },
 	{
 		rel: "icon",
 		href: "/favicon.svg",
@@ -53,12 +55,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
-				<div className="isolate">
-					<Navigation className="sticky top-0 z-10 shadow-lg" />
-					<div className="page-container">
-						<DiceTray>{children}</DiceTray>
-					</div>
-				</div>
+				<DiceTray>
+					<ToastProvider className="absolute inset-y-0 left-0">
+						<div className="isolate">
+							<Navigation className="sticky top-0 z-10 shadow-lg" />
+							<div className="page-container">{children}</div>
+						</div>
+					</ToastProvider>
+				</DiceTray>
 				<ScrollRestoration />
 				<Scripts />
 			</body>
@@ -67,6 +71,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function Root() {
+	const { showToast } = useToastContext()
+
+	useEffect(() => {
+		const controller = new AbortController()
+
+		window.addEventListener(
+			"unhandledrejection",
+			(event) => {
+				console.error("Unhandled rejection:", event.reason)
+				if (import.meta.env.DEV) {
+					showToast({
+						type: "error",
+						content: "An error occurred. Check the console for details.",
+					})
+				}
+			},
+			{ signal: controller.signal },
+		)
+
+		return () => controller.abort()
+	}, [showToast])
+
 	return (
 		<ConvexAuthProvider client={convexClient}>
 			<Outlet />
