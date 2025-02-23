@@ -30,7 +30,7 @@ function NavLinkList() {
 		{ to: "/rulebook", label: "Rulebook" },
 		{ to: "/lore", label: "World Lore" },
 		{ to: "/character-builder", label: "Character Builder" },
-		import.meta.env.DEV && { to: "/play", label: "Play" },
+		{ to: "/play", label: "Play" },
 	].filter(Boolean)
 
 	return (
