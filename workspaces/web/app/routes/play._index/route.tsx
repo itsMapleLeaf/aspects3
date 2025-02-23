@@ -1,31 +1,52 @@
+import { Heading, HeadingLevel } from "@ariakit/react"
+import { useQuery } from "convex-helpers/react/cache"
 import {
 	Authenticated,
 	AuthLoading,
 	Unauthenticated,
 	useConvex,
 } from "convex/react"
-import { useNavigate } from "react-router"
+import type { ComponentProps, ReactNode } from "react"
+import { NavLink, useNavigate } from "react-router"
+import { twMerge } from "tailwind-merge"
+import { ContentState } from "~/components/ui/ContentState.tsx"
 import { api } from "../../../convex/_generated/api"
 import { DiscordSignInButton } from "../../components/DiscordSignInButton.tsx"
 import { Button } from "../../components/ui/Button.tsx"
 import { Icon } from "../../components/ui/Icon.tsx"
-import { LoadingSpinner } from "../../components/ui/LoadingSpinner.tsx"
 
 export default function PlayRoute() {
 	return (
 		<>
-			<p>Create a new room to play in real time with friends!</p>
 			<AuthLoading>
-				<LoadingSpinner />
+				<ContentState.Loading />
 			</AuthLoading>
 			<Unauthenticated>
-				<p>Please sign in to continue.</p>
-				<DiscordSignInButton />
+				<ContentState.Empty
+					icon={<Icon icon="mingcute:group-2-fill" />}
+					heading="Sign in to create a room and play with friends!"
+				>
+					<DiscordSignInButton />
+				</ContentState.Empty>
 			</Unauthenticated>
 			<Authenticated>
-				<CreateRoomButton />
+				<Rooms />
 			</Authenticated>
 		</>
+	)
+}
+
+function Rooms() {
+	return (
+		<main className="space-y-3 py-8">
+			<HeadingLevel>
+				<div className="flex items-end justify-between">
+					<Heading className="heading-3xl">Rooms</Heading>
+					<CreateRoomButton />
+				</div>
+				<RoomList />
+			</HeadingLevel>
+		</main>
 	)
 }
 
@@ -34,7 +55,7 @@ function CreateRoomButton() {
 	const navigate = useNavigate()
 	return (
 		<Button
-			icon={<Icon icon="mingcute:open-door-fill" />}
+			icon={<Icon icon="mingcute:classify-add-fill" />}
 			onClick={async () => {
 				try {
 					const slug = await convex.mutation(api.public.rooms.create)
@@ -47,5 +68,51 @@ function CreateRoomButton() {
 		>
 			New room
 		</Button>
+	)
+}
+
+function RoomList() {
+	const rooms = useQuery(api.public.rooms.listOwned)
+	return rooms === undefined ? (
+		<ContentState.Loading />
+	) : rooms.length === 0 ? (
+		<ContentState.Empty heading="You have no rooms yet. Create one to start playing with friends!" />
+	) : (
+		<ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+			{rooms.map((room) => (
+				<li key={room._id}>
+					<NavLink
+						to={`/play/${room.slug}`}
+						className="panel hover:bg-primary-950/50 group block px-4 py-3 transition-colors"
+					>
+						<HeadingLevel>
+							<Heading className="heading-xl mb-1">{room.name}</Heading>
+							<p className="text-primary-200 flex flex-row gap-3 text-sm opacity-75 transition-opacity group-hover:opacity-100">
+								<IconLabel icon={<Icon icon="mingcute:group-2-fill" />}>
+									3 players
+								</IconLabel>
+								<IconLabel icon={<Icon icon="mingcute:time-fill" />}>
+									2 days ago
+								</IconLabel>
+							</p>
+						</HeadingLevel>
+					</NavLink>
+				</li>
+			))}
+		</ul>
+	)
+}
+
+function IconLabel({
+	icon,
+	children,
+	className,
+	...props
+}: ComponentProps<"span"> & { icon: ReactNode; children: ReactNode }) {
+	return (
+		<span className={twMerge("flex items-center gap-1", className)} {...props}>
+			<span>{icon}</span>
+			<span>{children}</span>
+		</span>
 	)
 }
