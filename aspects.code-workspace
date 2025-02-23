@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"name": "web",
+			"path": "workspaces/web"
+		},
+		{
+			"name": "bot",
+			"path": "workspaces/bot"
+		},
+		{
+			"name": "shared",
+			"path": "workspaces/shared"
+		},
+		{
+			"name": "aspects3",
+			"path": "."
+		}
+	],
+	"settings": {
+		"typescript.tsdk": "node_modules\\typescript\\lib"
+	}
+}
