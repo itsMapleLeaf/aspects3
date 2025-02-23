@@ -139,11 +139,21 @@ export const clone = mutation({
 	},
 	handler: async (ctx, args) => {
 		const { character } = await ensureViewerOwnedCharacter(ctx, args.id)
-		return await ctx.db.insert("characters", {
+
+		const newCharacter = {
 			...omit(character, ["_id", "_creationTime"]),
 			name: `${character.name} (copy)`,
 			ownerId: character.ownerId,
-		})
+			key: crypto.randomUUID(),
+		}
+
+		const clonedId = await ctx.db.insert("characters", newCharacter)
+
+		return {
+			...newCharacter,
+			_id: clonedId as Id<"characters">,
+			_creationTime: Date.now(),
+		}
 	},
 })
 

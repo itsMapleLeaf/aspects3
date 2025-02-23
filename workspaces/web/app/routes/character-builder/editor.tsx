@@ -227,11 +227,13 @@ export function CharacterEditorMenu({
 	onNew,
 	onImport,
 	onDelete,
+	onClone,
 }: {
 	character: Character
 	onNew: () => void
 	onImport: (character: Character) => void
 	onDelete: (() => void) | null
+	onClone: (() => void) | null
 }) {
 	const share = useCopyCharacterShareUrl(character)
 	const auth = useConvexAuth()
@@ -300,6 +302,12 @@ export function CharacterEditorMenu({
 				<Ariakit.MenuItem className="menu-item" onClick={importCharacter}>
 					<Icon icon="mingcute:file-import-fill" /> Import...
 				</Ariakit.MenuItem>
+
+				{onClone && (
+					<Ariakit.MenuItem className="menu-item" onClick={onClone}>
+						<Icon icon="mingcute:copy-2-fill" /> Clone
+					</Ariakit.MenuItem>
+				)}
 
 				<Ariakit.MenuItem
 					className="menu-item"

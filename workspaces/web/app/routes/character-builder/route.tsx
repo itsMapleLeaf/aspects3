@@ -49,6 +49,7 @@ function LocalCharacterEditor() {
 						onNew={() => setCharacter(createEmptyCharacter())}
 						onImport={setCharacter}
 						onDelete={null}
+						onClone={null}
 					/>
 				}
 			/>

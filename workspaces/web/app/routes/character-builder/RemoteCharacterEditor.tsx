@@ -69,6 +69,19 @@ export function RemoteCharacterEditor({
 		})
 	}
 
+	async function cloneSelectedCharacter() {
+		if (!selectedCharacter) return
+
+		const clonedCharacter = await convex.mutation(api.public.characters.clone, {
+			id: selectedCharacter._id,
+		})
+
+		setUpdatedCharacters(
+			(prev) => new Map([...prev, [clonedCharacter.key, clonedCharacter]]),
+		)
+		setSelectedCharacterKey(clonedCharacter.key)
+	}
+
 	const character =
 		updatedCharacter ?? selectedCharacter ?? createEmptyCharacter()
 
@@ -101,6 +114,7 @@ export function RemoteCharacterEditor({
 							onNew={() => setCharacter(createEmptyCharacter())}
 							onImport={setCharacter}
 							onDelete={deleteSelectedCharacter}
+							onClone={selectedCharacter ? cloneSelectedCharacter : null}
 						/>
 					</>
 				}
