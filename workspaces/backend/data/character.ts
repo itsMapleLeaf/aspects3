@@ -6,6 +6,7 @@ import { parseNumber } from "@workspace/shared/utils"
 import { type } from "arktype"
 import type { WithoutSystemFields } from "convex/server"
 import { v, type Infer } from "convex/values"
+import { pick } from "es-toolkit"
 
 export type CharacterFields = Infer<typeof characterFieldsValidator>
 export const characterFieldsValidator = v.object({
@@ -36,7 +37,20 @@ const CharacterFieldsParser = type({
 	imageUrl: "string = ''",
 }).onUndeclaredKey("delete")
 export function parseCharacterFields(raw: unknown) {
-	return CharacterFieldsParser.assert(raw)
+	// workaround: onUndeclaredKey is broken
+	return pick(CharacterFieldsParser.assert(raw), [
+		"key",
+		"name",
+		"details",
+		"attributes",
+		"hits",
+		"fatigue",
+		"comeback",
+		"traits",
+		"proficientSkills",
+		"aspects",
+		"imageUrl",
+	])
 }
 
 export function parseRemoteCharacterFields(
