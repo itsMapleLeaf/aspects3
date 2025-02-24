@@ -16,6 +16,7 @@
 		"start": "PORT=5173 react-router-serve ./build/server/index.js",
 		"test": "run-s 'test:*'",
 		"test:unit": "bun test app convex --coverage",
+		"test:unit:watch": "bun run test:unit --watch",
 		"test:e2e": "playwright test",
 		"typecheck": "react-router typegen && tsc"
 	},
