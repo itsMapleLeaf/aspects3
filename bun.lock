@@ -10,6 +10,7 @@
         "@total-typescript/ts-reset": "^0.6.1",
         "@types/bun": "^1.2.2",
         "@types/node": "^22",
+        "arktype": "2.1.0",
         "prettier": "^3.5.0",
         "prettier-plugin-jsdoc": "^1.3.2",
         "prettier-plugin-tailwindcss": "^0.6.11",
@@ -50,12 +51,8 @@
     },
     "workspaces/data": {
       "name": "@workspace/data",
-      "dependencies": {
-        "arktype": "2.1.0",
-      },
       "devDependencies": {
         "@workspace/shared": "*",
-        "type-fest": "^4.33.0",
       },
     },
     "workspaces/shared": {
@@ -76,7 +73,6 @@
         "@workspace/backend": "*",
         "@workspace/data": "*",
         "@workspace/shared": "*",
-        "arktype": "^2.0.2",
         "convex": "^1.19.0",
         "convex-helpers": "^0.1.71",
         "discord.js": "^14.17.3",

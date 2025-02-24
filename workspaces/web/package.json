@@ -30,7 +30,6 @@
 		"@workspace/data": "*",
 		"@workspace/shared": "*",
 		"@uploadthing/react": "^7.1.5",
-		"arktype": "^2.0.2",
 		"convex": "^1.19.0",
 		"convex-helpers": "^0.1.71",
 		"discord.js": "^14.17.3",

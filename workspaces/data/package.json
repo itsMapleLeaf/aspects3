@@ -8,9 +8,7 @@
 	"scripts": {
 		"typecheck": "tsc"
 	},
-	"dependencies": {
-		"arktype": "2.1.0"
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"@workspace/shared": "*"
 	}
