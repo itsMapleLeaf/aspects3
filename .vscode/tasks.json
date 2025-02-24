@@ -4,13 +4,7 @@
 		{
 			"label": "dev",
 			"detail": "run all apps in dev mode + tests",
-			"dependsOn": [
-				"web/dev:app",
-				"web/dev:convex",
-				"web/test:unit:watch",
-				"bot/dev",
-				"typecheck:watch"
-			],
+			"dependsOn": ["web/dev", "backend/dev", "bot/dev", "typecheck:watch"],
 			"dependsOrder": "parallel",
 			"group": {
 				"kind": "build",
@@ -18,31 +12,23 @@
 			}
 		},
 		{
-			"label": "web/dev:app",
+			"label": "web/dev",
 			"detail": "run web app in dev mode",
 			"type": "shell",
-			"command": ["bun", "dev:app"],
+			"command": ["bun", "dev"],
 			"options": {
 				"cwd": "workspaces/web"
 			}
 		},
 		{
-			"label": "web/dev:convex",
+			"label": "backend/dev",
 			"detail": "run convex dev",
 			"type": "shell",
-			"command": ["bun", "dev:convex"],
+			"command": ["bun", "dev"],
 			"options": {
-				"cwd": "workspaces/web"
-			}
-		},
-		{
-			"label": "web/test:unit:watch",
-			"detail": "run tsc in watch mode",
-			"type": "shell",
-			"command": ["bun", "run", "test:unit:watch"],
-			"options": {
-				"cwd": "workspaces/web"
-			}
+				"cwd": "workspaces/backend"
+			},
+			"problemMatcher": []
 		},
 		{
 			"label": "bot/dev",
