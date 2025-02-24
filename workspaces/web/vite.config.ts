@@ -22,7 +22,7 @@ export default defineConfig({
 			filter: /\.[jt]sx?$/,
 			include: ["app/**"],
 			babelConfig: {
-				presets: ["@babel/preset-typescript"], // if you use TypeScript
+				presets: ["@babel/preset-typescript"],
 				plugins: ["babel-plugin-react-compiler"],
 			},
 			loader: "jsx",
