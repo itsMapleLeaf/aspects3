@@ -1,20 +1,24 @@
 {
 	"folders": [
 		{
-			"name": "web",
-			"path": "workspaces/web",
-		},
-		{
-			"name": "bot",
-			"path": "workspaces/bot",
+			"name": "shared",
+			"path": "workspaces/shared",
 		},
 		{
 			"name": "backend",
 			"path": "workspaces/backend",
 		},
 		{
-			"name": "shared",
-			"path": "workspaces/shared",
+			"name": "data",
+			"path": "workspaces/data",
+		},
+		{
+			"name": "web",
+			"path": "workspaces/web",
+		},
+		{
+			"name": "bot",
+			"path": "workspaces/bot",
 		},
 		{
 			"name": "aspects3",
