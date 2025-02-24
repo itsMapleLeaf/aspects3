@@ -1,0 +1,26 @@
+{
+	"name": "@workspace/backend",
+	"private": true,
+	"type": "module",
+	"engines": {
+		"node": "22 || 23"
+	},
+	"scripts": {
+		"dev": "convex dev --tail-logs",
+		"deploy": "convex deploy --cmd \"cd ../web && bun run build\" --cmd-url-env-var-name VITE_CONVEX_URL",
+		"test": "bun test",
+		"typecheck": "tsc"
+	},
+	"dependencies": {
+		"@auth/core": "^0.37.4",
+		"@convex-dev/auth": "^0.0.80",
+		"@workspace/shared": "*",
+		"convex": "^1.19.0",
+		"convex-helpers": "^0.1.71",
+		"space-slug": "^2.1.0"
+	},
+	"devDependencies": {
+		"convex-test": "^0.0.35",
+		"type-fest": "^4.33.0"
+	}
+}

@@ -1,9 +1,9 @@
+import { api } from "@workspace/backend/convex/_generated/api"
 import { Character, createEmptyCharacter } from "@workspace/shared/characters"
 import { useConvexAuth, useQuery } from "convex/react"
 import { lazy } from "react"
 import { ContentState } from "~/components/ui/ContentState.tsx"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
-import { api } from "../../../convex/_generated/api"
 import { getPageMeta } from "../../meta.ts"
 import {
 	CharacterEditor,

@@ -2,22 +2,26 @@
 	"folders": [
 		{
 			"name": "web",
-			"path": "workspaces/web"
+			"path": "workspaces/web",
 		},
 		{
 			"name": "bot",
-			"path": "workspaces/bot"
+			"path": "workspaces/bot",
+		},
+		{
+			"name": "backend",
+			"path": "workspaces/backend",
 		},
 		{
 			"name": "shared",
-			"path": "workspaces/shared"
+			"path": "workspaces/shared",
 		},
 		{
 			"name": "aspects3",
-			"path": "."
-		}
+			"path": ".",
+		},
 	],
 	"settings": {
-		"typescript.tsdk": "node_modules\\typescript\\lib"
-	}
+		"typescript.tsdk": "node_modules\\typescript\\lib",
+	},
 }

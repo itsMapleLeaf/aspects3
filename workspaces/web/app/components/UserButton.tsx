@@ -1,6 +1,6 @@
 import { useAuthActions } from "@convex-dev/auth/react"
+import { api } from "@workspace/backend/convex/_generated/api"
 import { useQuery } from "convex/react"
-import { api } from "../../convex/_generated/api"
 import { Icon } from "./ui/Icon.tsx"
 import { Menu, MenuButton, MenuItem, MenuPanel } from "./ui/Menu.tsx"
 

@@ -1,10 +1,10 @@
 import * as Ariakit from "@ariakit/react"
+import { api } from "@workspace/backend/convex/_generated/api"
+import type { Doc } from "@workspace/backend/convex/_generated/dataModel"
 import { Character, createEmptyCharacter } from "@workspace/shared/characters"
 import { useConvex } from "convex/react"
 import { useEffect, useState, useTransition } from "react"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
-import { api } from "../../../convex/_generated/api"
-import type { Doc } from "../../../convex/_generated/dataModel"
 import { Icon } from "../../components/ui/Icon.tsx"
 import { SquareIconButton } from "../../components/ui/SquareIconButton.tsx"
 import {

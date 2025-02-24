@@ -1,4 +1,5 @@
 import { Heading, HeadingLevel } from "@ariakit/react"
+import { api } from "@workspace/backend/convex/_generated/api"
 import { useQuery } from "convex-helpers/react/cache"
 import {
 	Authenticated,
@@ -9,7 +10,6 @@ import {
 import { NavLink, useNavigate } from "react-router"
 import { ContentState } from "~/components/ui/ContentState.tsx"
 import { IconLabel } from "~/components/ui/IconLabel.tsx"
-import { api } from "../../../convex/_generated/api"
 import { DiscordSignInButton } from "../../components/DiscordSignInButton.tsx"
 import { Button } from "../../components/ui/Button.tsx"
 import { Icon } from "../../components/ui/Icon.tsx"
