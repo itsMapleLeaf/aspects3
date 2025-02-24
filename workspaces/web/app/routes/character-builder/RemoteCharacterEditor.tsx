@@ -15,11 +15,23 @@ import {
 import { useCharacterFromDataParam } from "./useCharacterFromDataParam.ts"
 
 export function RemoteCharacterEditor({
-	characters,
+	characters: remoteCharacterList,
 }: {
 	characters: Doc<"characters">[]
 }) {
 	const convex = useConvex()
+
+	const remoteCharacters = new Map(
+		remoteCharacterList.flatMap((c) =>
+			c.fields ? [[c.fields.key, c.fields]] : [],
+		),
+	)
+
+	const [updatedCharacters, setUpdatedCharacters] = useState<
+		Map<string, Character>
+	>(new Map())
+
+	const characters = new Map([...remoteCharacters, ...updatedCharacters])
 
 	const [selectedCharacterKey, setSelectedCharacterKey] = useLocalStorage(
 		"RemoteCharacterEditor:selectedCharacterKey",
@@ -28,16 +40,8 @@ export function RemoteCharacterEditor({
 	)
 
 	const selectedCharacter = selectedCharacterKey
-		? characters.find((c) => c.key === selectedCharacterKey)
-		: characters[0]
-
-	const [updatedCharacters, setUpdatedCharacters] = useState<
-		Map<string, Character>
-	>(new Map())
-
-	const updatedCharacter = selectedCharacterKey
-		? updatedCharacters.get(selectedCharacterKey)
-		: null
+		? characters.get(selectedCharacterKey)
+		: [...characters.values()][0]
 
 	useCharacterFromDataParam((character) => {
 		setUpdatedCharacters(
@@ -46,17 +50,23 @@ export function RemoteCharacterEditor({
 		setSelectedCharacterKey(character.key)
 	})
 
+	const updatedCharacter = selectedCharacterKey
+		? updatedCharacters.get(selectedCharacterKey)
+		: null
+
 	useEffect(() => {
 		if (updatedCharacter) {
-			convex.mutation(
-				api.public.characters.upsert,
-				Character.assert(updatedCharacter),
-			)
+			convex.mutation(api.public.characters.upsert, updatedCharacter)
 		}
 	}, [updatedCharacter])
 
 	function deleteSelectedCharacter() {
 		if (!selectedCharacter) return
+
+		const remoteCharacter = remoteCharacterList.find(
+			(c) => c.fields?.key === selectedCharacter.key,
+		)
+		if (!remoteCharacter) return
 
 		const yes = confirm(
 			"Are you sure you want to delete this character? This action cannot be undone.",
@@ -71,21 +81,30 @@ export function RemoteCharacterEditor({
 		setSelectedCharacterKey(null)
 
 		convex.mutation(api.public.characters.delete, {
-			id: selectedCharacter._id,
+			id: remoteCharacter._id,
 		})
 	}
 
 	async function cloneSelectedCharacter() {
 		if (!selectedCharacter) return
 
+		const remoteCharacter = remoteCharacterList.find(
+			(c) => c.fields?.key === selectedCharacter.key,
+		)
+		if (!remoteCharacter) return
+
 		const clonedCharacter = await convex.mutation(api.public.characters.clone, {
-			id: selectedCharacter._id,
+			id: remoteCharacter._id,
 		})
 
 		setUpdatedCharacters(
-			(prev) => new Map([...prev, [clonedCharacter.key, clonedCharacter]]),
+			(prev) =>
+				new Map([
+					...prev,
+					[clonedCharacter.fields.key, clonedCharacter.fields],
+				]),
 		)
-		setSelectedCharacterKey(clonedCharacter.key)
+		setSelectedCharacterKey(clonedCharacter.fields.key)
 	}
 
 	const character =
@@ -104,15 +123,7 @@ export function RemoteCharacterEditor({
 				actions={
 					<>
 						<CharacterSwitcher
-							characters={[
-								...new Map([
-									...characters.map(
-										(character) => [character.key, character] as const,
-									),
-									// includes local characters in the list so that they're selectable before being synced
-									...updatedCharacters,
-								]).values(),
-							]}
+							characters={[...characters.values()]}
 							onSelect={(character) => setSelectedCharacterKey(character.key)}
 						/>
 						<CharacterEditorMenu

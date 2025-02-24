@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, expect, mock, test } from "bun:test"
 import type { Except } from "type-fest"
+import type { CharacterFields } from "../../data/character.ts"
 import { api } from "../_generated/api"
 import type { Doc, Id } from "../_generated/dataModel"
 import { createConvexTest } from "../lib/testing.lib.ts"
@@ -13,9 +14,7 @@ function createAuthToken(userId: Id<"users">) {
 	}
 }
 
-function createCharacterInput(
-	name: string,
-): Except<Doc<"characters">, "_id" | "_creationTime" | "ownerId"> {
+function createCharacterFields(name: string): CharacterFields {
 	return {
 		name,
 		aspects: {},
@@ -31,13 +30,13 @@ function createCharacterInput(
 	}
 }
 
-function createCharacterData(
+function createCharacterDoc(
 	name: string,
 	ownerId: Id<"users">,
 ): Except<Doc<"characters">, "_id" | "_creationTime"> {
 	return {
-		...createCharacterInput(name),
 		ownerId,
+		fields: createCharacterFields(name),
 	}
 }
 
@@ -66,7 +65,7 @@ test("get - returns null if not logged in", async () => {
 		const userId = await ctx.db.insert("users", {})
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -83,7 +82,7 @@ test("get - returns null if not character owner", async () => {
 		const userId = await ctx.db.insert("users", {})
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -108,7 +107,7 @@ test("get - returns character if logged in and character owner", async () => {
 	const id = await t.run(async (ctx) => {
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -117,8 +116,8 @@ test("get - returns character if logged in and character owner", async () => {
 	})
 
 	expect(character).toMatchObject({
-		name: "Test Character",
 		ownerId: userId,
+		fields: { name: "Test Character" },
 	})
 })
 
@@ -128,7 +127,7 @@ test("listOwned - returns empty array if not logged in", async () => {
 		const userId = await ctx.db.insert("users", {})
 		await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -142,7 +141,7 @@ test("listOwned - returns empty array if not character owner", async () => {
 		const userId = await ctx.db.insert("users", {})
 		await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -162,18 +161,15 @@ test("listOwned - returns array of characters if logged in and character owner",
 	const user = t.withIdentity(createAuthToken(userId))
 
 	await t.run(async (ctx) => {
-		await ctx.db.insert(
-			"characters",
-			createCharacterData("Character 1", userId),
-		)
-		await ctx.db.insert(
-			"characters",
-			createCharacterData("Character 2", userId),
-		)
+		await ctx.db.insert("characters", createCharacterDoc("Character 1", userId))
+		await ctx.db.insert("characters", createCharacterDoc("Character 2", userId))
 	})
 
 	const characters = await user.query(api.public.characters.listOwned)
-	expect(characters.map((c) => c.name)).toEqual(["Character 1", "Character 2"])
+	expect(characters.map((c) => c.fields!.name)).toEqual([
+		"Character 1",
+		"Character 2",
+	])
 })
 
 test("listOwner - only returns characters owned by the user", async () => {
@@ -184,18 +180,15 @@ test("listOwner - only returns characters owned by the user", async () => {
 	const user = t.withIdentity(createAuthToken(userId))
 
 	await t.run(async (ctx) => {
+		await ctx.db.insert("characters", createCharacterDoc("Character 1", userId))
 		await ctx.db.insert(
 			"characters",
-			createCharacterData("Character 1", userId),
-		)
-		await ctx.db.insert(
-			"characters",
-			createCharacterData("Character 2", await ctx.db.insert("users", {})),
+			createCharacterDoc("Character 2", await ctx.db.insert("users", {})),
 		)
 	})
 
 	const characters = await user.query(api.public.characters.listOwned)
-	expect(characters.map((c) => c.name)).toEqual(["Character 1"])
+	expect(characters.map((c) => c.fields!.name)).toEqual(["Character 1"])
 })
 
 test("create - throws if not logged in", async () => {
@@ -204,7 +197,7 @@ test("create - throws if not logged in", async () => {
 	expect(
 		t.mutation(
 			api.public.characters.create,
-			createCharacterInput("Test Character"),
+			createCharacterFields("Test Character"),
 		),
 	).rejects.toThrow()
 })
@@ -218,7 +211,7 @@ test("create - creates character and returns id if logged in", async () => {
 
 	const id = await user.mutation(
 		api.public.characters.create,
-		createCharacterInput("Test Character"),
+		createCharacterFields("Test Character"),
 	)
 
 	const character = await t.run(async (ctx) => {
@@ -226,8 +219,8 @@ test("create - creates character and returns id if logged in", async () => {
 	})
 
 	expect(character).toMatchObject({
-		name: "Test Character",
 		ownerId: userId,
+		fields: { name: "Test Character" },
 	})
 })
 
@@ -237,14 +230,14 @@ test("update - throws if not logged in", async () => {
 		const userId = await ctx.db.insert("users", {})
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
 	expect(
 		t.mutation(api.public.characters.update, {
 			id,
-			data: createCharacterInput("Updated Name"),
+			data: createCharacterFields("Updated Name"),
 		}),
 	).rejects.toThrow()
 })
@@ -255,7 +248,7 @@ test("update - throws if not character owner", async () => {
 		const userId = await ctx.db.insert("users", {})
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -266,7 +259,7 @@ test("update - throws if not character owner", async () => {
 	expect(
 		otherUser.mutation(api.public.characters.update, {
 			id,
-			data: createCharacterInput("Updated Name"),
+			data: createCharacterFields("Updated Name"),
 		}),
 	).rejects.toThrow()
 })
@@ -281,13 +274,13 @@ test("update - updates character if logged in and character owner", async () => 
 	const id = await t.run(async (ctx) => {
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
 	await user.mutation(api.public.characters.update, {
 		id,
-		data: createCharacterInput("Updated Name"),
+		data: createCharacterFields("Updated Name"),
 	})
 
 	const character = await t.run(async (ctx) => {
@@ -295,8 +288,8 @@ test("update - updates character if logged in and character owner", async () => 
 	})
 
 	expect(character).toMatchObject({
-		name: "Updated Name",
 		ownerId: userId,
+		fields: { name: "Updated Name" },
 	})
 })
 
@@ -306,7 +299,7 @@ test("delete - throws if not logged in", async () => {
 		const userId = await ctx.db.insert("users", {})
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -319,7 +312,7 @@ test("delete - throws if not character owner", async () => {
 		const userId = await ctx.db.insert("users", {})
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -342,7 +335,7 @@ test("delete - deletes character if logged in and character owner", async () => 
 	const id = await t.run(async (ctx) => {
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -361,7 +354,7 @@ test("clone - throws if not logged in", async () => {
 		const userId = await ctx.db.insert("users", {})
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -374,7 +367,7 @@ test("clone - throws if not character owner", async () => {
 		const userId = await ctx.db.insert("users", {})
 		return await ctx.db.insert(
 			"characters",
-			createCharacterData("Test Character", userId),
+			createCharacterDoc("Test Character", userId),
 		)
 	})
 
@@ -396,7 +389,7 @@ test("clone - clones character if logged in and character owner", async () => {
 	})
 	const user = t.withIdentity(createAuthToken(userId))
 
-	const originalCharacter = createCharacterData("Test Character", userId)
+	const originalCharacter = createCharacterDoc("Test Character", userId)
 
 	const id = await t.run(async (ctx) => {
 		return await ctx.db.insert("characters", originalCharacter)
@@ -406,6 +399,6 @@ test("clone - clones character if logged in and character owner", async () => {
 		id,
 	})
 
-	expect(clonedCharacter?.name).toContain(originalCharacter.name)
-	expect(clonedCharacter?.ownerId).toEqual(originalCharacter.ownerId)
+	expect(clonedCharacter.fields.name).toContain(originalCharacter.fields!.name)
+	expect(clonedCharacter.ownerId).toEqual(originalCharacter.ownerId)
 })

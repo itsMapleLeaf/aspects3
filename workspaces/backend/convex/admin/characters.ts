@@ -1,10 +1,9 @@
 import { createAccount, retrieveAccount } from "@convex-dev/auth/server"
 import { ConvexError, v } from "convex/values"
-import { omit, pick } from "es-toolkit"
+import { characterFieldsValidator } from "../../data/character.ts"
 import { internal } from "../_generated/api"
 import type { DataModel } from "../_generated/dataModel"
 import { internalMutation } from "../_generated/server"
-import schema from "../schema.ts"
 import { adminAction, adminQuery } from "./utils.lib.ts"
 
 export const save = adminAction({
@@ -15,11 +14,12 @@ export const save = adminAction({
 			displayName: v.string(),
 		}),
 		discordGuildId: v.string(),
-		character: v.object(
-			omit(schema.tables.characters.validator.fields, ["ownerId"]),
-		),
+		character: characterFieldsValidator,
 	},
-	handler: async (ctx, { discordUser, discordGuildId, character }) => {
+	handler: async (
+		ctx,
+		{ discordUser, discordGuildId, character: characterFields },
+	) => {
 		let auth
 
 		try {
@@ -43,10 +43,8 @@ export const save = adminAction({
 		}
 
 		await ctx.runMutation(internal.admin.characters.saveMutation, {
-			character: {
-				...character,
-				ownerId: auth.user._id,
-			},
+			fields: characterFields,
+			ownerId: auth.user._id,
 			discordGuildId,
 		})
 	},
@@ -54,31 +52,38 @@ export const save = adminAction({
 
 export const saveMutation = internalMutation({
 	args: {
-		character: schema.tables.characters.validator,
+		fields: characterFieldsValidator,
+		ownerId: v.id("users"),
 		discordGuildId: v.string(),
 	},
-	handler: async (ctx, { character, discordGuildId }) => {
-		const user = await ctx.db.get(character.ownerId)
+	handler: async (ctx, { ownerId, fields, discordGuildId }) => {
+		const user = await ctx.db.get(ownerId)
 		if (!user) {
 			throw new ConvexError({
 				message: `Character owner not found`,
-				character: pick(character, ["key", "name", "ownerId"]),
+				character: fields,
 			})
 		}
 
 		const existing = await ctx.db
 			.query("characters")
 			.withIndex("ownerId_key", (q) =>
-				q.eq("ownerId", character.ownerId).eq("key", character.key),
+				q.eq("ownerId", ownerId).eq("fields.key", fields.key),
 			)
 			.first()
 
 		let characterId
 		if (existing) {
-			await ctx.db.replace(existing._id, character)
+			await ctx.db.patch(existing._id, {
+				fields,
+				ownerId,
+			})
 			characterId = existing._id
 		} else {
-			characterId = await ctx.db.insert("characters", character)
+			characterId = await ctx.db.insert("characters", {
+				ownerId,
+				fields,
+			})
 		}
 
 		await ctx.db.patch(user._id, {

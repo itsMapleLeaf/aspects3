@@ -1,11 +1,13 @@
 import { partial } from "convex-helpers/validators"
 import { v } from "convex/values"
-import { omit } from "es-toolkit"
+import {
+	characterFieldsValidator,
+	parseRemoteCharacterFields,
+} from "../../data/character.ts"
 import type { Id } from "../_generated/dataModel"
 import { mutation, query, type QueryCtx } from "../_generated/server"
 import { ensureAuthUserId } from "../auth.ts"
 import { ensureDoc } from "../db.ts"
-import schema from "../schema.ts"
 
 export const get = query({
 	args: { id: v.string() },
@@ -32,7 +34,7 @@ export const getByKey = query({
 			return await ctx.db
 				.query("characters")
 				.withIndex("ownerId_key", (q) =>
-					q.eq("ownerId", userId).eq("key", args.key),
+					q.eq("ownerId", userId).eq("fields.key", args.key),
 				)
 				.first()
 		} catch (error) {
@@ -75,12 +77,12 @@ export const listOwned = query({
 })
 
 export const create = mutation({
-	args: omit(schema.tables.characters.validator.fields, ["ownerId"]),
+	args: characterFieldsValidator,
 	handler: async (ctx, args) => {
 		const userId = await ensureAuthUserId(ctx)
 		return await ctx.db.insert("characters", {
-			...args,
 			ownerId: userId,
+			fields: args,
 		})
 	},
 })
@@ -88,35 +90,37 @@ export const create = mutation({
 export const update = mutation({
 	args: {
 		id: v.id("characters"),
-		data: v.object(
-			partial(omit(schema.tables.characters.validator.fields, ["ownerId"])),
-		),
+		data: v.object(partial(characterFieldsValidator.fields)),
+		roomId: v.optional(v.id("rooms")),
 	},
-	handler: async (ctx, args) => {
-		await ensureViewerOwnedCharacter(ctx, args.id)
-		await ctx.db.patch(args.id, args.data)
+	handler: async (ctx, { id, data, ...patch }) => {
+		const { character } = await ensureViewerOwnedCharacter(ctx, id)
+		await ctx.db.patch(id, {
+			fields: { ...parseRemoteCharacterFields(character), ...data, ...patch },
+		})
 	},
 })
 
 export const upsert = mutation({
-	args: omit(schema.tables.characters.validator.fields, ["ownerId", "roomId"]),
+	args: characterFieldsValidator,
 	handler: async (ctx, args) => {
 		const userId = await ensureAuthUserId(ctx)
 
 		const existing = await ctx.db
 			.query("characters")
 			.withIndex("ownerId_key", (q) =>
-				q.eq("ownerId", userId).eq("key", args.key),
+				q.eq("ownerId", userId).eq("fields.key", args.key),
 			)
 			.first()
 
 		if (existing) {
-			await ctx.db.patch(existing._id, args)
+			await ctx.db.patch(existing._id, {
+				fields: args,
+			})
 		} else {
 			await ctx.db.insert("characters", {
-				...args,
 				ownerId: userId,
-				key: args.key,
+				fields: args,
 			})
 		}
 	},
@@ -141,10 +145,11 @@ export const clone = mutation({
 		const { character } = await ensureViewerOwnedCharacter(ctx, args.id)
 
 		const newCharacter = {
-			...omit(character, ["_id", "_creationTime"]),
-			name: `${character.name} (copy)`,
 			ownerId: character.ownerId,
-			key: crypto.randomUUID(),
+			fields: {
+				...parseRemoteCharacterFields(character),
+				key: crypto.randomUUID(),
+			},
 		}
 
 		const clonedId = await ctx.db.insert("characters", newCharacter)

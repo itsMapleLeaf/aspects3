@@ -1,8 +1,7 @@
 import { Heading, HeadingLevel } from "@ariakit/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Doc, Id } from "@workspace/backend/convex/_generated/dataModel"
-import { getResolve, getToughness } from "@workspace/data/characters"
-import { parseNumber } from "@workspace/shared/utils"
+import { CharacterModel } from "@workspace/backend/data/character.ts"
 import { useQuery } from "convex-helpers/react/cache"
 import {
 	Authenticated,
@@ -80,20 +79,24 @@ function RoomCharacterList({ room }: { room: Doc<"rooms"> }) {
 }
 
 function RoomCharacterCard({
-	character,
+	character: characterDoc,
 	room,
 }: {
 	character: Doc<"characters">
 	room: Doc<"rooms">
 }) {
 	const me = useQuery(api.public.auth.me)
+	const character = CharacterModel.fromRemote(characterDoc)
 	return (
 		<div className="panel py-2 pr-2 pl-3">
 			<HeadingLevel>
 				<div className="flex items-start justify-between">
-					<Heading className="heading-xl">{character.name}</Heading>
-					{(me?._id === character.ownerId || me?._id === room.ownerId) && (
-						<RoomCharacterMenuButton character={character} roomId={room._id} />
+					<Heading className="heading-xl">{character.fields.name}</Heading>
+					{(me?._id === characterDoc.ownerId || me?._id === room.ownerId) && (
+						<RoomCharacterMenuButton
+							character={characterDoc}
+							roomId={room._id}
+						/>
 					)}
 				</div>
 				<div className="flex items-center gap-3">
@@ -102,7 +105,7 @@ function RoomCharacterCard({
 						className="hover:text-primary-200 cursor-default transition-colors"
 					>
 						<IconLabel icon={<Icon icon="mingcute:heart-crack-fill" />}>
-							{parseNumber(character.hits)}/{getToughness(character)}
+							{character.hits}/{character.toughness}
 						</IconLabel>
 					</Tooltip>
 					<Tooltip
@@ -110,7 +113,7 @@ function RoomCharacterCard({
 						className="hover:text-primary-200 cursor-default transition-colors"
 					>
 						<IconLabel icon={<Icon icon="mingcute:lightning-fill" />}>
-							{parseNumber(character.fatigue)}/{getResolve(character)}
+							{character.fatigue}/{character.resolve}
 						</IconLabel>
 					</Tooltip>
 					<Tooltip
@@ -118,7 +121,7 @@ function RoomCharacterCard({
 						className="hover:text-primary-200 cursor-default transition-colors"
 					>
 						<IconLabel icon={<Icon icon="mingcute:arrows-up-fill" />}>
-							{parseNumber(character.comeback)}
+							{character.comeback}
 						</IconLabel>
 					</Tooltip>
 				</div>
@@ -170,23 +173,27 @@ function AddCharacterButton({ roomId }: { roomId: Id<"rooms"> }) {
 				Add character
 			</Button>
 			<MenuPanel>
-				{characters?.map((character) => (
-					<MenuItem
-						onClick={() => {
-							convex.mutation(api.public.characters.update, {
-								id: character._id,
-								data: { roomId },
-							})
-						}}
-					>
-						<img
-							src={character.imageUrl}
-							alt=""
-							className="size-6 rounded-full object-cover object-top"
-						/>
-						<span>{character.name}</span>
-					</MenuItem>
-				))}
+				{characters?.map((characterDoc) => {
+					const character = CharacterModel.fromRemote(characterDoc)
+					return (
+						<MenuItem
+							onClick={() => {
+								convex.mutation(api.public.characters.update, {
+									id: characterDoc._id,
+									data: {},
+									roomId,
+								})
+							}}
+						>
+							<img
+								src={character.fields.imageUrl}
+								alt=""
+								className="size-6 rounded-full object-cover object-top"
+							/>
+							<span>{character.fields.name}</span>
+						</MenuItem>
+					)
+				})}
 			</MenuPanel>
 		</Menu>
 	)

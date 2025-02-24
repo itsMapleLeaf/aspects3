@@ -1,4 +1,5 @@
 import { api } from "@workspace/backend/convex/_generated/api.js"
+import { parseRemoteCharacterFields } from "@workspace/backend/data/character.ts"
 import { Character } from "@workspace/data/characters"
 import { ConvexHttpClient } from "convex/browser"
 
@@ -26,9 +27,9 @@ const adminSecret = process.env.ADMIN_SECRET as string
 export function createConvexContext(): CommandContext {
 	return {
 		async findCharacterByUser({ user, guild }) {
-			// calling the validator to normalize the data, strip extra fields, and avoid arg validation errors
-			return Character.assert(
-				await convex.query(api.admin.characters.getLatestByOwner, {
+			const character = await convex.query(
+				api.admin.characters.getLatestByOwner,
+				{
 					adminSecret,
 					discordUser: {
 						id: user.id,
@@ -36,8 +37,9 @@ export function createConvexContext(): CommandContext {
 						displayName: user.globalName || user.username,
 					},
 					discordGuildId: guild.id,
-				}),
+				},
 			)
+			return character ? parseRemoteCharacterFields(character) : null
 		},
 		async upsertUserWithCharacter({ user, guild, character }) {
 			console.log({ character })

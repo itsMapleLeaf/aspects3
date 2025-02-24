@@ -1,6 +1,9 @@
 import { authTables } from "@convex-dev/auth/server"
+import { deprecated } from "convex-helpers/validators"
 import { defineSchema, defineTable } from "convex/server"
 import { v } from "convex/values"
+import { mapValues } from "es-toolkit"
+import { characterFieldsValidator } from "../data/character.ts"
 
 export default defineSchema({
 	...authTables,
@@ -19,24 +22,15 @@ export default defineSchema({
 		.index("phone", ["phone"]),
 
 	characters: defineTable({
-		name: v.string(),
-		details: v.string(),
-		attributes: v.record(v.string(), v.string()),
-		hits: v.string(),
-		fatigue: v.string(),
-		comeback: v.string(),
-		traits: v.array(v.string()),
-		proficientSkills: v.array(v.string()),
-		aspects: v.record(v.string(), v.string()),
-		imageUrl: v.string(),
-		key: v.string(), // client-defined key for consistent upsert
+		...mapValues(characterFieldsValidator.fields, () => deprecated),
 		ownerId: v.id("users"),
 		roomId: v.optional(v.union(v.id("rooms"), v.null())),
+		fields: v.optional(characterFieldsValidator),
 	})
 		.index("ownerId", ["ownerId"])
-		.index("ownerId_name", ["ownerId", "name"])
-		.index("ownerId_key", ["ownerId", "key"])
-		.index("roomId", ["roomId", "name"]),
+		.index("ownerId_name", ["ownerId", "fields.name", "name"])
+		.index("ownerId_key", ["ownerId", "fields.key", "fields.name", "name"])
+		.index("roomId", ["roomId", "fields.name", "name"]),
 
 	rooms: defineTable({
 		name: v.string(),
