@@ -1,9 +1,9 @@
-import { aspects } from "@workspace/shared/aspects"
-import type { Character } from "@workspace/shared/characters"
+import { aspects } from "@workspace/data/aspects"
+import type { Character } from "@workspace/data/characters"
 import {
 	getAspectPowerDice,
 	getAttributeValue,
-} from "@workspace/shared/characters"
+} from "@workspace/data/characters"
 import { parseNumber } from "@workspace/shared/utils"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"

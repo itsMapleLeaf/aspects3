@@ -3,6 +3,8 @@
 	"references": [
 		{ "path": "workspaces/web" },
 		{ "path": "workspaces/bot" },
-		{ "path": "workspaces/shared" }
+		{ "path": "workspaces/shared" },
+		{ "path": "workspaces/data" },
+		{ "path": "workspaces/backend" }
 	]
 }

@@ -1,7 +1,7 @@
 import * as Ariakit from "@ariakit/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Doc } from "@workspace/backend/convex/_generated/dataModel"
-import { Character, createEmptyCharacter } from "@workspace/shared/characters"
+import { Character, createEmptyCharacter } from "@workspace/data/characters"
 import { useConvex } from "convex/react"
 import { useEffect, useState, useTransition } from "react"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"

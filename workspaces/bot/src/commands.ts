@@ -1,14 +1,10 @@
-import {
-	aspectNames,
-	aspects,
-	type AspectName,
-} from "@workspace/shared/aspects"
+import { aspectNames, aspects, type AspectName } from "@workspace/data/aspects"
 import {
 	attributeNames,
 	attributes,
 	getAttributeBySkill,
 	getSkill,
-} from "@workspace/shared/attributes"
+} from "@workspace/data/attributes"
 import {
 	Character,
 	getAspectPowerDice,
@@ -16,7 +12,7 @@ import {
 	getAttributeValue,
 	getCharacterUrl,
 	getSkillPowerDice,
-} from "@workspace/shared/characters"
+} from "@workspace/data/characters"
 import {
 	numericDie,
 	parseDiceRollStringInput,

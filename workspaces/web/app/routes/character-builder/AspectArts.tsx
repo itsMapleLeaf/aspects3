@@ -1,4 +1,4 @@
-import type { Character } from "@workspace/shared/characters"
+import type { Character } from "@workspace/data/characters"
 import { Checkbox } from "~/components/ui/Checkbox.tsx"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { AspectArtList } from "./AspectArtList.tsx"

@@ -2,8 +2,8 @@
 	"name": "@workspace/data",
 	"private": true,
 	"type": "module",
-	"engines": {
-		"node": "22 || 23"
+	"exports": {
+		"./*": "./src/*.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc"
@@ -12,7 +12,6 @@
 		"arktype": "2.1.0"
 	},
 	"devDependencies": {
-		"@workspace/shared": "*",
-		"type-fest": "^4.33.0"
+		"@workspace/shared": "*"
 	}
 }

@@ -1,4 +1,4 @@
-import { Character } from "@workspace/shared/characters"
+import { Character } from "@workspace/data/characters"
 import { useEffect, useRef } from "react"
 import { useSearchParams } from "react-router"
 

@@ -1,4 +1,4 @@
-import type { Character } from "@workspace/shared/characters"
+import type { Character } from "@workspace/data/characters"
 import { pipe, timeoutPromise } from "@workspace/shared/utils"
 import { useState, useTransition } from "react"
 import { Button } from "../../components/ui/Button.tsx"

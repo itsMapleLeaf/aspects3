@@ -1,7 +1,7 @@
 import { Heading, HeadingLevel } from "@ariakit/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Doc, Id } from "@workspace/backend/convex/_generated/dataModel"
-import { getResolve, getToughness } from "@workspace/shared/characters"
+import { getResolve, getToughness } from "@workspace/data/characters"
 import { parseNumber } from "@workspace/shared/utils"
 import { useQuery } from "convex-helpers/react/cache"
 import {

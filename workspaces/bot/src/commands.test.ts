@@ -1,4 +1,4 @@
-import type { Character } from "@workspace/shared/characters"
+import type { Character } from "@workspace/data/characters"
 import { expect, mock, test } from "bun:test"
 import * as Discord from "discord.js"
 import { addCommands } from "./commands.ts"

@@ -1,6 +1,6 @@
-import { aspects } from "@workspace/shared/aspects"
-import { attributes } from "@workspace/shared/attributes"
-import { traits } from "@workspace/shared/traits"
+import { aspects } from "@workspace/data/aspects"
+import { attributes } from "@workspace/data/attributes"
+import { traits } from "@workspace/data/traits"
 import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 
 const aspectColors = {

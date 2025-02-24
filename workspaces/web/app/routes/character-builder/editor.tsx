@@ -1,11 +1,11 @@
 import * as Ariakit from "@ariakit/react"
 import { useAuthActions } from "@convex-dev/auth/react"
-import { aspectNames } from "@workspace/shared/aspects"
+import { aspectNames } from "@workspace/data/aspects"
 import {
 	attributeNames,
 	attributes,
 	type AttributeName,
-} from "@workspace/shared/attributes"
+} from "@workspace/data/attributes"
 import {
 	Character,
 	getAspectTotal,
@@ -15,8 +15,8 @@ import {
 	getResolve,
 	getSkillPowerDice,
 	getToughness,
-} from "@workspace/shared/characters"
-import { traits } from "@workspace/shared/traits"
+} from "@workspace/data/characters"
+import { traits } from "@workspace/data/traits"
 import { useConvexAuth } from "convex/react"
 import { type ComponentProps, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"

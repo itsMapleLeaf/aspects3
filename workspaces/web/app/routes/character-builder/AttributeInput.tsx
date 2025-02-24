@@ -1,4 +1,4 @@
-import { type AttributeName, attributes } from "@workspace/shared/attributes"
+import { type AttributeName, attributes } from "@workspace/data/attributes"
 import { type ComponentProps } from "react"
 import { StatInput } from "./StatInput.tsx"
 

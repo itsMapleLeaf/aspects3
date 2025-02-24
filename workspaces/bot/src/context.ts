@@ -1,5 +1,5 @@
 import { api } from "@workspace/backend/convex/_generated/api.js"
-import { Character } from "@workspace/shared/characters"
+import { Character } from "@workspace/data/characters"
 import { ConvexHttpClient } from "convex/browser"
 
 type DiscordUser = {
