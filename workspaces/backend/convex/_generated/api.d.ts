@@ -17,6 +17,7 @@ import type * as admin_characters from "../admin/characters.js";
 import type * as auth from "../auth.js";
 import type * as db from "../db.js";
 import type * as http from "../http.js";
+import type * as migrate from "../migrate.js";
 import type * as public_auth from "../public/auth.js";
 import type * as public_characters from "../public/characters.js";
 import type * as public_rooms from "../public/rooms.js";
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   db: typeof db;
   http: typeof http;
+  migrate: typeof migrate;
   "public/auth": typeof public_auth;
   "public/characters": typeof public_characters;
   "public/rooms": typeof public_rooms;
