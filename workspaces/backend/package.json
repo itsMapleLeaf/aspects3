@@ -7,7 +7,7 @@
 	},
 	"scripts": {
 		"dev": "convex dev --tail-logs",
-		"deploy": "convex deploy --cmd \"cd ../web && bun run build\" --cmd-url-env-var-name VITE_CONVEX_URL",
+		"deploy": "convex deploy --cmd \"cd ../web && bun run build\" --cmd-url-env-var-name VITE_CONVEX_URL && convex run migrate",
 		"test": "bun test",
 		"typecheck": "tsc"
 	},
