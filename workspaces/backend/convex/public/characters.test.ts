@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, expect, mock, test } from "bun:test"
 import type { Except } from "type-fest"
-import type { CharacterFields } from "../../data/character.ts"
+import {
+	createEmptyCharacterFields,
+	type CharacterFields,
+} from "../../data/character.ts"
 import { api } from "../_generated/api"
 import type { Doc, Id } from "../_generated/dataModel"
 import { createConvexTest } from "../lib/testing.lib.ts"
@@ -16,17 +19,8 @@ function createAuthToken(userId: Id<"users">) {
 
 function createCharacterFields(name: string): CharacterFields {
 	return {
+		...createEmptyCharacterFields(),
 		name,
-		aspects: {},
-		attributes: {},
-		traits: [],
-		details: "",
-		hits: "",
-		fatigue: "",
-		comeback: "",
-		proficientSkills: [],
-		imageUrl: "",
-		key: crypto.randomUUID(),
 	}
 }
 
