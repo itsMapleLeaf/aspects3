@@ -51,7 +51,7 @@ export const getFallback = query({
 			const userId = await ensureAuthUserId(ctx)
 			return await ctx.db
 				.query("characters")
-				.withIndex("ownerId_name", (q) => q.eq("ownerId", userId))
+				.withIndex("ownerId", (q) => q.eq("ownerId", userId))
 				.first()
 		} catch (error) {
 			console.warn(error)
@@ -67,7 +67,7 @@ export const listOwned = query({
 			const userId = await ensureAuthUserId(ctx)
 			return await ctx.db
 				.query("characters")
-				.withIndex("ownerId_name", (q) => q.eq("ownerId", userId))
+				.withIndex("ownerId", (q) => q.eq("ownerId", userId))
 				.collect()
 		} catch (error) {
 			console.warn(error)
