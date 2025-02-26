@@ -260,9 +260,8 @@ export function addCommands(
 
 						const attributeValue = getAttributeValue(attributeName, character)
 						const powerCount = getSkillPowerDice(character, skill.name)
-						const url = getCharacterUrl(character)
 
-						const label = `Rolling **${skill.name}** for [**${character.name}**](${url.href}) (${attributeValue})`
+						const label = `Rolling **${skill.name}** (${attributeValue})`
 						const dice = [
 							numericDie(6),
 							...range(powerCount + extraPowerDice).map(() => powerDie()),
