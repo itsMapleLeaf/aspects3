@@ -1,5 +1,5 @@
 import {
-	parseCharacterFields,
+	parseCharacterFieldsUnsafe,
 	type CharacterFields,
 } from "@workspace/backend/data/character"
 import { useEffect, useRef } from "react"
@@ -20,7 +20,7 @@ export function useCharacterFromDataParam(
 		if (dataParam) {
 			const decoded = atob(dataParam)
 			const parsed = JSON.parse(decoded)
-			const character = parseCharacterFields(parsed)
+			const character = parseCharacterFieldsUnsafe(parsed)
 
 			onParsedRef.current(character)
 

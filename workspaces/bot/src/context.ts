@@ -1,5 +1,8 @@
 import { api } from "@workspace/backend/convex/_generated/api.js"
-import { type CharacterFields } from "@workspace/backend/data/character"
+import {
+	parseCharacterFieldsUnsafe,
+	type CharacterFields,
+} from "@workspace/backend/data/character"
 import { ConvexHttpClient } from "convex/browser"
 
 interface DiscordUser {
@@ -38,7 +41,7 @@ export function createConvexContext(): CommandContext {
 					discordGuildId: guild.id,
 				},
 			)
-			return character?.fields ?? null
+			return character ? parseCharacterFieldsUnsafe(character.fields) : null
 		},
 		async upsertUserWithCharacter({ user, guild, character }) {
 			await convex.action(api.admin.characters.save, {

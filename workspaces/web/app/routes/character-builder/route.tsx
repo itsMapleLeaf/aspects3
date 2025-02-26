@@ -1,7 +1,7 @@
 import { api } from "@workspace/backend/convex/_generated/api"
 import {
 	CharacterModel,
-	parseCharacterFields,
+	parseCharacterFieldsUnsafe,
 } from "@workspace/backend/data/character"
 import { useConvexAuth, useQuery } from "convex/react"
 import { lazy } from "react"
@@ -42,7 +42,7 @@ function LocalCharacterEditor() {
 	const [character, setCharacter] = useLocalStorage(
 		"character",
 		CharacterModel.empty().fields,
-		parseCharacterFields,
+		parseCharacterFieldsUnsafe,
 	)
 
 	useCharacterFromDataParam(setCharacter)

@@ -5,13 +5,14 @@ import { traits } from "@workspace/data/traits"
 import { parseNumber } from "@workspace/shared/utils"
 import { type } from "arktype"
 import type { WithoutSystemFields } from "convex/server"
-import { v, type Infer } from "convex/values"
-import { pick } from "es-toolkit"
+import { v } from "convex/values"
+import { clamp, pick } from "es-toolkit"
+import { countCharacterLevels } from "./characterLevels.ts"
 
-export type CharacterFields = Infer<typeof characterFieldsValidator>
 export const characterFieldsValidator = v.object({
 	key: v.string(),
 	name: v.string(),
+	levelIndex: v.optional(v.number()),
 	details: v.string(),
 	attributes: v.record(v.string(), v.string()),
 	hits: v.string(),
@@ -20,12 +21,17 @@ export const characterFieldsValidator = v.object({
 	traits: v.array(v.string()),
 	proficientSkills: v.array(v.string()),
 	aspects: v.record(v.string(), v.string()),
+	paths: v.optional(v.array(v.string())),
 	imageUrl: v.string(),
 })
 
+export type CharacterFields = typeof CharacterFieldsParser.inferOut
 const CharacterFieldsParser = type({
 	key: type("string").default(() => crypto.randomUUID()),
 	name: "string < 256 = ''",
+	levelIndex: type("number")
+		.pipe((it) => clamp(Math.floor(it), 0, countCharacterLevels()))
+		.default(6),
 	details: "string = ''",
 	attributes: type(`Record<string, string>`).default(() => ({})),
 	hits: "string = ''",
@@ -34,15 +40,17 @@ const CharacterFieldsParser = type({
 	traits: type("string[]").default(() => []),
 	proficientSkills: type("string[]").default(() => []),
 	aspects: type(`Record<string, string>`).default(() => ({})),
+	paths: type("string[]").default(() => []),
 	imageUrl: "string = ''",
 }).onUndeclaredKey("delete")
 
-export function parseCharacterFields(raw: unknown) {
+export function parseCharacterFieldsUnsafe(raw: unknown): CharacterFields {
 	// workaround: onUndeclaredKey is broken and doesn't strip unknown keys
 	// ensure the list of keys here match the type above
 	return pick(CharacterFieldsParser.assert(raw), [
 		"key",
 		"name",
+		"levelIndex",
 		"details",
 		"attributes",
 		"hits",
@@ -51,6 +59,7 @@ export function parseCharacterFields(raw: unknown) {
 		"traits",
 		"proficientSkills",
 		"aspects",
+		"paths",
 		"imageUrl",
 	])
 }
@@ -58,7 +67,31 @@ export function parseCharacterFields(raw: unknown) {
 export function parseRemoteCharacterFields(
 	doc: WithoutSystemFields<Doc<"characters">>,
 ) {
-	return doc.fields ?? parseCharacterFields(doc)
+	return parseCharacterFieldsUnsafe(doc.fields ?? doc)
+}
+
+export function createEmptyCharacterFields(): CharacterFields {
+	return {
+		key: crypto.randomUUID(),
+		name: "",
+		levelIndex: 0,
+		details: "",
+		attributes: {
+			intellect: "1",
+			sense: "1",
+			agility: "1",
+			strength: "1",
+			wit: "1",
+		},
+		hits: "",
+		fatigue: "",
+		comeback: "",
+		traits: [],
+		proficientSkills: [],
+		aspects: {},
+		paths: [],
+		imageUrl: "",
+	}
 }
 
 export class CharacterModel {
@@ -69,7 +102,7 @@ export class CharacterModel {
 	}
 
 	static fromUnsafeData(raw: unknown) {
-		return new CharacterModel(parseCharacterFields(raw))
+		return new CharacterModel(parseCharacterFieldsUnsafe(raw))
 	}
 
 	static fromRemote(doc: WithoutSystemFields<Doc<"characters">>) {
@@ -77,25 +110,7 @@ export class CharacterModel {
 	}
 
 	static empty() {
-		return new CharacterModel({
-			key: crypto.randomUUID(),
-			name: "",
-			details: "",
-			attributes: {
-				intellect: "1",
-				sense: "1",
-				agility: "1",
-				strength: "1",
-				wit: "1",
-			},
-			hits: "",
-			fatigue: "",
-			comeback: "",
-			traits: [],
-			proficientSkills: [],
-			aspects: {},
-			imageUrl: "",
-		})
+		return new CharacterModel(createEmptyCharacterFields())
 	}
 
 	getAttributeValue(name: AttributeName) {

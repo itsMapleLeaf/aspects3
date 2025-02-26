@@ -1,6 +1,6 @@
 import {
 	CharacterModel,
-	parseCharacterFields,
+	parseCharacterFieldsUnsafe,
 	type CharacterFields,
 } from "@workspace/backend/data/character"
 import {
@@ -30,7 +30,6 @@ import type { CommandContext } from "./context.ts"
 import { logger } from "./logger.ts"
 import type { InteractionRouter } from "./router.ts"
 
-// Helper functions to replace the imported ones
 function getAttributeValue(name: AttributeName, character: CharacterFields) {
 	return new CharacterModel(character).getAttributeValue(name)
 }
@@ -96,7 +95,9 @@ export function addCommands(
 								return
 							}
 
-							const data = parseCharacterFields(JSON.parse(atob(dataParam)))
+							const data = parseCharacterFieldsUnsafe(
+								JSON.parse(atob(dataParam)),
+							)
 
 							await context.upsertUserWithCharacter({
 								user: interaction.user,

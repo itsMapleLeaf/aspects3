@@ -2,7 +2,7 @@ import * as Ariakit from "@ariakit/react"
 import { useAuthActions } from "@convex-dev/auth/react"
 import {
 	CharacterModel,
-	parseCharacterFields,
+	parseCharacterFieldsUnsafe,
 	type CharacterFields,
 } from "@workspace/backend/data/character"
 import { aspectNames } from "@workspace/data/aspects"
@@ -300,7 +300,7 @@ export function CharacterEditorMenu({
 				const data = await file.text()
 				const parsed = JSON.parse(data)
 				const character = {
-					...parseCharacterFields(parsed),
+					...parseCharacterFieldsUnsafe(parsed),
 					key: crypto.randomUUID(),
 				}
 				onImport(character)
