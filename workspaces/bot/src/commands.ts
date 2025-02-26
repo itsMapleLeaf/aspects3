@@ -1,18 +1,21 @@
-import { aspectNames, aspects, type AspectName } from "@workspace/data/aspects"
+import {
+	CharacterModel,
+	parseCharacterFields,
+	type CharacterFields,
+} from "@workspace/backend/data/character"
+import {
+	aspectNames,
+	aspects,
+	type AspectInfo,
+	type AspectName,
+} from "@workspace/data/aspects"
 import {
 	attributeNames,
 	attributes,
 	getAttributeBySkill,
 	getSkill,
+	type AttributeName,
 } from "@workspace/data/attributes"
-import {
-	Character,
-	getAspectPowerDice,
-	getAspectValue,
-	getAttributeValue,
-	getCharacterUrl,
-	getSkillPowerDice,
-} from "@workspace/data/characters"
 import {
 	numericDie,
 	parseDiceRollStringInput,
@@ -26,6 +29,30 @@ import { matchSorter } from "match-sorter"
 import type { CommandContext } from "./context.ts"
 import { logger } from "./logger.ts"
 import type { InteractionRouter } from "./router.ts"
+
+// Helper functions to replace the imported ones
+function getAttributeValue(name: AttributeName, character: CharacterFields) {
+	return new CharacterModel(character).getAttributeValue(name)
+}
+
+function getSkillPowerDice(character: CharacterFields, skillName: string) {
+	return new CharacterModel(character).getSkillPowerDice(skillName)
+}
+
+function getAspectValue(name: string, character: CharacterFields) {
+	return new CharacterModel(character).getAspectValue(name)
+}
+
+function getAspectPowerDice(
+	aspectName: AspectName,
+	character: CharacterFields,
+) {
+	return new CharacterModel(character).getAspectPowerDice(aspectName)
+}
+
+function getCharacterUrl(data: CharacterFields) {
+	return new CharacterModel(data).url
+}
 
 export function addCommands(
 	router: InteractionRouter,
@@ -69,7 +96,7 @@ export function addCommands(
 								return
 							}
 
-							const data = Character.assert(JSON.parse(atob(dataParam)))
+							const data = parseCharacterFields(JSON.parse(atob(dataParam)))
 
 							await context.upsertUserWithCharacter({
 								user: interaction.user,
@@ -401,7 +428,7 @@ export function addCommands(
 	}))
 }
 
-function getCharacterDisplayMessageOptions(data: Character) {
+function getCharacterDisplayMessageOptions(data: CharacterFields) {
 	return {
 		content: `You are playing as [**${data.name}**](${
 			getCharacterUrl(data).href
@@ -410,7 +437,7 @@ function getCharacterDisplayMessageOptions(data: Character) {
 	} satisfies Discord.BaseMessageOptions
 }
 
-function createCharacterEmbed(data: Character): Discord.APIEmbed {
+function createCharacterEmbed(data: CharacterFields): Discord.APIEmbed {
 	const url = getCharacterUrl(data)
 
 	const traitList = new Intl.ListFormat(undefined, {
@@ -438,11 +465,12 @@ function createCharacterEmbed(data: Character): Discord.APIEmbed {
 			{
 				name: "Aspects",
 				value: Object.entries(data.aspects)
-					.map(([aspect, value]) => {
-						const aspectInfo = aspects[aspect as AspectName]
-						const attributeValue = getAttributeValue(aspectInfo.attribute, data)
+					.flatMap(([aspect, value]) => {
+						const aspectsRecord: Record<string, AspectInfo> = aspects
+						const aspectInfo = aspectsRecord[aspect]
+						if (!aspectInfo) return []
 						const totalValue = getAspectValue(aspect, data)
-						return `${aspectInfo.name}: **${totalValue}**`
+						return [`${aspectInfo.name}: **${totalValue}**`]
 					})
 					.join("\n"),
 				inline: true,

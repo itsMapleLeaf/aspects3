@@ -1,5 +1,8 @@
 import { api } from "@workspace/backend/convex/_generated/api"
-import { Character, createEmptyCharacter } from "@workspace/data/characters"
+import {
+	CharacterModel,
+	parseCharacterFields,
+} from "@workspace/backend/data/character"
 import { useConvexAuth, useQuery } from "convex/react"
 import { lazy } from "react"
 import { ContentState } from "~/components/ui/ContentState.tsx"
@@ -38,8 +41,8 @@ export default function CharacterBuilderRoute() {
 function LocalCharacterEditor() {
 	const [character, setCharacter] = useLocalStorage(
 		"character",
-		createEmptyCharacter(),
-		Character.assert,
+		CharacterModel.empty().fields,
+		parseCharacterFields,
 	)
 
 	useCharacterFromDataParam(setCharacter)
@@ -52,7 +55,7 @@ function LocalCharacterEditor() {
 				actions={
 					<CharacterEditorMenu
 						character={character}
-						onNew={() => setCharacter(createEmptyCharacter())}
+						onNew={() => setCharacter(CharacterModel.empty().fields)}
 						onImport={setCharacter}
 						onDelete={null}
 						onClone={null}

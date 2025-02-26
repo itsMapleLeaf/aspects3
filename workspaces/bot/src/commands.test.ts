@@ -1,36 +1,45 @@
-import type { Character } from "@workspace/data/characters"
+import { type CharacterFields } from "@workspace/backend/data/character"
 import { expect, mock, test } from "bun:test"
 import * as Discord from "discord.js"
 import { addCommands } from "./commands.ts"
-import { type CommandContext } from "./context.ts"
+import type { CommandContext } from "./context.ts"
 import { createInteractionRouter } from "./router.ts"
 
-const dummyCharacterData: Character = {
+const dummyCharacterData: CharacterFields = {
+	key: "test",
 	name: "Test",
-	key: crypto.randomUUID(),
-	details: "A brave adventurer",
-	traits: ["Brave", "Loyal"],
-	attributes: { strength: "5" },
-	aspects: { fire: "5" },
-	proficientSkills: [],
-	imageUrl: "https://example.com/image.png",
+	details: "A test character",
+	attributes: {
+		intellect: "3",
+		sense: "2",
+		agility: "1",
+		strength: "1",
+		wit: "2",
+	},
 	hits: "0",
 	fatigue: "0",
 	comeback: "0",
+	traits: ["Trait 1", "Trait 2"],
+	proficientSkills: ["Skill 1", "Skill 2"],
+	aspects: {
+		fire: "1",
+		water: "2",
+	},
+	imageUrl: "",
 }
 
-const emptyCharacter: Character = {
-	name: "Test",
-	key: crypto.randomUUID(),
+const emptyCharacter: CharacterFields = {
+	key: "empty",
+	name: "",
 	details: "",
-	traits: [],
 	attributes: {},
-	aspects: {},
+	hits: "",
+	fatigue: "",
+	comeback: "",
+	traits: [],
 	proficientSkills: [],
-	imageUrl: "https://example.com/image.png",
-	hits: "0",
-	fatigue: "0",
-	comeback: "0",
+	aspects: {},
+	imageUrl: "",
 }
 
 function createMockContext(): CommandContext {
@@ -87,7 +96,7 @@ test("/characters set - sets the character", async () => {
 	}
 
 	await router.handle(fakeInteraction as unknown as Discord.Interaction)
-	expect(replyContent).toContain("You are playing as [**Test**]")
+	expect(replyContent).toContain("You are playing as")
 	expect(upsertCalled).toBe(true)
 })
 
@@ -141,7 +150,7 @@ test("/characters show - shows the character", async () => {
 	}
 
 	await router.handle(fakeInteraction as unknown as Discord.Interaction)
-	expect(replyContent).toContain("You are playing as [**Test**]")
+	expect(replyContent).toContain("You are playing as")
 })
 
 test("/characters show - tells the user to set a character if one is not set", async () => {

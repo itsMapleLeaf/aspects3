@@ -76,6 +76,28 @@ export class CharacterModel {
 		return new CharacterModel(parseRemoteCharacterFields(doc))
 	}
 
+	static empty() {
+		return new CharacterModel({
+			key: crypto.randomUUID(),
+			name: "",
+			details: "",
+			attributes: {
+				intellect: "1",
+				sense: "1",
+				agility: "1",
+				strength: "1",
+				wit: "1",
+			},
+			hits: "",
+			fatigue: "",
+			comeback: "",
+			traits: [],
+			proficientSkills: [],
+			aspects: {},
+			imageUrl: "",
+		})
+	}
+
 	getAttributeValue(name: AttributeName) {
 		return parseNumber(this.fields.attributes[name] ?? "1", 1, 6)
 	}

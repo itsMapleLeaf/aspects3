@@ -1,6 +1,8 @@
+import {
+	CharacterModel,
+	type CharacterFields,
+} from "@workspace/backend/data/character"
 import { aspects, type AspectName } from "@workspace/data/aspects"
-import type { Character } from "@workspace/data/characters"
-import { getAttributeValue } from "@workspace/data/characters"
 import { StatInput } from "./StatInput.tsx"
 
 const aspectColors = {
@@ -13,13 +15,15 @@ const aspectColors = {
 
 type AspectInputProps = {
 	aspect: AspectName
-	character: Character
+	character: CharacterFields
 	onChange: (value: string) => void
 }
 
 export function AspectInput({ aspect, character, onChange }: AspectInputProps) {
 	const aspectInfo = aspects[aspect as keyof typeof aspects]
-	const attributeValue = getAttributeValue(aspectInfo.attribute, character)
+	const attributeValue = new CharacterModel(character).getAttributeValue(
+		aspectInfo.attribute,
+	)
 	const aspectValue = Number(character.aspects[aspect] ?? "0")
 	const total = aspectValue + attributeValue
 	const color = aspectColors[aspect as keyof typeof aspectColors]

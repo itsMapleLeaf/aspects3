@@ -1,9 +1,12 @@
-import { Character } from "@workspace/data/characters"
+import {
+	parseCharacterFields,
+	type CharacterFields,
+} from "@workspace/backend/data/character"
 import { useEffect, useRef } from "react"
 import { useSearchParams } from "react-router"
 
 export function useCharacterFromDataParam(
-	onParsed: (character: Character) => void,
+	onParsed: (character: CharacterFields) => void,
 ) {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const dataParam = searchParams.get("data")
@@ -17,7 +20,7 @@ export function useCharacterFromDataParam(
 		if (dataParam) {
 			const decoded = atob(dataParam)
 			const parsed = JSON.parse(decoded)
-			const character = Character.assert(parsed)
+			const character = parseCharacterFields(parsed)
 
 			onParsedRef.current(character)
 

@@ -1,7 +1,10 @@
 import * as Ariakit from "@ariakit/react"
 import { api } from "@workspace/backend/convex/_generated/api"
 import type { Doc } from "@workspace/backend/convex/_generated/dataModel"
-import { Character, createEmptyCharacter } from "@workspace/data/characters"
+import {
+	CharacterModel,
+	type CharacterFields,
+} from "@workspace/backend/data/character"
 import { useConvex } from "convex/react"
 import { useEffect, useState, useTransition } from "react"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
@@ -28,7 +31,7 @@ export function RemoteCharacterEditor({
 	)
 
 	const [updatedCharacters, setUpdatedCharacters] = useState<
-		Map<string, Character>
+		Map<string, CharacterFields>
 	>(new Map())
 
 	const characters = new Map([...remoteCharacters, ...updatedCharacters])
@@ -108,9 +111,9 @@ export function RemoteCharacterEditor({
 	}
 
 	const character =
-		updatedCharacter ?? selectedCharacter ?? createEmptyCharacter()
+		updatedCharacter ?? selectedCharacter ?? CharacterModel.empty().fields
 
-	function setCharacter(character: Character) {
+	function setCharacter(character: CharacterFields) {
 		setUpdatedCharacters(
 			(prev) => new Map([...prev, [character.key, character]]),
 		)
@@ -128,7 +131,7 @@ export function RemoteCharacterEditor({
 						/>
 						<CharacterEditorMenu
 							character={character}
-							onNew={() => setCharacter(createEmptyCharacter())}
+							onNew={() => setCharacter(CharacterModel.empty().fields)}
 							onImport={setCharacter}
 							onDelete={deleteSelectedCharacter}
 							onClone={selectedCharacter ? cloneSelectedCharacter : null}
@@ -150,8 +153,8 @@ function CharacterSwitcher({
 	characters,
 	onSelect,
 }: {
-	characters: Character[]
-	onSelect: (character: Character) => void
+	characters: CharacterFields[]
+	onSelect: (character: CharacterFields) => void
 }) {
 	const [open, setOpen] = useState(false)
 	return (
@@ -183,8 +186,8 @@ function CharacterSwitcherItem({
 	character,
 	onClick,
 }: {
-	character: Character
-	onClick: (character: Character) => void
+	character: CharacterFields
+	onClick: (character: CharacterFields) => void
 }) {
 	const [pending, startTransition] = useTransition()
 	return (

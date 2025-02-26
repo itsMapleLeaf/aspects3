@@ -1,9 +1,8 @@
-import { aspects } from "@workspace/data/aspects"
-import type { Character } from "@workspace/data/characters"
 import {
-	getAspectPowerDice,
-	getAttributeValue,
-} from "@workspace/data/characters"
+	CharacterModel,
+	type CharacterFields,
+} from "@workspace/backend/data/character"
+import { aspects } from "@workspace/data/aspects"
 import { parseNumber } from "@workspace/shared/utils"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"
@@ -30,7 +29,7 @@ const aspectBgColors = {
 const inactiveColors = "text-gray-400 bg-gray-900/20 border-gray-700"
 
 type AspectArtListProps = {
-	character: Character
+	character: CharacterFields
 	showAttunedOnly: boolean
 }
 
@@ -39,19 +38,21 @@ export function AspectArtList({
 	showAttunedOnly,
 }: AspectArtListProps) {
 	const diceTray = useDiceTray()
+
 	return (
 		<>
 			{Object.entries(aspects).map(([aspectName, aspect]) => {
 				const aspectPoints = parseNumber(character.aspects[aspectName] ?? "")
-				const attributeValue = getAttributeValue(aspect.attribute, character)
+				const attributeValue = new CharacterModel(character).getAttributeValue(
+					aspect.attribute,
+				)
 				const total = aspectPoints + attributeValue
 				const hasAspect = aspectPoints > 0
 				const color = aspectColors[aspectName as keyof typeof aspectColors]
 				const bgColor =
 					aspectBgColors[aspectName as keyof typeof aspectBgColors]
-				const powerDice = getAspectPowerDice(
+				const powerDice = new CharacterModel(character).getAspectPowerDice(
 					aspectName as keyof typeof aspects,
-					character,
 				)
 
 				if (showAttunedOnly && !hasAspect) return null

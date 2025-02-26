@@ -1,21 +1,16 @@
 import * as Ariakit from "@ariakit/react"
 import { useAuthActions } from "@convex-dev/auth/react"
+import {
+	CharacterModel,
+	parseCharacterFields,
+	type CharacterFields,
+} from "@workspace/backend/data/character"
 import { aspectNames } from "@workspace/data/aspects"
 import {
 	attributeNames,
 	attributes,
 	type AttributeName,
 } from "@workspace/data/attributes"
-import {
-	Character,
-	getAspectTotal,
-	getAttributeTotal,
-	getAttributeValue,
-	getAvailableProficiencies,
-	getResolve,
-	getSkillPowerDice,
-	getToughness,
-} from "@workspace/data/characters"
 import { traits } from "@workspace/data/traits"
 import { useConvexAuth } from "convex/react"
 import { type ComponentProps, type ReactNode } from "react"
@@ -38,13 +33,51 @@ import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
 import { TraitSelection } from "~/routes/character-builder/TraitSelection.tsx"
 import { CloudSaveDialog } from "./CloudSaveCta.tsx"
 
+// Helper functions to replace the imported ones
+function getAttributeValue(name: AttributeName, character: CharacterFields) {
+	return new CharacterModel(character).getAttributeValue(name)
+}
+
+function getAttributeTotal(attributes: Record<string, string>) {
+	const tempCharacter = CharacterModel.empty().fields
+	tempCharacter.attributes = attributes
+	return new CharacterModel(tempCharacter).attributeTotal
+}
+
+function getAspectTotal(aspects: Record<string, string>) {
+	const tempCharacter = CharacterModel.empty().fields
+	tempCharacter.aspects = aspects
+	return new CharacterModel(tempCharacter).aspectTotal
+}
+
+function getToughness(character: CharacterFields) {
+	return new CharacterModel(character).toughness
+}
+
+function getResolve(character: CharacterFields) {
+	return new CharacterModel(character).resolve
+}
+
+function getAvailableProficiencies(
+	attribute: AttributeName,
+	selectedTraits: string[],
+) {
+	const tempCharacter = CharacterModel.empty().fields
+	tempCharacter.traits = selectedTraits
+	return new CharacterModel(tempCharacter).getAvailableProficiencies(attribute)
+}
+
+function getSkillPowerDice(character: CharacterFields, skillName: string) {
+	return new CharacterModel(character).getSkillPowerDice(skillName)
+}
+
 export function CharacterEditor({
 	character,
 	onChange,
 	actions,
 }: {
-	character: Character
-	onChange: (character: Character) => void
+	character: CharacterFields
+	onChange: (character: CharacterFields) => void
 	actions: ReactNode
 }) {
 	function updateAttribute(attr: AttributeName & string, value: string) {
@@ -229,9 +262,9 @@ export function CharacterEditorMenu({
 	onDelete,
 	onClone,
 }: {
-	character: Character
+	character: CharacterFields
 	onNew: () => void
-	onImport: (character: Character) => void
+	onImport: (character: CharacterFields) => void
 	onDelete: (() => void) | null
 	onClone: (() => void) | null
 }) {
@@ -267,7 +300,7 @@ export function CharacterEditorMenu({
 				const data = await file.text()
 				const parsed = JSON.parse(data)
 				const character = {
-					...Character.assert(parsed),
+					...parseCharacterFields(parsed),
 					key: crypto.randomUUID(),
 				}
 				onImport(character)
@@ -476,7 +509,7 @@ function AttributeInputList({
 }
 
 type AspectInputListProps = {
-	character: Character
+	character: CharacterFields
 	onChange: (aspect: string, value: string) => void
 }
 
@@ -501,7 +534,7 @@ function AspectInputList({ character, onChange }: AspectInputListProps) {
 }
 
 type HitsBarProps = {
-	character: Character
+	character: CharacterFields
 	onChange: (value: string) => void
 }
 
@@ -520,7 +553,7 @@ function HitsBar({ character, onChange }: HitsBarProps) {
 }
 
 type FatigueBarProps = {
-	character: Character
+	character: CharacterFields
 	onChange: (value: string) => void
 }
 
@@ -540,7 +573,7 @@ function FatigueBar({ character, onChange }: FatigueBarProps) {
 
 type SkillListProps = {
 	attribute: AttributeName
-	character: Character
+	character: CharacterFields
 	onToggleSkill: (skill: string) => void
 }
 

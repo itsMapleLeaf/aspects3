@@ -1,10 +1,10 @@
-import type { Character } from "@workspace/data/characters"
+import { type CharacterFields } from "@workspace/backend/data/character"
 import { Checkbox } from "~/components/ui/Checkbox.tsx"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { AspectArtList } from "./AspectArtList.tsx"
 
 type AspectArtsProps = {
-	character: Character
+	character: CharacterFields
 }
 
 export function AspectArts({ character }: AspectArtsProps) {
