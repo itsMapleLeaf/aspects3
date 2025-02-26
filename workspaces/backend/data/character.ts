@@ -66,7 +66,7 @@ export function parseCharacterFieldsUnsafe(raw: unknown): CharacterFields {
 
 export function parseRemoteCharacterFields(
 	doc: WithoutSystemFields<Doc<"characters">>,
-) {
+): CharacterFields {
 	return parseCharacterFieldsUnsafe(doc.fields ?? doc)
 }
 
