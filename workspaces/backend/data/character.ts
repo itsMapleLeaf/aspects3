@@ -36,8 +36,10 @@ const CharacterFieldsParser = type({
 	aspects: type(`Record<string, string>`).default(() => ({})),
 	imageUrl: "string = ''",
 }).onUndeclaredKey("delete")
+
 export function parseCharacterFields(raw: unknown) {
-	// workaround: onUndeclaredKey is broken
+	// workaround: onUndeclaredKey is broken and doesn't strip unknown keys
+	// ensure the list of keys here match the type above
 	return pick(CharacterFieldsParser.assert(raw), [
 		"key",
 		"name",
