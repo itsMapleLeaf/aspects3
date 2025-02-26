@@ -1,4 +1,7 @@
-import { type CharacterFields } from "@workspace/backend/data/character"
+import {
+	createEmptyCharacterFields,
+	type CharacterFields,
+} from "@workspace/backend/data/character"
 import { expect, mock, test } from "bun:test"
 import * as Discord from "discord.js"
 import { addCommands } from "./commands.ts"
@@ -6,6 +9,7 @@ import type { CommandContext } from "./context.ts"
 import { createInteractionRouter } from "./router.ts"
 
 const dummyCharacterData: CharacterFields = {
+	...createEmptyCharacterFields(),
 	key: "test",
 	name: "Test",
 	details: "A test character",
@@ -28,35 +32,11 @@ const dummyCharacterData: CharacterFields = {
 	imageUrl: "",
 }
 
-const emptyCharacter: CharacterFields = {
-	key: "empty",
-	name: "",
-	details: "",
-	attributes: {},
-	hits: "",
-	fatigue: "",
-	comeback: "",
-	traits: [],
-	proficientSkills: [],
-	aspects: {},
-	imageUrl: "",
-}
+const emptyCharacter: CharacterFields = createEmptyCharacterFields()
 
 function createMockContext(): CommandContext {
 	return {
-		findCharacterByUser: async () => ({
-			name: "Test Character",
-			key: crypto.randomUUID(),
-			details: "Test details",
-			traits: [],
-			attributes: { strength: "10" },
-			aspects: { fire: "10" },
-			proficientSkills: [],
-			imageUrl: "test.jpg",
-			hits: "10",
-			fatigue: "10",
-			comeback: "10",
-		}),
+		findCharacterByUser: async () => dummyCharacterData,
 		upsertUserWithCharacter: async () => {},
 	}
 }

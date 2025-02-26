@@ -3,6 +3,7 @@ import { api } from "@workspace/backend/convex/_generated/api"
 import type { Doc } from "@workspace/backend/convex/_generated/dataModel"
 import {
 	CharacterModel,
+	parseRemoteCharacterFields,
 	type CharacterFields,
 } from "@workspace/backend/data/character"
 import { useConvex } from "convex/react"
@@ -25,9 +26,10 @@ export function RemoteCharacterEditor({
 	const convex = useConvex()
 
 	const remoteCharacters = new Map(
-		remoteCharacterList.flatMap((c) =>
-			c.fields ? [[c.fields.key, c.fields]] : [],
-		),
+		remoteCharacterList.map((c) => [
+			c.fields.key,
+			parseRemoteCharacterFields(c),
+		]),
 	)
 
 	const [updatedCharacters, setUpdatedCharacters] = useState<
