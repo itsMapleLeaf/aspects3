@@ -174,6 +174,7 @@ export function CharacterEditor({
 					<AttributeInputList
 						attributes={character.attributes}
 						onChange={updateAttribute}
+						character={character}
 					/>
 
 					<AspectInputList character={character} onChange={updateAspect} />
@@ -502,17 +503,21 @@ function NameInput({
 type AttributeInputListProps = {
 	attributes: Record<string, string>
 	onChange: (attribute: AttributeName & string, value: string) => void
+	character: CharacterFields
 }
 
 function AttributeInputList({
 	attributes: characterAttributes,
 	onChange,
+	character,
 }: AttributeInputListProps) {
 	const attributeTotal = getAttributeTotal(characterAttributes)
+	const level = getCharacterLevel(character.levelIndex)
+	const maxAttributePoints = level.attributePoints
 
 	return (
 		<StatSection
-			title={`Attributes (${attributeTotal}/18)`}
+			title={`Attributes (${attributeTotal}/${maxAttributePoints})`}
 			hint="Core stats defining your physical and mental abilities."
 		>
 			{attributeNames.map((attribute) => (
@@ -535,10 +540,12 @@ type AspectInputListProps = {
 
 function AspectInputList({ character, onChange }: AspectInputListProps) {
 	const aspectTotal = getAspectTotal(character.aspects)
+	const level = getCharacterLevel(character.levelIndex)
+	const maxAspectPoints = level.aspectPoints
 
 	return (
 		<StatSection
-			title={`Aspects (${aspectTotal}/6)`}
+			title={`Aspects (${aspectTotal}/${maxAspectPoints})`}
 			hint="Expertise levels in each aspect, elements you can bend to your will."
 		>
 			{aspectNames.map((aspect) => (
@@ -593,15 +600,12 @@ function FatigueBar({ character, onChange }: FatigueBarProps) {
 
 function SkillListSection({
 	character,
-
 	onToggleSkill,
 }: {
 	character: CharacterFields
-
 	onToggleSkill: (skill: string) => void
 }) {
 	const level = getCharacterLevel(character.levelIndex)
-	level.proficientSkills - character.proficientSkills.length
 
 	return (
 		<ToggleSection
