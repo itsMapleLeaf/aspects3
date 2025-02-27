@@ -4,7 +4,6 @@ import {
 	AttributeName as AttributeNameOld,
 	getAttributeBySkill,
 } from "@workspace/data/attributes"
-import { findTrait, traits } from "@workspace/data/traits"
 import { parseNumber } from "@workspace/shared/utils"
 import { type } from "arktype"
 import type { WithoutSystemFields } from "convex/server"
@@ -12,6 +11,7 @@ import { v } from "convex/values"
 import { clamp, pick } from "es-toolkit"
 import { type Attribute } from "./attributes.ts"
 import { countCharacterLevels } from "./characterLevels.ts"
+import { findTrait, listTraits, Trait } from "./traits.ts"
 
 export const characterFieldsValidator = v.object({
 	key: v.string(),
@@ -114,13 +114,7 @@ export function getCharacterSkillPowerDiceCount(
 
 	for (const traitName of character.traits) {
 		const trait = findTrait(traitName)
-		if (!trait) continue
-
-		if (
-			trait.attributes.some(
-				(tr) => tr.attribute === attribute.name.toLowerCase(),
-			)
-		) {
+		if (trait?.attributes.some((tr) => tr.name === attribute.name)) {
 			count += 1
 		}
 	}
@@ -137,6 +131,10 @@ export function isCharacterProficient(
 	skill: Attribute["skills"][number],
 ) {
 	return character.proficientSkills.includes(skill.name)
+}
+
+export function hasCharacterTrait(character: CharacterFields, trait: Trait) {
+	return character.traits.includes(trait.name)
 }
 
 export class CharacterModel {
@@ -164,11 +162,13 @@ export class CharacterModel {
 
 	getTraitPowerDice(attribute: AttributeNameOld) {
 		return this.fields.traits.reduce((count, traitName) => {
-			const trait = traits.find((t) => t.name === traitName)
+			const trait = findTrait(traitName)
 			if (!trait) return count
 			return (
 				count +
-				(trait.attributes.some((a) => a.attribute === attribute) ? 1 : 0)
+				(trait.attributes.some((a) => a.name.toLowerCase() === attribute)
+					? 1
+					: 0)
 			)
 		}, 0)
 	}
@@ -186,11 +186,10 @@ export class CharacterModel {
 
 	getAvailableProficiencies(attribute: AttributeNameOld) {
 		return this.fields.traits.reduce((count, traitName) => {
-			const trait = traits.find((t) => t.name === traitName)
+			const trait = findTrait(traitName)
 			if (!trait) return count
 			return (
-				count +
-				(trait.attributes.some((a) => a.attribute === attribute) ? 1 : 0)
+				count + (trait.attributes.some((a) => a.name === attribute) ? 1 : 0)
 			)
 		}, 0)
 	}
@@ -243,9 +242,9 @@ export class CharacterModel {
 	}
 
 	getAspectPowerDice(aspectName: AspectName) {
-		return traits
+		return listTraits()
 			.filter((trait) => this.fields.traits.includes(trait.name))
-			.filter((trait) => trait.aspect === aspectName).length
+			.filter((trait) => trait.aspect.name.toLowerCase() === aspectName).length
 	}
 
 	get url() {

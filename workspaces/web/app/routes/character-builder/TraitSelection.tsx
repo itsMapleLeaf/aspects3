@@ -1,6 +1,4 @@
-import { aspects } from "@workspace/data/aspects"
-import { attributes } from "@workspace/data/attributes"
-import { traits } from "@workspace/data/traits"
+import { listTraits } from "@workspace/backend/data/traits.ts"
 import { IconTooltip } from "~/components/ui/IconTooltip.tsx"
 
 const aspectColors = {
@@ -22,7 +20,7 @@ export function TraitSelection({
 }: TraitSelectionProps) {
 	return (
 		<>
-			{traits.map((trait) => {
+			{listTraits().map((trait) => {
 				const isSelected = selectedTraits.includes(trait.name)
 				const isDisabled = !isSelected && selectedTraits.length >= 3
 
@@ -40,16 +38,19 @@ export function TraitSelection({
 						<div>
 							<h3 className="mb-1 font-medium">{trait.name}</h3>
 							<div className="flex flex-wrap gap-x-2 gap-y-1">
-								{trait.attributes.map(({ attribute, description }) => (
-									<div key={attribute} className="flex items-center gap-1">
+								{trait.attributes.map((attribute) => (
+									<div key={attribute.name} className="flex items-center gap-1">
 										<span className="text-primary-400 text-sm">
-											{attributes[attribute].name}
+											{attribute.name}
 										</span>
-										<IconTooltip content={description} className="size-4" />
+										<IconTooltip
+											content={attribute.description}
+											className="size-4"
+										/>
 									</div>
 								))}
 								<span className={`text-primary-400 text-sm`}>
-									{aspects[trait.aspect].name}
+									{trait.aspect.name}
 								</span>
 							</div>
 						</div>

@@ -16,13 +16,13 @@ import {
 	characterLevelCount,
 	getCharacterLevel,
 } from "@workspace/backend/data/characterLevels.ts"
+import { listTraits } from "@workspace/backend/data/traits.ts"
 import { aspectNames } from "@workspace/data/aspects"
 import {
 	attributeNames,
 	attributes,
 	type AttributeName,
 } from "@workspace/data/attributes"
-import { traits } from "@workspace/data/traits"
 import { useConvexAuth } from "convex/react"
 import { range } from "es-toolkit"
 import { type ComponentProps, type ReactNode } from "react"
@@ -108,7 +108,7 @@ export function CharacterEditor({
 		})
 	}
 
-	const selectedTraits = traits
+	const selectedTraits = listTraits()
 		.filter((trait) =>
 			character.traits.some((selected) => selected === trait.name),
 		)
