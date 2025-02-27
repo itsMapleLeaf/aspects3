@@ -136,3 +136,7 @@ export const traits: Trait[] = [
 ]
 
 traits.sort((a, b) => a.name.localeCompare(b.name))
+
+export function findTrait(name: string) {
+	return traits.find((it) => it.name === name)
+}

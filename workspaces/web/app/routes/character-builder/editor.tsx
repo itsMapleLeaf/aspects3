@@ -1,10 +1,18 @@
 import * as Ariakit from "@ariakit/react"
 import { useAuthActions } from "@convex-dev/auth/react"
 import {
+	listAttributes,
+	type Attribute,
+} from "@workspace/backend/data/attributes"
+import {
 	CharacterModel,
+	getCharacterAttributeScore,
+	getCharacterSkillPowerDiceCount,
+	isCharacterProficient,
 	parseCharacterFieldsUnsafe,
 	type CharacterFields,
 } from "@workspace/backend/data/character"
+import { getCharacterLevel } from "@workspace/backend/data/characterLevels.ts"
 import { aspectNames } from "@workspace/data/aspects"
 import {
 	attributeNames,
@@ -197,28 +205,17 @@ export function CharacterEditor({
 			</ToggleSection>
 
 			<div className="mt-6 space-y-6">
-				<ToggleSection
-					title="Skills"
-					tooltip="Various actions you can make in the game."
-				>
-					<div className="grid grid-cols-1 gap-8 @md:grid-cols-2 @2xl:grid-cols-3">
-						{attributeNames.map((attribute) => (
-							<SkillList
-								key={attribute}
-								attribute={attribute}
-								character={character}
-								onToggleSkill={(skill) => {
-									onChange({
-										...character,
-										proficientSkills: character.proficientSkills.includes(skill)
-											? character.proficientSkills.filter((s) => s !== skill)
-											: [...character.proficientSkills, skill],
-									})
-								}}
-							/>
-						))}
-					</div>
-				</ToggleSection>
+				<SkillListSection
+					character={character}
+					onToggleSkill={(skill) => {
+						onChange({
+							...character,
+							proficientSkills: character.proficientSkills.includes(skill)
+								? character.proficientSkills.filter((s) => s !== skill)
+								: [...character.proficientSkills, skill],
+						})
+					}}
+				></SkillListSection>
 
 				<ToggleSection
 					title="Aspect Arts"
@@ -571,102 +568,118 @@ function FatigueBar({ character, onChange }: FatigueBarProps) {
 	)
 }
 
-type SkillListProps = {
-	attribute: AttributeName
+function SkillListSection({
+	character,
+
+	onToggleSkill,
+}: {
 	character: CharacterFields
+
 	onToggleSkill: (skill: string) => void
+}) {
+	const level = getCharacterLevel(character.levelIndex)
+	const neededSkillCount =
+		level.proficientSkills - character.proficientSkills.length
+
+	return (
+		<ToggleSection
+			title="Skills"
+			description={`${character.proficientSkills.length}/${level.proficientSkills} Proficiencies`}
+		>
+			<div className="grid grid-cols-1 gap-8 @md:grid-cols-2 @2xl:grid-cols-3">
+				{listAttributes().map((attribute) => (
+					<div key={attribute.name} className="space-y-2">
+						<h3 className="font-medium">{attribute.name}</h3>
+						<AttributeSkillList
+							character={character}
+							attribute={attribute}
+							onToggleSkill={onToggleSkill}
+						/>
+					</div>
+				))}
+			</div>
+		</ToggleSection>
+	)
 }
 
-function SkillList({ attribute, character, onToggleSkill }: SkillListProps) {
-	const availableProficiencies = getAvailableProficiencies(
-		attribute,
-		character.traits,
-	)
-	const usedProficiencies = attributes[attribute].skills.filter((skill) =>
-		character.proficientSkills.includes(skill.name),
-	).length
-
-	const neededProficiencies = availableProficiencies - usedProficiencies
-
+function AttributeSkillList({
+	character,
+	attribute,
+	onToggleSkill,
+}: {
+	character: CharacterFields
+	attribute: Attribute
+	onToggleSkill: (skill: string) => void
+}): ReactNode {
 	const diceTray = useDiceTray()
 
 	return (
-		<div className="space-y-2">
-			<h3 className="font-medium">
-				{attributes[attribute].name}
-				{neededProficiencies > 0 && (
-					<span className="ml-2 text-sm text-gray-400">
-						Pick {neededProficiencies}{" "}
-						{neededProficiencies === 1 ? "proficiency" : "proficiencies"}
-					</span>
-				)}
-			</h3>
-
-			<ul>
-				{attributes[attribute].skills.map((skill) => {
-					const isProficient = character.proficientSkills.includes(skill.name)
-					const canToggle =
-						isProficient || usedProficiencies < availableProficiencies
-					const powerDice = getSkillPowerDice(character, skill.name)
-					const attributeValue = getAttributeValue(attribute, character)
-
-					return (
-						<li key={skill.name}>
-							<div
-								className={`-mx-2 flex w-full items-center gap-1 rounded px-2 py-1 transition`}
-							>
-								<span className="flex flex-1 items-center gap-1.5">
-									{skill.name}
-									<IconTooltip
-										content={skill.description}
-										className="translate-y-px"
-									/>
-								</span>
-								<span className="grid grid-flow-col items-center text-end tabular-nums">
-									<span>{attributeValue}</span>
-									{powerDice > 0 && (
-										<span className="text-primary-400 w-7">+{powerDice}</span>
-									)}
-
-									<div className="flex w-7 justify-end">
-										{canToggle && (
-											<div
-												className={`size-5 rounded-full border transition ${
-													isProficient
-														? "border-primary-400 bg-primary-400/20"
-														: "border-gray-400 hover:bg-gray-300/20"
-												} `}
-											>
-												<input
-													type="checkbox"
-													checked={isProficient}
-													onChange={() => onToggleSkill(skill.name)}
-													className="size-full opacity-0"
-												/>
-											</div>
-										)}
-									</div>
-								</span>
-								<Button
-									icon={<Icon icon="mingcute:box-3-fill" />}
-									appearance="ghost"
-									shape="circle"
-									onClick={() => {
-										diceTray.prefill({
-											target: attributeValue,
-											dice: [
-												{ name: "skill", count: 1 },
-												{ name: "power", count: powerDice },
-											],
-										})
-									}}
+		<ul>
+			{attribute.skills.map((skill) => {
+				const powerDice = getCharacterSkillPowerDiceCount(
+					character,
+					attribute,
+					skill,
+				)
+				const isProficient = isCharacterProficient(character, skill)
+				const attributeValue = getCharacterAttributeScore(character, attribute)
+				return (
+					<li key={skill.name}>
+						<div
+							className={`-mx-2 flex w-full items-center gap-1 rounded px-2 py-1 transition`}
+						>
+							<span className="flex flex-1 items-center gap-1.5">
+								{skill.name}
+								<IconTooltip
+									content={skill.description}
+									className="translate-y-px"
 								/>
-							</div>
-						</li>
-					)
-				})}
-			</ul>
-		</div>
+							</span>
+
+							<span className="grid grid-flow-col items-center text-end tabular-nums">
+								<span>{attributeValue}</span>
+
+								{powerDice > 0 && (
+									<span className="text-primary-400 w-7">+{powerDice}</span>
+								)}
+
+								<div className="flex w-7 justify-end">
+									<div
+										className={`size-5 rounded-full border transition ${
+											isProficient
+												? "border-primary-400 bg-primary-400/20"
+												: "border-gray-400 hover:bg-gray-300/20"
+										} `}
+									>
+										<input
+											type="checkbox"
+											checked={isProficient}
+											onChange={() => onToggleSkill(skill.name)}
+											className="size-full opacity-0"
+										/>
+									</div>
+								</div>
+							</span>
+
+							<Button
+								icon={<Icon icon="mingcute:box-3-fill" />}
+								appearance="ghost"
+								shape="circle"
+								onClick={() => {
+									diceTray.prefill({
+										target: attributeValue,
+										dice: [
+											{ name: "skill", count: 1 },
+											{ name: "power", count: powerDice },
+										],
+									})
+								}}
+							/>
+						</div>
+					</li>
+				)
+			})}
+		</ul>
 	)
 }
 

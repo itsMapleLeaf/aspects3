@@ -1,3 +1,5 @@
+import { clamp } from "es-toolkit"
+
 export type CharacterLevel = {
 	level: number
 	attributePoints: number
@@ -5,7 +7,7 @@ export type CharacterLevel = {
 	proficientSkills: number
 }
 
-const characterLevels: CharacterLevel[] = [
+const characterLevels: [CharacterLevel, ...CharacterLevel[]] = [
 	{
 		level: 1,
 		attributePoints: 15,
@@ -86,10 +88,18 @@ const characterLevels: CharacterLevel[] = [
 	},
 ]
 
+export const characterLevelCount = characterLevels.length
+
 export function countCharacterLevels() {
 	return characterLevels.length
 }
 
 export function listCharacterLevels() {
 	return [...characterLevels]
+}
+
+export function getCharacterLevel(index: number): CharacterLevel {
+	return (
+		characterLevels[clamp(index, 0, characterLevelCount)] ?? characterLevels[0]
+	)
 }
