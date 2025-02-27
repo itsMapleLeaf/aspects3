@@ -1,10 +1,13 @@
 import { findAspect } from "@workspace/backend/data/aspects.ts"
 import { listAspectSkills } from "@workspace/backend/data/aspectSkills.ts"
 import { type CharacterFields } from "@workspace/backend/data/character"
+import { findTrait } from "@workspace/backend/data/traits.ts"
 import { parseNumber } from "@workspace/shared/utils"
 import { useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"
+import { Icon } from "~/components/ui/Icon.tsx"
+import { SquareIconButton } from "~/components/ui/SquareIconButton.tsx"
 
 const aspectColors = {
 	Light: "border-yellow-900/50 bg-yellow-950/30",
@@ -99,10 +102,9 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 						)
 
 						const cardStyle = twMerge(
-							`border h-80 flex flex-col cursor-default`,
+							`border h-96 flex flex-col`,
 							aspectColors[skill.aspect as keyof typeof aspectColors],
-							hasRequiredPaths ? "opacity-90" : "opacity-50",
-							"hover:opacity-100 transition",
+							hasRequiredPaths ? "" : "opacity-50 hover:opacity-100 transition",
 						)
 
 						const scrollbarColor =
@@ -122,16 +124,35 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 
 						const aspectTotalScore = aspectBaseScore + attributeScore
 
+						const powerDiceCount = character.traits
+							.flatMap((trait) => findTrait(trait) ?? [])
+							.filter(
+								(trait) =>
+									trait.aspect.name.toLowerCase() ===
+									skill.aspect.toLowerCase(),
+							).length
+
 						return (
-							<div
-								key={skill.name}
-								className={`rounded-lg ${cardStyle} p-4`}
-								onClick={() => handleSkillClick(skill, hasRequiredPaths)}
-							>
-								<div className="mb-2 flex items-center justify-between">
+							<div key={skill.name} className={`rounded-lg ${cardStyle} p-4`}>
+								<div className="mb-2 flex items-center gap-2">
 									<h3 className="heading-xl">{skill.name}</h3>
+
+									<SquareIconButton
+										icon={<Icon icon="mingcute:box-3-fill" />}
+										size="sm"
+										className="translate-y-px"
+										onClick={() => handleSkillClick(skill, hasRequiredPaths)}
+									>
+										Roll {skill.name}
+									</SquareIconButton>
+
 									<span
-										className={`${aspectTextColors[skill.aspect as keyof typeof aspectTextColors]} text-sm font-medium`}
+										className={twMerge(
+											aspectTextColors[
+												skill.aspect as keyof typeof aspectTextColors
+											],
+											`ml-auto text-sm font-medium`,
+										)}
 									>
 										{skill.aspect} ({aspectTotalScore})
 									</span>
@@ -155,8 +176,14 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 									</div>
 								</div>
 
-								<div className="mt-2 border-t border-gray-700 pt-2 text-sm text-gray-400">
-									<span className="font-medium text-gray-300">Paths: </span>
+								{powerDiceCount > 0 && (
+									<div className="text-sm text-gray-300">
+										+{powerDiceCount} power from traits
+									</div>
+								)}
+
+								<div className="mt-2 border-t border-gray-700 pt-2 text-sm text-gray-300">
+									<span className="font-medium text-gray-200">Paths: </span>
 									{skill.paths.join(", ")}
 								</div>
 							</div>
