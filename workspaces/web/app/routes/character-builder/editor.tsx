@@ -70,19 +70,6 @@ function getResolve(character: CharacterFields) {
 	return new CharacterModel(character).resolve
 }
 
-function getAvailableProficiencies(
-	attribute: AttributeName,
-	selectedTraits: string[],
-) {
-	const tempCharacter = CharacterModel.empty().fields
-	tempCharacter.traits = selectedTraits
-	return new CharacterModel(tempCharacter).getAvailableProficiencies(attribute)
-}
-
-function getSkillPowerDice(character: CharacterFields, skillName: string) {
-	return new CharacterModel(character).getSkillPowerDice(skillName)
-}
-
 export function CharacterEditor({
 	character,
 	onChange,
