@@ -12,7 +12,10 @@ import {
 	parseCharacterFieldsUnsafe,
 	type CharacterFields,
 } from "@workspace/backend/data/character"
-import { getCharacterLevel } from "@workspace/backend/data/characterLevels.ts"
+import {
+	characterLevelCount,
+	getCharacterLevel,
+} from "@workspace/backend/data/characterLevels.ts"
 import { aspectNames } from "@workspace/data/aspects"
 import {
 	attributeNames,
@@ -21,6 +24,7 @@ import {
 } from "@workspace/data/attributes"
 import { traits } from "@workspace/data/traits"
 import { useConvexAuth } from "convex/react"
+import { range } from "es-toolkit"
 import { type ComponentProps, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"
@@ -148,6 +152,38 @@ export function CharacterEditor({
 
 			<div className="grid grid-cols-1 gap-8 @xl:grid-cols-[1fr_auto]">
 				<div className="@container min-w-0 space-y-6">
+					<Ariakit.SelectProvider
+						value={String(character.levelIndex)}
+						setValue={(value) =>
+							onChange({ ...character, levelIndex: Number(value) })
+						}
+					>
+						<div className="flex items-center gap-3">
+							<Ariakit.SelectLabel className="heading-xl">
+								Level
+							</Ariakit.SelectLabel>
+							<Ariakit.Select className="button-solid min-w-16 justify-center text-center">
+								{character.levelIndex + 1}
+							</Ariakit.Select>
+						</div>
+						<Ariakit.SelectPopover
+							className="menu-panel"
+							gutter={8}
+							portal
+							unmountOnHide
+						>
+							{range(characterLevelCount).map((n) => (
+								<Ariakit.SelectItem
+									key={n}
+									value={String(n)}
+									className="menu-item"
+								>
+									Level {n + 1}
+								</Ariakit.SelectItem>
+							))}
+						</Ariakit.SelectPopover>
+					</Ariakit.SelectProvider>
+
 					<AttributeInputList
 						attributes={character.attributes}
 						onChange={updateAttribute}
@@ -578,8 +614,7 @@ function SkillListSection({
 	onToggleSkill: (skill: string) => void
 }) {
 	const level = getCharacterLevel(character.levelIndex)
-	const neededSkillCount =
-		level.proficientSkills - character.proficientSkills.length
+	level.proficientSkills - character.proficientSkills.length
 
 	return (
 		<ToggleSection
