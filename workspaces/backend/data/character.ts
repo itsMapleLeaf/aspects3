@@ -35,7 +35,7 @@ const CharacterFieldsParser = type({
 	name: "string < 256 = ''",
 	levelIndex: type("number")
 		.pipe((it) => clamp(Math.floor(it), 0, countCharacterLevels()))
-		.default(6),
+		.default(0),
 	details: "string = ''",
 	attributes: type(`Record<string, string>`).default(() => ({})),
 	hits: "string = ''",
