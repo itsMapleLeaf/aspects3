@@ -38,8 +38,8 @@ import { TextArea } from "~/components/ui/TextArea.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
 import { UploadButton, useUploadThing } from "~/routes/api.images/components.ts"
-import { AspectArts } from "~/routes/character-builder/AspectArts.tsx"
 import { AspectInput } from "~/routes/character-builder/AspectInput.tsx"
+import { AspectSkillList } from "~/routes/character-builder/AspectSkillList.tsx"
 import { AttributeInput } from "~/routes/character-builder/AttributeInput.tsx"
 import { PathSelection } from "~/routes/character-builder/PathSelection.tsx"
 import { useCopyCharacterShareUrl } from "~/routes/character-builder/share.tsx"
@@ -275,10 +275,10 @@ export function CharacterEditor({
 				></SkillListSection>
 
 				<ToggleSection
-					title="Aspect Arts"
-					tooltip="Abilities performed through aspect manipulation."
+					title="Aspect Skills"
+					tooltip="Abilities performed through aspect manipulation, determined by your chosen paths."
 				>
-					<AspectArts character={character} />
+					<AspectSkillList character={character} />
 				</ToggleSection>
 			</div>
 		</>
