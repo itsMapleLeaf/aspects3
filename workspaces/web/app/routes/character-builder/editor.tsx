@@ -16,6 +16,7 @@ import {
 	characterLevelCount,
 	getCharacterLevel,
 } from "@workspace/backend/data/characterLevels.ts"
+import { listCharacterPaths } from "@workspace/backend/data/characterPaths.ts"
 import { listTraits } from "@workspace/backend/data/traits.ts"
 import { aspectNames } from "@workspace/data/aspects"
 import {
@@ -24,7 +25,7 @@ import {
 	type AttributeName,
 } from "@workspace/data/attributes"
 import { useConvexAuth } from "convex/react"
-import { range } from "es-toolkit"
+import { intersection, range } from "es-toolkit"
 import { type ComponentProps, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
 import { useDiceTray } from "~/components/DiceTray.tsx"
@@ -40,6 +41,7 @@ import { UploadButton, useUploadThing } from "~/routes/api.images/components.ts"
 import { AspectArts } from "~/routes/character-builder/AspectArts.tsx"
 import { AspectInput } from "~/routes/character-builder/AspectInput.tsx"
 import { AttributeInput } from "~/routes/character-builder/AttributeInput.tsx"
+import { PathSelection } from "~/routes/character-builder/PathSelection.tsx"
 import { useCopyCharacterShareUrl } from "~/routes/character-builder/share.tsx"
 import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
 import { TraitSelection } from "~/routes/character-builder/TraitSelection.tsx"
@@ -108,6 +110,15 @@ export function CharacterEditor({
 		})
 	}
 
+	function togglePath(pathName: string) {
+		onChange({
+			...character,
+			paths: character.paths?.includes(pathName)
+				? character.paths.filter((p) => p !== pathName)
+				: [...(character.paths ?? []), pathName],
+		})
+	}
+
 	const selectedTraits = listTraits()
 		.filter((trait) =>
 			character.traits.some((selected) => selected === trait.name),
@@ -118,6 +129,15 @@ export function CharacterEditor({
 
 	const traitsDescription =
 		remainingTraits > 0 ? `Choose ${remainingTraits} more` : undefined
+
+	// ensure paths in character data are Real
+	const selectedPaths = intersection(
+		character.paths,
+		listCharacterPaths().map((p) => p.name),
+	)
+	const remainingPaths = 2 - selectedPaths.length
+	const pathsDescription =
+		remainingPaths > 0 ? `Choose ${remainingPaths} more` : undefined
 
 	return (
 		<>
@@ -224,6 +244,19 @@ export function CharacterEditor({
 					<TraitSelection
 						selectedTraits={selectedTraits}
 						onTraitToggle={toggleTrait}
+					/>
+				</div>
+			</ToggleSection>
+
+			<ToggleSection
+				title="Paths"
+				tooltip="Character archetypes that define your approach to challenges."
+				description={pathsDescription}
+			>
+				<div className="grid grid-cols-1 gap-4 @md:grid-cols-2 @2xl:grid-cols-3">
+					<PathSelection
+						selectedPaths={selectedPaths}
+						onPathToggle={togglePath}
 					/>
 				</div>
 			</ToggleSection>

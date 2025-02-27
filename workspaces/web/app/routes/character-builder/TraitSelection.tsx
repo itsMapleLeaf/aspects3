@@ -29,11 +29,16 @@ export function TraitSelection({
 						key={trait.name}
 						className={`flex items-center justify-between gap-4 rounded-lg border px-3 py-2.5 transition ${
 							isSelected
-								? "bg-primary-900/20 border-primary-700"
+								? "bg-primary-900/20 border-primary-700 cursor-pointer"
 								: isDisabled
 									? "border-gray-700 bg-gray-900/20 opacity-50"
-									: "border-gray-700 hover:border-gray-600 hover:bg-gray-900/20"
+									: "cursor-pointer border-gray-700 hover:border-gray-600 hover:bg-gray-900/20"
 						} `}
+						onClick={() => {
+							if (!isDisabled) {
+								onTraitToggle(trait.name)
+							}
+						}}
 					>
 						<div>
 							<h3 className="mb-1 font-medium">{trait.name}</h3>
@@ -59,8 +64,13 @@ export function TraitSelection({
 							type="checkbox"
 							checked={isSelected}
 							disabled={isDisabled}
-							onChange={() => onTraitToggle(trait.name)}
+							onChange={(event) => {
+								// Prevent the click event from firing twice
+								event.stopPropagation()
+								onTraitToggle(trait.name)
+							}}
 							className="size-5 accent-pink-300"
+							onClick={(event) => event.stopPropagation()}
 						/>
 					</div>
 				)
