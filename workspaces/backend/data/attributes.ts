@@ -108,8 +108,8 @@ const attributeRecord = {
 				description: "hurl objects or people with force",
 			},
 			{
-				name: SkillName("Lift"),
-				description: "carry heavy objects or move obstacles",
+				name: SkillName("Exert"),
+				description: `lift, push, tear, or hold back something; apply a steady impulse`,
 			},
 			{
 				name: SkillName("Endure"),

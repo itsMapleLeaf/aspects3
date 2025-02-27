@@ -81,7 +81,11 @@ export const attributes: Record<AttributeName, AttributeInfo> = {
 				description: "defend against physical attacks with your body or shield",
 			},
 			{ name: "Throw", description: "hurl objects or people with force" },
-			{ name: "Lift", description: "carry heavy objects or move obstacles" },
+			{
+				name: "Exert",
+				description:
+					"lift, push, tear, or hold back something; apply a steady impulse",
+			},
 			{
 				name: "Endure",
 				description: "resist physical strain, exhaustion, or harsh conditions",
