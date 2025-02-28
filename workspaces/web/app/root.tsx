@@ -20,6 +20,11 @@ import styles from "./styles/index.css?url"
 
 export const meta: Route.MetaFunction = () => getPageMeta()
 
+export const headers: Route.HeadersFunction = () => ({
+	"Access-Control-Allow-Origin": "https://www.owlbear.rodeo",
+	"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+})
+
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
 	{
