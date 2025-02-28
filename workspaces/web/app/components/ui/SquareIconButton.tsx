@@ -19,7 +19,7 @@ export function SquareIconButton({
 			icon: twMerge("size-5"),
 		},
 		sm: {
-			wrapper: twMerge("w-6 h-6 aspect-square"),
+			wrapper: twMerge("w-7 h-7 aspect-square"),
 			icon: twMerge("size-4"),
 		},
 	}[size]

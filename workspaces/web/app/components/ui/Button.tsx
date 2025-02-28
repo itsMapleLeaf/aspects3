@@ -1,13 +1,16 @@
 import * as Ariakit from "@ariakit/react"
 import { omit } from "es-toolkit"
 import { type ReactNode } from "react"
+import { twMerge } from "tailwind-merge"
 import { Icon } from "~/components/ui/Icon.tsx"
 
 const appearanceClasses = {
-	default:
-		"bg-primary-500/20 border-primary-500 hover:bg-primary-500/30 focus:ring-primary-500/50",
-	ghost:
+	default: twMerge(
+		"bg-primary-950/75 backdrop-blur-md border-primary-500 hover:bg-primary-500/30 focus:ring-primary-500/50",
+	),
+	ghost: twMerge(
 		"border-transparent opacity-75 hover:bg-gray-500/30 hover:opacity-100 focus:ring-gray-500/50",
+	),
 } as const
 
 const sizeClasses = {

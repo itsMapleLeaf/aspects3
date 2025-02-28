@@ -101,12 +101,6 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 							characterPaths.includes(path),
 						)
 
-						const cardStyle = twMerge(
-							`border h-96 flex flex-col`,
-							aspectColors[skill.aspect as keyof typeof aspectColors],
-							hasRequiredPaths ? "" : "opacity-50 hover:opacity-100 transition",
-						)
-
 						const scrollbarColor =
 							aspectScrollbarColors[
 								skill.aspect as keyof typeof aspectScrollbarColors
@@ -133,7 +127,16 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 							).length
 
 						return (
-							<div key={skill.name} className={`rounded-lg ${cardStyle} p-4`}>
+							<div
+								key={skill.name}
+								className={twMerge(
+									`flex h-80 flex-col rounded-lg border p-4`,
+									aspectColors[skill.aspect as keyof typeof aspectColors],
+									hasRequiredPaths
+										? ""
+										: "opacity-50 transition hover:opacity-100",
+								)}
+							>
 								<div className="mb-2 flex items-center gap-2">
 									<h3 className="heading-xl">{skill.name}</h3>
 
@@ -151,7 +154,7 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 											aspectTextColors[
 												skill.aspect as keyof typeof aspectTextColors
 											],
-											`ml-auto text-sm font-medium`,
+											`ml-auto shrink-0 text-sm font-medium`,
 										)}
 									>
 										{skill.aspect} ({aspectTotalScore})
@@ -159,7 +162,7 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 								</div>
 
 								<div
-									className={`flex-1 space-y-2 overflow-y-auto pr-1 ${scrollbarColor}`}
+									className={`-mr-4 flex flex-1 flex-col gap-2 overflow-y-auto py-1 ${scrollbarColor}`}
 								>
 									<div>
 										<div className="text-sm/tight font-semibold text-green-300/90">
@@ -177,7 +180,7 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 								</div>
 
 								{powerDiceCount > 0 && (
-									<div className="text-sm text-gray-300">
+									<div className="mt-2 text-sm text-gray-300">
 										+{powerDiceCount} power from traits
 									</div>
 								)}

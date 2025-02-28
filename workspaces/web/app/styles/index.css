@@ -61,3 +61,7 @@
 		@apply border-t border-gray-700 text-sm text-gray-300;
 	}
 }
+
+@utility pointer-events-children {
+	@apply pointer-events-none *:pointer-events-auto;
+}

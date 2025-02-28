@@ -6,10 +6,8 @@ import {
 	Fragment,
 	use,
 	useEffect,
-	useRef,
 	useState,
 	type ReactNode,
-	type RefObject,
 } from "react"
 import { twMerge } from "tailwind-merge"
 import { Button } from "./ui/Button.tsx"
@@ -161,8 +159,6 @@ export function DiceTray({ children }: { children: ReactNode }) {
 	const [target, setTarget] = useState<number>()
 	const [results, setResults] = useState<DiceRoll[]>([])
 	const [open, setOpen] = useState(false)
-	const controlsRef = useRef<HTMLDivElement>(null)
-	const disclosureRef = useRef<HTMLButtonElement>(null)
 
 	const [prefillEmitter] = useState(() => createEmitter<PrefillArgs>())
 
@@ -233,66 +229,36 @@ export function DiceTray({ children }: { children: ReactNode }) {
 			>
 				<div className="fixed right-4 bottom-4 print:hidden">
 					<div className="flex items-start gap-2">
-						<div className="contents" ref={controlsRef}>
-							{target != null && (
-								<Tooltip content="Target (Click to remove)">
-									<Button
-										size="sm"
-										icon={<Icon icon="mingcute:target-fill" />}
-										onClick={() => setTarget(undefined)}
-									>
-										{target}
-									</Button>
-								</Tooltip>
-							)}
-							{hasCounts && (
-								<Tooltip content="Clear">
-									<Button shape="circle" size="sm" onClick={clear}>
-										<Icon icon="mingcute:close-fill" />
-									</Button>
-								</Tooltip>
-							)}
-						</div>
-						<Tooltip
-							content={
-								hasCounts ? "Roll" : open ? "Hide dice tray" : "Show dice tray"
-							}
-						>
+						<Tooltip content="Show dice tray">
 							<Ariakit.PopoverDisclosure
-								render={<Button shape="circle" />}
-								onClick={handleDisclosureClick}
-								ref={disclosureRef}
-							>
-								<Icon
-									icon={
-										open && hasCounts
-											? "mingcute:check-fill"
-											: "mingcute:box-3-fill"
-									}
-									className="size-8"
-								/>
-							</Ariakit.PopoverDisclosure>
+								render={
+									open ? (
+										<div className="h-0" />
+									) : (
+										<Button shape="circle">
+											<Icon icon="mingcute:box-3-fill" className="size-8" />
+										</Button>
+									)
+								}
+							/>
 						</Tooltip>
 					</div>
 				</div>
 
 				<Ariakit.Popover
-					gutter={12}
 					portal
 					unmountOnHide
 					fixed
-					getPersistentElements={() => [
-						...(controlsRef.current ? [controlsRef.current] : []),
-						...(disclosureRef.current ? [disclosureRef.current] : []),
-					]}
-					initialFocus={disclosureRef as RefObject<HTMLElement>}
-					className="flex flex-col items-end gap-2"
+					className="pointer-events-children flex flex-col items-end gap-2 pr-1"
+					backdrop={
+						<div className="fixed inset-0 bg-black/25 opacity-0 backdrop-blur-xs transition-opacity data-enter:opacity-100" />
+					}
 				>
 					{results.map((result) => (
 						<DiceRollElement key={result.id} result={result} />
 					))}
 
-					<div className="flex flex-wrap items-center gap-2">
+					<div className="pointer-events-children flex flex-wrap items-center gap-2">
 						{dice.map((die) => {
 							const count = counts.get(die.name) ?? 0
 							return (
@@ -317,6 +283,45 @@ export function DiceTray({ children }: { children: ReactNode }) {
 								/>
 							)
 						})}
+					</div>
+
+					<div className="pointer-events-children flex justify-end">
+						{target != null && (
+							<Tooltip content="Target (Click to remove)">
+								<Button
+									size="sm"
+									icon={<Icon icon="mingcute:target-fill" />}
+									onClick={() => setTarget(undefined)}
+								>
+									{target}
+								</Button>
+							</Tooltip>
+						)}
+						{hasCounts && (
+							<Tooltip content="Clear">
+								<Button shape="circle" size="sm" onClick={clear}>
+									<Icon icon="mingcute:close-fill" />
+								</Button>
+							</Tooltip>
+						)}
+						<Tooltip
+							content={
+								hasCounts ? "Roll" : open ? "Hide dice tray" : "Show dice tray"
+							}
+						>
+							{hasCounts ? (
+								<Button shape="circle" onClick={roll} autoFocus>
+									<Icon icon="mingcute:check-fill" className="size-8" />
+								</Button>
+							) : (
+								<Ariakit.PopoverDismiss
+									render={<Button shape="circle" />}
+									autoFocus
+								>
+									<Icon icon="mingcute:box-3-fill" className="size-8" />
+								</Ariakit.PopoverDismiss>
+							)}
+						</Tooltip>
 					</div>
 				</Ariakit.Popover>
 			</Ariakit.PopoverProvider>
@@ -391,7 +396,7 @@ function DiceRollElement(props: { result: DiceRoll }) {
 	const isFailure = props.result.target != null && total > props.result.target
 
 	return (
-		<div className="bg-primary-950/50 border-primary-500 flex flex-col rounded-md border px-2 py-2">
+		<div className="bg-primary-950/75 border-primary-500 flex flex-col rounded-md border px-2 py-2 backdrop-blur-md">
 			{props.result.target && <small>Target: {props.result.target}</small>}
 			<div className="flex items-center">
 				<div className="flex max-w-[240px] flex-wrap">
