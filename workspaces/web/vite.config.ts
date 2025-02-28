@@ -29,4 +29,10 @@ export default defineConfig({
 		}),
 		process.env.NETLIFY ? netlify() : [],
 	],
+	server: {
+		headers: {
+			"Access-Control-Allow-Origin": "https://www.owlbear.rodeo",
+			"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+		},
+	},
 })

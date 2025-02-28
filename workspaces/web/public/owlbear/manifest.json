@@ -1,0 +1,12 @@
+{
+	"name": "Aspects of Nature",
+	"version": "0.0.1",
+	"manifest_version": 1,
+	"action": {
+		"title": "Aspects of Nature",
+		"icon": "/favicon.svg",
+		"popover": "/character-builder",
+		"height": 900,
+		"width": 600
+	}
+}
