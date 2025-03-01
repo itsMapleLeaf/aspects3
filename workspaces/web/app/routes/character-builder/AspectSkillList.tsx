@@ -79,7 +79,7 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 	}
 
 	return (
-		<>
+		<div className="@container">
 			<div className="mb-4 flex items-center justify-between">
 				<label className="flex items-center gap-2 text-sm select-none">
 					<input
@@ -92,7 +92,7 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 				</label>
 			</div>
 
-			<div className="grid grid-cols-1 gap-4 @md:grid-cols-2 @2xl:grid-cols-3">
+			<div className="grid grid-cols-1 gap-4 @lg:grid-cols-2 @2xl:grid-cols-3">
 				{displaySkills
 					.sort((a, b) => a.name.localeCompare(b.name))
 					.sort((a, b) => a.aspect.localeCompare(b.aspect))
@@ -130,35 +130,34 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 							<div
 								key={skill.name}
 								className={twMerge(
-									`flex h-80 flex-col rounded-lg border p-4`,
+									`flex flex-col gap-1 rounded-lg border p-4 @lg:h-80`,
 									aspectColors[skill.aspect as keyof typeof aspectColors],
-									hasRequiredPaths
-										? ""
-										: "opacity-50 transition hover:opacity-100",
+									hasRequiredPaths ? "" : "opacity-75",
 								)}
 							>
-								<div className="mb-2 flex items-center gap-2">
-									<h3 className="heading-xl">{skill.name}</h3>
+								<div className="flex items-center gap-2">
+									<div className="flex flex-1 flex-wrap items-center justify-between gap-3">
+										<h3 className="heading-xl">{skill.name}</h3>
+										<span
+											className={twMerge(
+												aspectTextColors[
+													skill.aspect as keyof typeof aspectTextColors
+												],
+												`text-sm font-medium`,
+											)}
+										>
+											{skill.aspect} ({aspectTotalScore})
+										</span>
+									</div>
 
 									<SquareIconButton
 										icon={<Icon icon="mingcute:box-3-fill" />}
 										size="sm"
-										className="translate-y-px"
+										className="translate-y-[1px]"
 										onClick={() => handleSkillClick(skill, hasRequiredPaths)}
 									>
 										Roll {skill.name}
 									</SquareIconButton>
-
-									<span
-										className={twMerge(
-											aspectTextColors[
-												skill.aspect as keyof typeof aspectTextColors
-											],
-											`ml-auto shrink-0 text-sm font-medium`,
-										)}
-									>
-										{skill.aspect} ({aspectTotalScore})
-									</span>
 								</div>
 
 								<div
@@ -193,6 +192,6 @@ export function AspectSkillList({ character }: AspectSkillListProps) {
 						)
 					})}
 			</div>
-		</>
+		</div>
 	)
 }

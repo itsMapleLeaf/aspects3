@@ -171,7 +171,6 @@ export function DiceTray({ children }: { children: ReactNode }) {
 			setCounts(counts)
 			setTarget(args.target)
 			setOpen(true)
-			disclosureRef.current?.focus()
 		})
 	}, [])
 
@@ -249,7 +248,7 @@ export function DiceTray({ children }: { children: ReactNode }) {
 					portal
 					unmountOnHide
 					fixed
-					className="pointer-events-children flex flex-col items-end gap-2 pr-1"
+					className="flex flex-col items-end gap-2 pr-1"
 					backdrop={
 						<div className="fixed inset-0 bg-black/25 opacity-0 backdrop-blur-xs transition-opacity data-enter:opacity-100" />
 					}
@@ -258,7 +257,7 @@ export function DiceTray({ children }: { children: ReactNode }) {
 						<DiceRollElement key={result.id} result={result} />
 					))}
 
-					<div className="pointer-events-children flex flex-wrap items-center gap-2">
+					<div className="flex flex-wrap items-center gap-2">
 						{dice.map((die) => {
 							const count = counts.get(die.name) ?? 0
 							return (
@@ -285,7 +284,7 @@ export function DiceTray({ children }: { children: ReactNode }) {
 						})}
 					</div>
 
-					<div className="pointer-events-children flex justify-end">
+					<div className="flex justify-end gap-1.5">
 						{target != null && (
 							<Tooltip content="Target (Click to remove)">
 								<Button
@@ -304,11 +303,7 @@ export function DiceTray({ children }: { children: ReactNode }) {
 								</Button>
 							</Tooltip>
 						)}
-						<Tooltip
-							content={
-								hasCounts ? "Roll" : open ? "Hide dice tray" : "Show dice tray"
-							}
-						>
+						<Tooltip content={hasCounts ? "Roll" : "Hide dice tray"}>
 							{hasCounts ? (
 								<Button shape="circle" onClick={roll} autoFocus>
 									<Icon icon="mingcute:check-fill" className="size-8" />
