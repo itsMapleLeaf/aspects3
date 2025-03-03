@@ -37,15 +37,18 @@ import { SquareIconButton } from "~/components/ui/SquareIconButton.tsx"
 import { TextArea } from "~/components/ui/TextArea.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { useLocalStorage } from "~/hooks/useLocalStorage.ts"
-import { UploadButton, useUploadThing } from "~/routes/api.images/components.ts"
-import { AspectInput } from "~/routes/character-builder/AspectInput.tsx"
-import { AspectSkillList } from "~/routes/character-builder/AspectSkillList.tsx"
-import { AttributeInput } from "~/routes/character-builder/AttributeInput.tsx"
-import { PathSelection } from "~/routes/character-builder/PathSelection.tsx"
-import { useCopyCharacterShareUrl } from "~/routes/character-builder/share.tsx"
-import { StatMeter } from "~/routes/character-builder/StatMeter.tsx"
-import { TraitSelection } from "~/routes/character-builder/TraitSelection.tsx"
+import {
+	UploadButton,
+	useUploadThing,
+} from "../_layout.api.images/components.ts"
+import { AspectInput } from "./AspectInput.tsx"
+import { AspectSkillList } from "./AspectSkillList.tsx"
+import { AttributeInput } from "./AttributeInput.tsx"
 import { CloudSaveDialog } from "./CloudSaveCta.tsx"
+import { PathSelection } from "./PathSelection.tsx"
+import { useCopyCharacterShareUrl } from "./share.tsx"
+import { StatMeter } from "./StatMeter.tsx"
+import { TraitSelection } from "./TraitSelection.tsx"
 
 // Helper functions to replace the imported ones
 function getAttributeValue(name: AttributeName, character: CharacterFields) {

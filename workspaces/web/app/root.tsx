@@ -11,9 +11,7 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from "react-router"
-import { Navigation } from "~/components/Navigation"
 import type { Route } from "./+types/root.ts"
-import { DiceTray } from "./components/DiceTray.tsx"
 import { ToastProvider, useToastContext } from "./components/toasts.tsx"
 import { getPageMeta } from "./meta.ts"
 import styles from "./styles/index.css?url"
@@ -58,12 +56,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			<body>
 				<ConvexProvider>
 					<ToastProvider className="absolute inset-y-0 left-0">
-						<DiceTray>
-							<div className="isolate">
-								<Navigation className="sticky top-0 z-10 shadow-lg" />
-								<div className="page-container">{children}</div>
-							</div>
-						</DiceTray>
+						<Outlet />
 					</ToastProvider>
 				</ConvexProvider>
 				<ScrollRestoration />

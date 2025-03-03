@@ -1,6 +1,6 @@
 import { parseNumber } from "@workspace/shared/utils"
 import { type ComponentProps, useId, useState } from "react"
-import { NumberInput } from "~/routes/character-builder/NumberInput"
+import { NumberInput } from "./NumberInput"
 
 type StatMeterProps = {
 	value: string
