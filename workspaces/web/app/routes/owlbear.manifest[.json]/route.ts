@@ -7,7 +7,7 @@ export function loader() {
 			action: {
 				title: "Aspects of Nature" + (import.meta.env.DEV ? " [dev]" : ""),
 				icon: "/favicon.svg",
-				popover: "/character-builder",
+				popover: "/owlbear/view",
 				height: 900,
 				width: 500,
 			},
