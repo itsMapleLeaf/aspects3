@@ -1,5 +1,11 @@
 import OBR from "@owlbear-rodeo/sdk"
-import { useEffect, useId, useState, type ComponentProps } from "react"
+import {
+	useEffect,
+	useId,
+	useState,
+	type ComponentProps,
+	type ReactNode,
+} from "react"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "~/components/ui/Icon.tsx"
 
@@ -47,6 +53,26 @@ todo:
 - [ ] show the name of selected tokens
 */
 
+type Character = {
+	id: string
+	name: string
+	level: number
+	hits: number
+	fatigue: number
+	comeback: number
+}
+
+function createCharacter(name: string): Character {
+	return {
+		id: crypto.randomUUID(),
+		name,
+		level: 1,
+		hits: 0,
+		fatigue: 0,
+		comeback: 0,
+	}
+}
+
 export function OwlbearExtensionClient() {
 	// const [player, setPlayer] = useState<Player>()
 	// useOwlbearReadyEffect(() => {
@@ -67,6 +93,26 @@ export function OwlbearExtensionClient() {
 	// const selectedSceneItems =
 	// 	player?.selection?.flatMap((id) => sceneItems.get(id) ?? []) ?? []
 
+	const [characters, setCharacters] = useState(() => {
+		const map = new Map<string, Character>()
+		for (const name of ["Luna", "Larissa", "Dusk"]) {
+			const character = createCharacter(name)
+			map.set(character.id, character)
+		}
+		return map
+	})
+
+	function updateCharacter(id: string, patch: Partial<Character>) {
+		setCharacters((characters) => {
+			const currentCharacter =
+				characters.get(id) ?? createCharacter("Unknown Character")
+			return new Map(characters).set(id, {
+				...currentCharacter,
+				...patch,
+			})
+		})
+	}
+
 	const [view, setView] = useState<
 		{ name: "characterList" } | { name: "character"; id: string }
 	>({ name: "characterList" })
@@ -78,52 +124,135 @@ export function OwlbearExtensionClient() {
 	return (
 		<>
 			{view.name === "characterList" && (
-				<div className="grid gap-3 p-3">
-					{["Luna", "Larissa", "Dusk"].map((name) => (
+				<main className="grid gap-3 p-3">
+					{[...characters.values()].map((character) => (
 						<button
 							type="button"
-							key={name}
+							key={character.id}
 							className={cardButtonStyle}
-							onClick={() => setView({ name: "character", id: name })}
+							onClick={() => setView({ name: "character", id: character.id })}
 						>
 							<Icon icon="mingcute:right-fill" className="size-6" />
-							<h2 className="heading-xl">{name}</h2>
+							<h2 className="heading-xl">{character.name}</h2>
 						</button>
 					))}
 					<button type="button" className={cardButtonStyle}>
 						<Icon icon="mingcute:user-add-2-fill" className="size-6" />
 						<h2 className="heading-xl">New Character</h2>
 					</button>
-				</div>
+				</main>
 			)}
-			{view.name === "character" && (
-				<>
-					<header className="bg-gray-900">
-						<button
-							type="button"
-							className="hover:text-primary-200 flex items-center gap-0.5 px-3 py-2 text-start transition"
-							onClick={() => setView({ name: "characterList" })}
-						>
-							<Icon
-								icon="mingcute:left-fill"
-								className="pointer-events-none size-5 translate-y-px"
-							/>
-							<span>Back</span>
-						</button>
-					</header>
-					<div className="grid gap-3 p-3">
-						<div className="flex gap-3">
-							<InputField
-								label="Name"
-								className="flex-1"
-								defaultValue={view.id}
-							/>
-							<InputField label="Level" className="w-16" defaultValue={3} />
-						</div>
-					</div>
-				</>
-			)}
+
+			{view.name === "character" &&
+				(() => {
+					const character =
+						characters.get(view.id) ?? createCharacter("New Character")
+					return (
+						<>
+							<header className="bg-gray-900">
+								<button
+									type="button"
+									className="hover:text-primary-200 flex items-center gap-0.5 px-3 py-2 text-start transition"
+									onClick={() => setView({ name: "characterList" })}
+								>
+									<Icon
+										icon="mingcute:left-fill"
+										className="pointer-events-none size-5 translate-y-px"
+									/>
+									<span>Back</span>
+								</button>
+							</header>
+							<main className="grid gap-3 p-3">
+								<div className="flex gap-3">
+									<InputField
+										label="Name"
+										className="flex-1"
+										value={character.name}
+										onChange={(event) => {
+											updateCharacter(character.id, {
+												name: event.target.value,
+											})
+										}}
+									/>
+									<InputField
+										label="Level"
+										type="number"
+										className="w-16"
+										min={1}
+										max={13}
+										value={character.level}
+										onChange={(event) =>
+											updateCharacter(character.id, {
+												level: event.target.valueAsNumber || 1,
+											})
+										}
+									/>
+								</div>
+								<div className="flex gap-3">
+									<InputField
+										label="Hits"
+										type="number"
+										className="flex-1"
+										min={0}
+										value={character.hits}
+										onChange={(event) =>
+											updateCharacter(character.id, {
+												hits: event.target.valueAsNumber || 0,
+											})
+										}
+									/>
+									<InputField
+										label="Fatigue"
+										type="number"
+										className="flex-1"
+										min={0}
+										value={character.fatigue}
+										onChange={(event) =>
+											updateCharacter(character.id, {
+												fatigue: event.target.valueAsNumber || 0,
+											})
+										}
+									/>
+									<InputField
+										label="Comeback"
+										type="number"
+										className="flex-1"
+										min={0}
+										value={character.fatigue}
+										onChange={(event) =>
+											updateCharacter(character.id, {
+												fatigue: event.target.valueAsNumber || 0,
+											})
+										}
+									/>
+								</div>
+								<ToggleSection title="Stats">Stats</ToggleSection>
+								<ToggleSection title="Lore">Lore</ToggleSection>
+							</main>
+						</>
+					)
+				})()}
 		</>
+	)
+}
+
+function ToggleSection({
+	title,
+	className,
+	children,
+	...props
+}: ComponentProps<"details"> & { title: ReactNode }) {
+	return (
+		<details className={twMerge("group", className)} {...props}>
+			<summary className="heading-2xl hover:text-primary-200 flex cursor-default list-none items-center justify-between gap-1 transition select-none">
+				{title}
+				<Icon
+					icon="mingcute:left-fill"
+					className="size-6 transition group-open:-rotate-90"
+				/>
+			</summary>
+			{children}
+		</details>
 	)
 }
 
@@ -159,7 +288,7 @@ function InputField({
 		>
 			<input
 				{...props}
-				className="rounded border border-gray-800 bg-gray-900 px-3 py-1.5 transition focus:border-gray-700 focus:outline-none"
+				className="w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 py-1.5 transition focus:border-gray-700 focus:outline-none"
 			/>
 		</Field>
 	)
