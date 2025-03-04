@@ -1,4 +1,5 @@
 import OBR from "@owlbear-rodeo/sdk"
+import { ArkErrors, type } from "arktype"
 import {
 	useEffect,
 	useId,
@@ -50,27 +51,29 @@ feature set:
 - Dice roller + history
 */
 
-type Character = {
-	id: string
-	name: string
-	level: number
-	hits: number
-	fatigue: number
-	comeback: number
-	lineage?: string | null
-	role?: string | null
-	drive?: string | null
-	experiences?: string[]
-	strengthBonus?: number
-	senseBonus?: number
-	dexterityBonus?: number
-	presenceBonus?: number
-	fireBonus?: number
-	waterBonus?: number
-	windBonus?: number
-	lightBonus?: number
-	darknessBonus?: number
-}
+const Character = type({
+	"id": "string = ''",
+	"name": "string = ''",
+	"level": "number = 1",
+	"hits": "number = 0",
+	"fatigue": "number = 0",
+	"comeback": "number = 0",
+	"lineage?": "string | null",
+	"role?": "string | null",
+	"drive?": "string | null",
+	"experiences?": "string[]",
+	"strengthBonus": "number = 0",
+	"senseBonus": "number = 0",
+	"dexterityBonus": "number = 0",
+	"presenceBonus": "number = 0",
+	"fireBonus": "number = 0",
+	"waterBonus": "number = 0",
+	"windBonus": "number = 0",
+	"lightBonus": "number = 0",
+	"darknessBonus": "number = 0",
+})
+
+type Character = typeof Character.inferOut
 
 function createCharacter(name: string): Character {
 	return {
@@ -418,43 +421,52 @@ const experiences = {
 	},
 }
 
+const metadataCharactersKey = "dev.mapleleaf.aspects/characters"
+
+type RoomMetadata = typeof RoomMetadata.inferOut
+const RoomMetadata = type({
+	[metadataCharactersKey]: type.Record("string", Character).default(() => ({})),
+})
+
 export function OwlbearExtensionClient() {
-	// const [player, setPlayer] = useState<Player>()
-	// useOwlbearReadyEffect(() => {
-	// 	return OBR.player.onChange((player) => {
-	// 		setPlayer(player)
-	// 	})
-	// })
+	const [characters, setCharacters] = useState(new Map<string, Character>())
 
-	// const [sceneItems, setSceneItems] = useState<Map<string, SceneItem>>(
-	// 	new Map(),
-	// )
-	// useOwlbearReadyEffect(() => {
-	// 	return OBR.scene.items.onChange((items) => {
-	// 		setSceneItems(new Map(items.map((item) => [item.id, item])))
-	// 	})
-	// })
-
-	// const selectedSceneItems =
-	// 	player?.selection?.flatMap((id) => sceneItems.get(id) ?? []) ?? []
-
-	const [characters, setCharacters] = useState(() => {
-		const map = new Map<string, Character>()
-		for (const name of ["Luna", "Larissa", "Dusk"]) {
-			const character = createCharacter(name)
-			map.set(character.id, character)
+	function handleMetadataChange(metadataRaw: unknown) {
+		const metadata = RoomMetadata(metadataRaw)
+		if (metadata instanceof ArkErrors) {
+			console.error(metadata)
+			return
 		}
-		return map
-	})
+		setCharacters(new Map(Object.entries(metadata[metadataCharactersKey])))
+	}
+
+	const [ready, setReady] = useState(false)
+	useEffect(() => {
+		return OBR.onReady(() => {
+			setReady(true)
+
+			// set characters from metadata
+			OBR.room.getMetadata().then(handleMetadataChange)
+		})
+	}, [handleMetadataChange])
+
+	useEffect(() => {
+		if (!ready) return
+		return OBR.room.onMetadataChange(handleMetadataChange)
+	}, [ready, handleMetadataChange])
 
 	function updateCharacter(id: string, patch: Partial<Character>) {
-		setCharacters((characters) => {
-			const currentCharacter =
-				characters.get(id) ?? createCharacter("Unknown Character")
-			return new Map(characters).set(id, {
-				...currentCharacter,
-				...patch,
-			})
+		const currentCharacter =
+			characters.get(id) ?? createCharacter("Unknown Character")
+
+		const newCharacters = new Map(characters).set(id, {
+			...currentCharacter,
+			...patch,
+		})
+
+		setCharacters(newCharacters)
+		OBR.room.setMetadata({
+			[metadataCharactersKey]: Object.fromEntries(newCharacters),
 		})
 	}
 
@@ -481,7 +493,22 @@ export function OwlbearExtensionClient() {
 							<h2 className="heading-xl">{character.name}</h2>
 						</button>
 					))}
-					<button type="button" className={cardButtonStyle}>
+					<button
+						type="button"
+						className={cardButtonStyle}
+						onClick={() => {
+							const character = createCharacter("New Character")
+							const newCharacters = new Map(characters).set(
+								character.id,
+								character,
+							)
+							setCharacters(newCharacters)
+							OBR.room.setMetadata({
+								[metadataCharactersKey]: Object.fromEntries(newCharacters),
+							})
+							setView({ name: "character", id: character.id })
+						}}
+					>
 						<Icon icon="mingcute:user-add-2-fill" className="size-6" />
 						<h2 className="heading-xl">New Character</h2>
 					</button>
@@ -583,10 +610,8 @@ function CharacterEditor({
 						label="Name"
 						className="flex-1"
 						value={character.name}
-						onChange={(event) => {
-							onUpdate({
-								name: event.target.value,
-							})
+						onSubmitValue={(value) => {
+							onUpdate({ name: value })
 						}}
 					/>
 					<InputField
@@ -596,9 +621,9 @@ function CharacterEditor({
 						min={1}
 						max={13}
 						value={character.level}
-						onChange={(event) =>
+						onSubmitValue={(event) =>
 							onUpdate({
-								level: event.target.valueAsNumber || 1,
+								level: Number(event) || 0,
 							})
 						}
 					/>
@@ -611,9 +636,9 @@ function CharacterEditor({
 						className="min-w-0 flex-1"
 						min={0}
 						value={character.hits}
-						onChange={(event) =>
+						onSubmitValue={(event) =>
 							onUpdate({
-								hits: event.target.valueAsNumber || 0,
+								hits: Number(event) || 0,
 							})
 						}
 					/>
@@ -623,9 +648,9 @@ function CharacterEditor({
 						className="min-w-0 flex-1"
 						min={0}
 						value={character.fatigue}
-						onChange={(event) =>
+						onSubmitValue={(event) =>
 							onUpdate({
-								fatigue: event.target.valueAsNumber || 0,
+								fatigue: Number(event) || 0,
 							})
 						}
 					/>
@@ -634,10 +659,10 @@ function CharacterEditor({
 						type="number"
 						className="min-w-0 flex-1"
 						min={0}
-						value={character.fatigue}
-						onChange={(event) =>
+						value={character.comeback}
+						onSubmitValue={(event) =>
 							onUpdate({
-								fatigue: event.target.valueAsNumber || 0,
+								comeback: Number(event) || 0,
 							})
 						}
 					/>
@@ -958,19 +983,49 @@ function Field({
 function InputField({
 	label,
 	className,
+	onSubmitValue,
 	...props
-}: ComponentProps<"input"> & { label: string }) {
+}: ComponentProps<"input"> & {
+	label: string
+	onSubmitValue: (value: string) => void
+}) {
 	const id = useId()
+	const [tempValue, setTempValue] = useState<string>()
 	return (
 		<Field
+			{...props}
 			label={label}
 			className={className}
 			htmlFor={props.id ?? id}
-			{...props}
 		>
 			<input
 				{...props}
+				value={tempValue ?? props.value}
 				className="min-w-0 flex-1 rounded border border-gray-800 bg-gray-900 px-2 py-1 transition focus:border-gray-700 focus:outline-none"
+				onFocus={(event) => {
+					setTempValue(event.currentTarget.value)
+				}}
+				onBlur={() => {
+					if (tempValue) {
+						setTempValue(undefined)
+						onSubmitValue(tempValue)
+					}
+				}}
+				onKeyDown={(event) => {
+					if (event.key === "Enter" && tempValue) {
+						event.preventDefault()
+						setTempValue(undefined)
+						onSubmitValue(tempValue)
+						event.currentTarget.blur()
+					}
+				}}
+				onChange={(event) => {
+					if (tempValue != null) {
+						setTempValue(event.currentTarget.value)
+					} else {
+						props.onChange?.(event)
+					}
+				}}
 			/>
 		</Field>
 	)
