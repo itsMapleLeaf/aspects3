@@ -1,4 +1,5 @@
 import { type ComponentProps } from "react"
+import { twMerge } from "tailwind-merge"
 
 interface CardProps extends ComponentProps<"div"> {
 	title?: string
@@ -13,7 +14,13 @@ export function Card({
 	...props
 }: CardProps) {
 	return (
-		<div className={`overflow-clip rounded-lg shadow ${className}`} {...props}>
+		<div
+			className={twMerge(
+				`overflow-clip rounded-lg border border-gray-800 bg-gray-900 shadow`,
+				className,
+			)}
+			{...props}
+		>
 			{(title || subtitle) && (
 				<div className="">
 					{title && (
