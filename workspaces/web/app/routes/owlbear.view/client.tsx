@@ -61,8 +61,6 @@ type Character = {
 	role?: string | null
 	drive?: string | null
 	experiences?: string[]
-
-	// Manual bonus fields
 	strengthBonus?: number
 	senseBonus?: number
 	dexterityBonus?: number
