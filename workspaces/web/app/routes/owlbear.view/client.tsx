@@ -46,37 +46,21 @@ todo:
 */
 
 export function OwlbearExtensionClient() {
-	const [ready, setReady] = useState(false)
-	useEffect(() => {
-		if (OBR.isReady) {
-			console.debug("sync ready")
-			setReady(true)
-			return
-		}
-
-		return OBR.onReady(() => {
-			console.debug("async ready")
-			setReady(true)
-		})
-	}, [])
-
 	const [player, setPlayer] = useState<Player>()
-	useEffect(() => {
-		if (!ready) return
+	useOwlbearReadyEffect(() => {
 		return OBR.player.onChange((player) => {
 			setPlayer(player)
 		})
-	}, [ready])
+	})
 
 	const [sceneItems, setSceneItems] = useState<Map<string, SceneItem>>(
 		new Map(),
 	)
-	useEffect(() => {
-		if (!ready) return
+	useOwlbearReadyEffect(() => {
 		return OBR.scene.items.onChange((items) => {
 			setSceneItems(new Map(items.map((item) => [item.id, item])))
 		})
-	}, [ready])
+	})
 
 	const selectedSceneItems =
 		player?.selection?.flatMap((id) => sceneItems.get(id) ?? []) ?? []
@@ -90,4 +74,27 @@ export function OwlbearExtensionClient() {
 			</div>
 		</>
 	)
+}
+
+function useOwlbearReadyEffect(
+	callback: () => (() => void) | undefined | void,
+) {
+	useEffect(() => {
+		if (OBR.isReady) {
+			console.debug("sync ready")
+			return callback()
+		}
+
+		let callbackCleanup: (() => void) | undefined | void
+
+		const cleanup = OBR.onReady(() => {
+			console.debug("async ready")
+			callbackCleanup = callback()
+		}) as unknown as () => void
+
+		return () => {
+			cleanup()
+			callbackCleanup?.()
+		}
+	}, [callback])
 }
