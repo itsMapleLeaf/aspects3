@@ -61,6 +61,17 @@ type Character = {
 	role?: string | null
 	drive?: string | null
 	experiences?: string[]
+
+	// Manual bonus fields
+	strengthBonus?: number
+	senseBonus?: number
+	dexterityBonus?: number
+	presenceBonus?: number
+	fireBonus?: number
+	waterBonus?: number
+	windBonus?: number
+	lightBonus?: number
+	darknessBonus?: number
 }
 
 function createCharacter(name: string): Character {
@@ -71,6 +82,15 @@ function createCharacter(name: string): Character {
 		hits: 0,
 		fatigue: 0,
 		comeback: 0,
+		strengthBonus: 0,
+		senseBonus: 0,
+		dexterityBonus: 0,
+		presenceBonus: 0,
+		fireBonus: 0,
+		waterBonus: 0,
+		windBonus: 0,
+		lightBonus: 0,
+		darknessBonus: 0,
 	}
 }
 
@@ -504,9 +524,62 @@ function CharacterEditor({
 	character: Character
 	onUpdate: (patch: Partial<Character>) => void
 }) {
+	const stats = {
+		strength: 1,
+		sense: 1,
+		dexterity: 1,
+		presence: 1,
+
+		fire: 0,
+		water: 0,
+		wind: 0,
+		light: 0,
+		darkness: 0,
+	}
+
+	if (character.lineage) {
+		const selectedLineage = lineages.find((l) => l.name === character.lineage)
+		if (selectedLineage) {
+			for (const attr of selectedLineage.attributes) {
+				stats[attr.name.toLowerCase() as keyof typeof stats] += 1
+			}
+		}
+	}
+
+	if (character.role) {
+		const selectedRole = roles[character.role as keyof typeof roles]
+		if (selectedRole) {
+			const attrName = selectedRole.attribute.name.toLowerCase()
+			stats[attrName as keyof typeof stats] += 3
+		}
+	}
+
+	if (character.experiences) {
+		for (const expId of character.experiences) {
+			const exp = experiences[expId as keyof typeof experiences]
+			if (exp) {
+				const attrName = exp.attribute.name.toLowerCase()
+				stats[attrName as keyof typeof stats] += 2
+
+				if (exp.aspects.length === 1) {
+					const aspectName = exp.aspects[0]!.name.toLowerCase()
+					stats[aspectName as keyof typeof stats] += 2
+				} else if (exp.aspects.length === 2) {
+					for (const aspect of exp.aspects) {
+						const aspectName = aspect.name.toLowerCase()
+						stats[aspectName as keyof typeof stats] += 1
+					}
+				}
+			}
+		}
+	}
+
+	const maxHits = stats.strength + stats.dexterity + 3
+	const maxFatigue = stats.sense + stats.presence
+
 	return (
 		<main className="grid gap-6 p-3">
-			<div className="grid gap-3">
+			<div className="grid grid-cols-1 gap-3">
 				<div className="flex gap-3">
 					<InputField
 						label="Name"
@@ -532,11 +605,12 @@ function CharacterEditor({
 						}
 					/>
 				</div>
+
 				<div className="flex gap-3">
 					<InputField
-						label="Hits"
+						label={`Hits / ${maxHits}`}
 						type="number"
-						className="flex-1"
+						className="min-w-0 flex-1"
 						min={0}
 						value={character.hits}
 						onChange={(event) =>
@@ -546,9 +620,9 @@ function CharacterEditor({
 						}
 					/>
 					<InputField
-						label="Fatigue"
+						label={`Fatigue / ${maxFatigue}`}
 						type="number"
-						className="flex-1"
+						className="min-w-0 flex-1"
 						min={0}
 						value={character.fatigue}
 						onChange={(event) =>
@@ -560,7 +634,7 @@ function CharacterEditor({
 					<InputField
 						label="Comeback"
 						type="number"
-						className="flex-1"
+						className="min-w-0 flex-1"
 						min={0}
 						value={character.fatigue}
 						onChange={(event) =>
@@ -570,72 +644,85 @@ function CharacterEditor({
 						}
 					/>
 				</div>
-				<div className="flex gap-3">
-					<InputField
-						label="Strength"
-						type="number"
-						className="flex-1"
-						readOnly
-						value={3}
-					/>
-					<InputField
-						label="Sense"
-						type="number"
-						className="flex-1"
-						readOnly
-						value={3}
-					/>
-					<InputField
-						label="Dexterity"
-						type="number"
-						className="flex-1"
-						readOnly
-						value={3}
-					/>
-					<InputField
-						label="Presence"
-						type="number"
-						className="flex-1"
-						readOnly
-						value={3}
-					/>
-				</div>
-				<div className="flex gap-3">
-					<InputField
-						label="Fire"
-						type="number"
-						className="flex-1"
-						readOnly
-						value={3}
-					/>
-					<InputField
-						label="Water"
-						type="number"
-						className="flex-1"
-						readOnly
-						value={3}
-					/>
-					<InputField
-						label="Wind"
-						type="number"
-						className="flex-1"
-						readOnly
-						value={3}
-					/>
-					<InputField
-						label="Light"
-						type="number"
-						className="flex-1"
-						readOnly
-						value={3}
-					/>
-					<InputField
-						label="Darkness"
-						type="number"
-						className="flex-1"
-						readOnly
-						value={3}
-					/>
+
+				<div className="grid grid-cols-2 gap-4">
+					<div className="grid content-start gap-3">
+						<StatField
+							label="Strength"
+							type="number"
+							className="min-w-0 flex-1"
+							value={character.strengthBonus || 0}
+							addition={stats.strength}
+							onValueChange={(value) => onUpdate({ strengthBonus: value })}
+						/>
+						<StatField
+							label="Sense"
+							type="number"
+							className="min-w-0 flex-1"
+							value={character.senseBonus || 0}
+							addition={stats.sense}
+							onValueChange={(value) => onUpdate({ senseBonus: value })}
+						/>
+						<StatField
+							label="Dexterity"
+							type="number"
+							className="min-w-0 flex-1"
+							value={character.dexterityBonus || 0}
+							addition={stats.dexterity}
+							onValueChange={(value) => onUpdate({ dexterityBonus: value })}
+						/>
+						<StatField
+							label="Presence"
+							type="number"
+							className="min-w-0 flex-1"
+							value={character.presenceBonus || 0}
+							addition={stats.presence}
+							onValueChange={(value) => onUpdate({ presenceBonus: value })}
+						/>
+					</div>
+
+					<div className="grid content-start gap-3">
+						<StatField
+							label="Fire"
+							type="number"
+							className="min-w-0 flex-1"
+							value={character.fireBonus || 0}
+							addition={stats.fire}
+							onValueChange={(value) => onUpdate({ fireBonus: value })}
+						/>
+						<StatField
+							label="Water"
+							type="number"
+							className="min-w-0 flex-1"
+							value={character.waterBonus || 0}
+							addition={stats.water}
+							onValueChange={(value) => onUpdate({ waterBonus: value })}
+						/>
+						<StatField
+							label="Wind"
+							type="number"
+							className="min-w-0 flex-1"
+							value={character.windBonus || 0}
+							addition={stats.wind}
+							onValueChange={(value) => onUpdate({ windBonus: value })}
+						/>
+						<StatField
+							label="Light"
+							type="number"
+							className="min-w-0 flex-1"
+							value={character.lightBonus || 0}
+							addition={stats.light}
+							onValueChange={(value) => onUpdate({ lightBonus: value })}
+						/>
+						<StatField
+							label="Darkness"
+							type="number"
+							className="min-w-0 flex-1"
+							value={character.darknessBonus || 0}
+							addition={stats.darkness}
+							onValueChange={(value) => onUpdate({ darknessBonus: value })}
+						/>
+					</div>
 				</div>
 			</div>
 
@@ -644,8 +731,8 @@ function CharacterEditor({
 			<ToggleSection title="Lineage">
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
 					Choose your lineage, which determines your physical appearance and
-					traits. Each lineage grants +1 to named attributes. Hover over each
-					one for examples.
+					traits. Your lineage grants +1 to its named attributes. Hover over
+					each one for examples.
 				</p>
 				<div className="grid grid-cols-3 gap-3">
 					{lineages.map((lineage) => (
@@ -664,7 +751,7 @@ function CharacterEditor({
 
 			<ToggleSection title="Role">
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-					Choose your role in this society. Each role grants +1 to the named
+					Choose your role in this society. Your role grants +3 to the named
 					attribute. Hover over each one for examples.
 				</p>
 				<div className="grid grid-cols-2 gap-3">
@@ -885,9 +972,53 @@ function InputField({
 		>
 			<input
 				{...props}
-				className="w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 py-1.5 transition focus:border-gray-700 focus:outline-none"
+				className="min-w-0 flex-1 rounded border border-gray-800 bg-gray-900 px-2 py-1 transition focus:border-gray-700 focus:outline-none"
 			/>
 		</Field>
+	)
+}
+
+function StatField({
+	label,
+	className,
+	addition,
+	value,
+	onValueChange,
+	...props
+}: ComponentProps<"input"> & {
+	label: string
+	value: number
+	addition: number
+	onValueChange?: (value: number) => void
+}) {
+	const id = useId()
+
+	return (
+		<div
+			className={twMerge("flex items-center gap-1.5 tabular-nums", className)}
+			{...props}
+		>
+			<label htmlFor={id} className="w-18 text-end text-sm font-semibold">
+				{label}
+			</label>
+			<strong className="w-4 text-end text-lg">{value + addition}</strong>
+			<span className="mx-1 h-5 w-px bg-gray-700"></span>
+			<input
+				id={id}
+				value={value}
+				type="number"
+				min={0}
+				onChange={(event) => {
+					const newValue = event.target.valueAsNumber || 0
+					onValueChange?.(newValue)
+				}}
+				{...props}
+				className="w-14 min-w-0 rounded border border-gray-800 bg-gray-900 px-2 py-1 transition focus:border-gray-700 focus:outline-none"
+			/>
+			<p className="shrink-0 cursor-default text-gray-400" title="lore bonuses">
+				+{addition}
+			</p>
+		</div>
 	)
 }
 
