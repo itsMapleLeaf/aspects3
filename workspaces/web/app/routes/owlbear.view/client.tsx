@@ -729,16 +729,17 @@ function CharacterEditor({
 			<ToggleSection title="Lineage">
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
 					Choose your lineage, which determines your physical appearance and
-					traits. Your lineage grants +1 to its named attributes. Hover over
-					each one for examples.
+					traits. Hover over each one for examples.
 				</p>
-				<div className="grid grid-cols-3 gap-3">
+				<div className="grid grid-cols-2 gap-3">
 					{lineages.map((lineage) => (
 						<OptionCard
 							type="radio"
 							key={lineage.name}
 							label={lineage.name}
-							description={lineage.attributes.map((it) => it.name).join(", ")}
+							description={lineage.attributes
+								.map((it) => `+1 ${it.name}`)
+								.join(", ")}
 							title={lineage.example}
 							checked={character.lineage === lineage.name}
 							onChange={() => onUpdate({ lineage: lineage.name })}
@@ -749,8 +750,7 @@ function CharacterEditor({
 
 			<ToggleSection title="Role">
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-					Choose your role in this society. Your role grants +3 to the named
-					attribute. Hover over each one for examples.
+					Choose your role in this society. Hover over each one for examples.
 				</p>
 				<div className="grid grid-cols-2 gap-3">
 					{Object.entries(roles).map(([roleId, role]) => (
@@ -758,7 +758,7 @@ function CharacterEditor({
 							type="radio"
 							key={roleId}
 							label={role.name}
-							description={role.attribute.name}
+							description={`+3 ${role.attribute.name}`}
 							checked={character.role === roleId}
 							onChange={() => onUpdate({ role: roleId })}
 							// show name on title in case it gets truncated
