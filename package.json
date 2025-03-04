@@ -2,7 +2,7 @@
 	"name": "aspects",
 	"private": true,
 	"type": "module",
-	"packageManager": "bun@1.2.2",
+	"packageManager": "bun@1.2.4",
 	"workspaces": [
 		"workspaces/*"
 	],
