@@ -69,7 +69,7 @@ export function ToastProvider({
 			{children}
 			<div
 				className={twMerge(
-					"flex flex-col items-start justify-end gap-3 p-4",
+					"pointer-events-children flex flex-col items-start justify-end gap-3 p-4",
 					className,
 				)}
 				ref={animateRef}
