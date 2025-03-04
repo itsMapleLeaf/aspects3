@@ -35,4 +35,7 @@ export default defineConfig({
 			"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 		},
 	},
+	ssr: {
+		noExternal: ["@owlbear-rodeo/sdk"],
+	},
 })
