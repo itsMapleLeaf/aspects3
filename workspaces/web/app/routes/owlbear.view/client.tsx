@@ -1,6 +1,7 @@
 import OBR from "@owlbear-rodeo/sdk"
 import { ArkErrors, type } from "arktype"
 import {
+	startTransition,
 	useEffect,
 	useId,
 	useState,
@@ -8,6 +9,7 @@ import {
 	type ReactNode,
 } from "react"
 import { twMerge } from "tailwind-merge"
+import { ContentState } from "~/components/ui/ContentState.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { drives, experiences, lineages, roles } from "./data.ts"
 
@@ -104,6 +106,24 @@ const RoomMetadata = type({
 })
 
 export function OwlbearExtensionClient() {
+	const [ready, setReady] = useState(false)
+
+	useEffect(() => {
+		return OBR.onReady(() => {
+			setReady(true)
+		})
+	}, [])
+
+	return ready ? (
+		<ReadyView />
+	) : (
+		<ContentState.Loading>
+			If this shows for more than 5 seconds, try refreshing the page.
+		</ContentState.Loading>
+	)
+}
+
+function ReadyView() {
 	const [characters, setCharacters] = useState(new Map<string, Character>())
 
 	function handleMetadataChange(metadataRaw: unknown) {
@@ -115,20 +135,33 @@ export function OwlbearExtensionClient() {
 		setCharacters(new Map(Object.entries(metadata[metadataCharactersKey])))
 	}
 
-	const [ready, setReady] = useState(false)
 	useEffect(() => {
-		return OBR.onReady(() => {
-			setReady(true)
+		// set characters from metadata
+		OBR.room.getMetadata().then(handleMetadataChange)
+	}, [])
 
-			// set characters from metadata
-			OBR.room.getMetadata().then(handleMetadataChange)
-		})
+	useEffect(() => {
+		return OBR.room.onMetadataChange(handleMetadataChange)
 	}, [handleMetadataChange])
 
-	useEffect(() => {
-		if (!ready) return
-		return OBR.room.onMetadataChange(handleMetadataChange)
-	}, [ready, handleMetadataChange])
+	function saveCharacters(newCharacters: Map<string, Character>) {
+		startTransition(async () => {
+			try {
+				await OBR.room.setMetadata({
+					[metadataCharactersKey]: Object.fromEntries(newCharacters),
+				})
+			} catch (error) {
+				console.error(error)
+			}
+		})
+	}
+
+	function addNewCharacter() {
+		const character = createCharacter("New Character")
+		const newCharacters = new Map(characters).set(character.id, character)
+		saveCharacters(newCharacters)
+		return character
+	}
 
 	function updateCharacter(id: string, patch: Partial<Character>) {
 		const currentCharacter =
@@ -139,10 +172,7 @@ export function OwlbearExtensionClient() {
 			...patch,
 		})
 
-		setCharacters(newCharacters)
-		OBR.room.setMetadata({
-			[metadataCharactersKey]: Object.fromEntries(newCharacters),
-		})
+		saveCharacters(newCharacters)
 	}
 
 	const [view, setView] = useState<
@@ -172,15 +202,7 @@ export function OwlbearExtensionClient() {
 						type="button"
 						className={cardButtonStyle}
 						onClick={() => {
-							const character = createCharacter("New Character")
-							const newCharacters = new Map(characters).set(
-								character.id,
-								character,
-							)
-							setCharacters(newCharacters)
-							OBR.room.setMetadata({
-								[metadataCharactersKey]: Object.fromEntries(newCharacters),
-							})
+							const character = addNewCharacter()
 							setView({ name: "character", id: character.id })
 						}}
 					>
@@ -351,7 +373,7 @@ function CharacterEditor({
 							className="min-w-0 flex-1"
 							value={character.strengthBonus || 0}
 							addition={stats.strength}
-							onValueChange={(value) => onUpdate({ strengthBonus: value })}
+							onSubmitValue={(value) => onUpdate({ strengthBonus: value })}
 						/>
 						<StatField
 							label="Sense"
@@ -359,7 +381,7 @@ function CharacterEditor({
 							className="min-w-0 flex-1"
 							value={character.senseBonus || 0}
 							addition={stats.sense}
-							onValueChange={(value) => onUpdate({ senseBonus: value })}
+							onSubmitValue={(value) => onUpdate({ senseBonus: value })}
 						/>
 						<StatField
 							label="Dexterity"
@@ -367,7 +389,7 @@ function CharacterEditor({
 							className="min-w-0 flex-1"
 							value={character.dexterityBonus || 0}
 							addition={stats.dexterity}
-							onValueChange={(value) => onUpdate({ dexterityBonus: value })}
+							onSubmitValue={(value) => onUpdate({ dexterityBonus: value })}
 						/>
 						<StatField
 							label="Presence"
@@ -375,7 +397,7 @@ function CharacterEditor({
 							className="min-w-0 flex-1"
 							value={character.presenceBonus || 0}
 							addition={stats.presence}
-							onValueChange={(value) => onUpdate({ presenceBonus: value })}
+							onSubmitValue={(value) => onUpdate({ presenceBonus: value })}
 						/>
 					</div>
 
@@ -386,7 +408,7 @@ function CharacterEditor({
 							className="min-w-0 flex-1"
 							value={character.fireBonus || 0}
 							addition={stats.fire}
-							onValueChange={(value) => onUpdate({ fireBonus: value })}
+							onSubmitValue={(value) => onUpdate({ fireBonus: value })}
 						/>
 						<StatField
 							label="Water"
@@ -394,7 +416,7 @@ function CharacterEditor({
 							className="min-w-0 flex-1"
 							value={character.waterBonus || 0}
 							addition={stats.water}
-							onValueChange={(value) => onUpdate({ waterBonus: value })}
+							onSubmitValue={(value) => onUpdate({ waterBonus: value })}
 						/>
 						<StatField
 							label="Wind"
@@ -402,7 +424,7 @@ function CharacterEditor({
 							className="min-w-0 flex-1"
 							value={character.windBonus || 0}
 							addition={stats.wind}
-							onValueChange={(value) => onUpdate({ windBonus: value })}
+							onSubmitValue={(value) => onUpdate({ windBonus: value })}
 						/>
 						<StatField
 							label="Light"
@@ -410,7 +432,7 @@ function CharacterEditor({
 							className="min-w-0 flex-1"
 							value={character.lightBonus || 0}
 							addition={stats.light}
-							onValueChange={(value) => onUpdate({ lightBonus: value })}
+							onSubmitValue={(value) => onUpdate({ lightBonus: value })}
 						/>
 						<StatField
 							label="Darkness"
@@ -418,7 +440,7 @@ function CharacterEditor({
 							className="min-w-0 flex-1"
 							value={character.darknessBonus || 0}
 							addition={stats.darkness}
-							onValueChange={(value) => onUpdate({ darknessBonus: value })}
+							onSubmitValue={(value) => onUpdate({ darknessBonus: value })}
 						/>
 					</div>
 				</div>
@@ -658,14 +680,12 @@ function Field({
 function InputField({
 	label,
 	className,
-	onSubmitValue,
 	...props
 }: ComponentProps<"input"> & {
 	label: string
 	onSubmitValue: (value: string) => void
 }) {
 	const id = useId()
-	const [tempValue, setTempValue] = useState<string>()
 	return (
 		<Field
 			{...props}
@@ -673,34 +693,10 @@ function InputField({
 			className={className}
 			htmlFor={props.id ?? id}
 		>
-			<input
+			<SubmitInput
 				{...props}
-				value={tempValue ?? props.value}
+				id={props.id ?? id}
 				className="min-w-0 flex-1 rounded border border-gray-800 bg-gray-900 px-2 py-1 transition focus:border-gray-700 focus:outline-none"
-				onFocus={(event) => {
-					setTempValue(event.currentTarget.value)
-				}}
-				onBlur={() => {
-					if (tempValue) {
-						setTempValue(undefined)
-						onSubmitValue(tempValue)
-					}
-				}}
-				onKeyDown={(event) => {
-					if (event.key === "Enter" && tempValue) {
-						event.preventDefault()
-						setTempValue(undefined)
-						onSubmitValue(tempValue)
-						event.currentTarget.blur()
-					}
-				}}
-				onChange={(event) => {
-					if (tempValue != null) {
-						setTempValue(event.currentTarget.value)
-					} else {
-						props.onChange?.(event)
-					}
-				}}
 			/>
 		</Field>
 	)
@@ -711,13 +707,13 @@ function StatField({
 	className,
 	addition,
 	value,
-	onValueChange,
+	onSubmitValue,
 	...props
 }: ComponentProps<"input"> & {
 	label: string
 	value: number
 	addition: number
-	onValueChange?: (value: number) => void
+	onSubmitValue: (value: number) => void
 }) {
 	const id = useId()
 
@@ -731,14 +727,13 @@ function StatField({
 			</label>
 			<strong className="w-4 text-end text-lg">{value + addition}</strong>
 			<span className="mx-1 h-5 w-px bg-gray-700"></span>
-			<input
+			<SubmitInput
 				id={id}
 				value={value}
 				type="number"
 				min={0}
-				onChange={(event) => {
-					const newValue = event.target.valueAsNumber || 0
-					onValueChange?.(newValue)
+				onSubmitValue={(value) => {
+					onSubmitValue(Number(value) || 0)
 				}}
 				{...props}
 				className="w-14 min-w-0 rounded border border-gray-800 bg-gray-900 px-2 py-1 transition focus:border-gray-700 focus:outline-none"
@@ -747,6 +742,45 @@ function StatField({
 				+{addition}
 			</p>
 		</div>
+	)
+}
+
+function SubmitInput({
+	onSubmitValue,
+	...props
+}: ComponentProps<"input"> & {
+	onSubmitValue: (value: string) => void
+}) {
+	const [tempValue, setTempValue] = useState<string>()
+	return (
+		<input
+			{...props}
+			value={tempValue ?? props.value}
+			onFocus={(event) => {
+				setTempValue(event.currentTarget.value)
+			}}
+			onBlur={() => {
+				if (tempValue) {
+					setTempValue(undefined)
+					onSubmitValue(tempValue)
+				}
+			}}
+			onKeyDown={(event) => {
+				if (event.key === "Enter" && tempValue) {
+					event.preventDefault()
+					setTempValue(undefined)
+					onSubmitValue(tempValue)
+					event.currentTarget.blur()
+				}
+			}}
+			onChange={(event) => {
+				if (tempValue != null) {
+					setTempValue(event.currentTarget.value)
+				} else {
+					props.onChange?.(event)
+				}
+			}}
+		/>
 	)
 }
 
