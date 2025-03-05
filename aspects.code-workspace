@@ -26,6 +26,6 @@
 		},
 	],
 	"settings": {
-		"typescript.tsdk": "node_modules\\typescript\\lib",
+		"typescript.tsdk": "aspects3\\node_modules\\typescript\\lib",
 	},
 }
