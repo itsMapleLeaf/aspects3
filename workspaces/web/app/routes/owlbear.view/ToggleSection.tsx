@@ -15,15 +15,17 @@ export function ToggleSection({
 	className,
 	children,
 	titlePostfix,
+	defaultOpen = true,
 	...props
 }: Except<ComponentProps<"details">, "title"> & {
 	title: ReactNode
 	storageKey?: string
 	titlePostfix?: ReactNode
+	defaultOpen?: boolean
 }) {
 	const [open, setOpen] = useLocalStorage(
 		`ToggleSection:${storageKey ?? title}`,
-		false,
+		defaultOpen,
 		Boolean,
 	)
 	return (

@@ -131,7 +131,7 @@ function ExtensionClientView() {
 											character={character}
 											onUpdate={(patch) => updateCharacter(character.id, patch)}
 										/>
-										<ActionsList />
+										<ActionsList character={character} />
 									</div>
 								</ToggleSection>
 							</li>

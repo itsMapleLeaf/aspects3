@@ -29,7 +29,10 @@ export function OptionCard({
 				type={type}
 				className="sr-only"
 				checked={checked}
-				onChange={() => onChange()}
+				onChange={(event) => {
+					event.currentTarget.blur()
+					onChange()
+				}}
 			/>
 			<header
 				className="group flex items-center gap-1.5"

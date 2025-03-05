@@ -247,11 +247,11 @@ export const experiences = {
 		attribute: attributes.strength,
 		aspects: [aspects.fire, aspects.darkness],
 	},
-	experiencedDomesticAbuse: {
-		description: "experienced domestic abuse",
-		attribute: attributes.strength,
-		aspects: [aspects.fire, aspects.darkness],
-	},
+	// experiencedDomesticAbuse: {
+	// 	description: "experienced domestic abuse",
+	// 	attribute: attributes.strength,
+	// 	aspects: [aspects.fire, aspects.darkness],
+	// },
 	gotLostInWilderness: {
 		description: "got lost in the wilderness",
 		attribute: attributes.sense,
@@ -396,3 +396,246 @@ export const actions = {
 		description: "try to see through lies, glean intent, or resist influence",
 	},
 }
+
+export const aspectSkills = [
+	{
+		name: "Accelerate",
+		aspect: aspects.wind,
+		drives: [drives.adaptation],
+		effect:
+			"Until your next action, give your allies # additional combat movements on their turn",
+	},
+	{
+		name: "Arc of Flame",
+		aspect: aspects.fire,
+		drives: [drives.dominance],
+		effect: "Deal 1 hit to # characters at short range (not immediate range)",
+	},
+	{
+		name: "Burning Aura",
+		aspect: aspects.fire,
+		drives: [drives.empowerment],
+		effect:
+			"# allies have +1 die on all of their strike, shoot, or aspect action rolls until your next action",
+	},
+	{
+		name: "Call of the Night",
+		aspect: aspects.darkness,
+		drives: [drives.empowerment, drives.manipulation],
+		effect: "All characters have +# dice on their rolls until your next action",
+	},
+	{
+		name: "Castle",
+		aspect: aspects.water,
+		drives: [drives.protection],
+		effect:
+			"Prevent up to # hits to all allies at immediate range until your next action",
+	},
+	{
+		name: "Cinder Storm",
+		aspect: aspects.fire,
+		drives: [drives.dominance],
+		effect:
+			"Deal 1 hit to every ally and yourself, then deal (success: 2 hits) (failure: 1 hit) to all enemies",
+	},
+	{
+		name: "Discriminate",
+		aspect: aspects.darkness,
+		drives: [drives.manipulation],
+		effect:
+			"Every aspect check for a chosen aspect has -# dice until your next action",
+	},
+	{
+		name: "Drain",
+		aspect: aspects.darkness,
+		drives: [drives.dominance, drives.protection],
+		effect: "Deal 1 hit (success: then heal the amount of hits dealt)",
+	},
+	{
+		name: "Energize",
+		aspect: aspects.light,
+		drives: [drives.protection],
+		effect:
+			"Prevent a character from taking up to # fatigue until your next action",
+	},
+	{
+		name: "Expel",
+		aspect: aspects.wind,
+		drives: [drives.dominance],
+		effect: "Move # enemies at immediate range to any zone within medium range",
+	},
+	{
+		name: "Fair Play",
+		aspect: aspects.wind,
+		drives: [drives.empowerment, drives.manipulation],
+		effect: "Deal # fatigue to all enemies with 0 hits",
+	},
+	{
+		name: "Flame Strike",
+		aspect: aspects.fire,
+		drives: [drives.dominance],
+		effect: "Deal # of hits to a character at immediate range",
+	},
+	{
+		name: "Flamewall",
+		aspect: aspects.fire,
+		drives: [drives.adaptation, drives.protection],
+		effect:
+			"Choose a zone at short or immediate range. Until your next action, when any character enters or exits the chosen zone, they take # * 2 hits",
+	},
+	{
+		name: "Fluidity",
+		aspect: aspects.water,
+		drives: [drives.adaptation, drives.empowerment],
+		effect:
+			"Reaction: after an ally makes a roll, allow them to reroll # of their dice and take the higher results",
+	},
+	{
+		name: "Focused Healing",
+		aspect: aspects.light,
+		drives: [drives.empowerment, drives.protection],
+		effect:
+			"Choose a character. The next time a chosen character makes an action which heals hits from one or more characters, heal # additional hits from the healed characters",
+	},
+	{
+		name: "Freeze",
+		aspect: aspects.water,
+		drives: [drives.adaptation],
+		effect:
+			"Choose a zone no further than medium range. Prevent # chosen characters in that zone from moving until your next action",
+	},
+	{
+		name: "Frostbite",
+		aspect: aspects.water,
+		drives: [drives.manipulation],
+		effect: "Deal # fatigue to a character at immediate range",
+	},
+	{
+		name: "Healing",
+		aspect: aspects.light,
+		drives: [drives.adaptation, drives.protection],
+		effect: "Heal # hits from a character within long range",
+	},
+	{
+		name: "Imperil",
+		aspect: aspects.darkness,
+		drives: [drives.manipulation],
+		effect: "A character has -# dice on their rolls until your next action",
+	},
+	{
+		name: "Inferno",
+		aspect: aspects.fire,
+		drives: [drives.dominance, drives.empowerment],
+		effect:
+			"A character's next strike, shoot, or aspect action deals (success: triple the hits) (failure: double the hits)",
+	},
+	{
+		name: "Inner Flame",
+		aspect: aspects.fire,
+		drives: [drives.adaptation, drives.dominance],
+		effect:
+			"After taking fatigue for this art, deal (success: your fatigue amount in hits) (failure: 1 hit) to a character in immediate range",
+	},
+	{
+		name: "Inspire",
+		aspect: aspects.light,
+		drives: [drives.empowerment],
+		effect:
+			"A character has +# dice on their rolls until the next time you use this art",
+	},
+	{
+		name: "Multicast",
+		aspect: aspects.wind,
+		drives: [drives.empowerment],
+		effect:
+			"Add # additional targets to a target character's next action. The target character chooses the targets",
+	},
+	{
+		name: "Overflow",
+		aspect: aspects.darkness,
+		drives: [drives.empowerment],
+		effect:
+			"Your allies have +# dice on all of their rolls until your next action. Take # fatigue",
+	},
+	{
+		name: "Pacify",
+		aspect: aspects.light,
+		drives: [drives.manipulation],
+		effect:
+			"Prevent a character from dealing up to # hits until your next action",
+	},
+	{
+		name: "Quick Swap",
+		aspect: aspects.wind,
+		drives: [drives.adaptation],
+		effect:
+			"Swap zones with another character (success: you choose the character) (failure: the character is random)",
+	},
+	{
+		name: "Ray of Equality",
+		aspect: aspects.light,
+		drives: [drives.dominance, drives.manipulation],
+		effect: "Deal # * 2 hits to the enemy with the highest toughness",
+	},
+	{
+		name: "Regret",
+		aspect: aspects.darkness,
+		drives: [drives.manipulation],
+		effect:
+			"Deal 1 fatigue to # enemies who've dealt hits since your last action",
+	},
+	{
+		name: "Restore",
+		aspect: aspects.light,
+		drives: [drives.protection],
+		effect: "Heal # hits from all allies in immediate range",
+	},
+	{
+		name: "Riftwalk",
+		aspect: aspects.darkness,
+		drives: [drives.adaptation],
+		effect:
+			"Mark your current zone and a chosen zone no further than a range of #. Until your next action, the marked zones are considered adjacent",
+	},
+	{
+		name: "Sear",
+		aspect: aspects.fire,
+		drives: [drives.manipulation],
+		effect:
+			"Deal # hits to all characters who used fire aspect art since your last action, including yourself.",
+	},
+	{
+		name: "Shield",
+		aspect: aspects.water,
+		drives: [drives.protection],
+		effect:
+			"Prevent up to # hits on a character within long range until your next action",
+	},
+	{
+		name: "Slide",
+		aspect: aspects.water,
+		drives: [drives.adaptation],
+		effect:
+			"Choose a zone no further than a range of #. Until your next turn, moving into that zone does not consume combat movement. All other combat movement restrictions still apply",
+	},
+	{
+		name: "Surge",
+		aspect: aspects.wind,
+		drives: [drives.empowerment],
+		effect: "Repeat the effect of a character's next action # times",
+	},
+	{
+		name: "Survival Instinct",
+		aspect: aspects.wind,
+		drives: [drives.adaptation, drives.protection],
+		effect:
+			"Give an ally +1 die (success: for each hit that ally has taken) on their next roll",
+	},
+	{
+		name: "Tsunami",
+		aspect: aspects.water,
+		drives: [drives.adaptation, drives.dominance],
+		effect:
+			"Choose a zone at a range of #. Deal # * 2 hits (on failure: 1 hit) to every character in that zone",
+	},
+]

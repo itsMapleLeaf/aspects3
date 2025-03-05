@@ -1,3 +1,4 @@
+import { intersection } from "es-toolkit"
 import { ActionsList } from "./ActionsList.tsx"
 import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
 import { InputField } from "./InputField.tsx"
@@ -118,7 +119,7 @@ export function CharacterEditor({
 			</div>
 
 			<ToggleSection title="Actions">
-				<ActionsList />
+				<ActionsList character={character} />
 			</ToggleSection>
 
 			<ToggleSection title="Lineage">
@@ -220,7 +221,7 @@ export function CharacterEditor({
 			</ToggleSection>
 
 			<ToggleSection
-				title={`Experiences (${character.experiences?.length || 0}/3)`}
+				title={`Experiences (${getCharacterExperienceCount(character)}/3)`}
 			>
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
 					Choose three experiences from your character's past. Each experience
@@ -258,4 +259,9 @@ export function CharacterEditor({
 			</ToggleSection>
 		</main>
 	)
+}
+
+function getCharacterExperienceCount(character: Character) {
+	return intersection(Object.keys(experiences), character.experiences ?? [])
+		.length
 }
