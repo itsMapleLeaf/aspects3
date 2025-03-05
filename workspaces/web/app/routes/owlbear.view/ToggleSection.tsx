@@ -1,5 +1,6 @@
 import { type ComponentProps, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
+import type { Except } from "type-fest"
 import { Icon } from "~/components/ui/Icon.tsx"
 
 export function ToggleSection({
@@ -7,7 +8,7 @@ export function ToggleSection({
 	className,
 	children,
 	...props
-}: ComponentProps<"details"> & { title: ReactNode }) {
+}: Except<ComponentProps<"details">, "title"> & { title: ReactNode }) {
 	return (
 		<details className={twMerge("group", className)} {...props}>
 			<summary className="heading-2xl hover:text-primary-200 flex cursor-default list-none items-center justify-between gap-1 transition select-none">
