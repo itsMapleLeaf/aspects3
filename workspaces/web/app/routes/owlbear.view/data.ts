@@ -323,3 +323,76 @@ export const experiences = {
 		aspects: [aspects.wind, aspects.darkness],
 	},
 }
+
+export const actions = {
+	strike: {
+		name: "Strike",
+		attribute: attributes.strength,
+		description: "punch someone, damage equals number of successes",
+	},
+	block: {
+		name: "Block",
+		attribute: attributes.strength,
+		description: "reduce damage by number of successes",
+	},
+	dodge: {
+		name: "Dodge",
+		attribute: attributes.dexterity,
+		description: "roll more successes than damage to avoid it",
+	},
+	jump: {
+		name: "Jump",
+		attribute: attributes.dexterity,
+		description: "gaps are a suggestion :)",
+	},
+	dash: {
+		name: "Dash",
+		attribute: attributes.dexterity,
+		description: "s p e e d",
+	},
+	sneak: {
+		name: "Sneak",
+		attribute: attributes.dexterity,
+		description: "sshhhh",
+	},
+	shoot: {
+		name: "Shoot",
+		attribute: attributes.dexterity,
+		description: "eat my crossbow bitch",
+	},
+	locate: {
+		name: "Locate",
+		attribute: attributes.sense,
+		description: "proactively find a thing",
+	},
+	notice: {
+		name: "Notice",
+		attribute: attributes.sense,
+		description: "reactively see/hear/feel a thing",
+	},
+	rest: {
+		name: "Rest",
+		attribute: attributes.sense,
+		description: "recover fatigue",
+	},
+	charm: {
+		name: "Charm",
+		attribute: attributes.presence,
+		description: "bribery",
+	},
+	intimidate: {
+		name: "Intimidate",
+		attribute: attributes.presence,
+		description: "blackmail",
+	},
+	deceive: {
+		name: "Deceive",
+		attribute: attributes.presence,
+		description: "try to lie convincingly",
+	},
+	read: {
+		name: "Read",
+		attribute: attributes.presence,
+		description: "try to see through lies, glean intent, or resist influence",
+	},
+}

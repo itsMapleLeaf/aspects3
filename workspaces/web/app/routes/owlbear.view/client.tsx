@@ -5,6 +5,7 @@ import { twMerge } from "tailwind-merge"
 import { ContentState } from "~/components/ui/ContentState.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { SquareIconButton } from "~/components/ui/SquareIconButton.tsx"
+import { ActionsList } from "./ActionsList.tsx"
 import { CharacterEditor } from "./CharacterEditor.tsx"
 import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
 import { ToggleSection } from "./ToggleSection.tsx"
@@ -130,6 +131,7 @@ function ExtensionClientView() {
 											character={character}
 											onUpdate={(patch) => updateCharacter(character.id, patch)}
 										/>
+										<ActionsList />
 									</div>
 								</ToggleSection>
 							</li>

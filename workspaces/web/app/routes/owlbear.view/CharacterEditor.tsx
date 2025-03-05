@@ -1,3 +1,4 @@
+import { ActionsList } from "./ActionsList.tsx"
 import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
 import { InputField } from "./InputField.tsx"
 import { OptionCard } from "./OptionCard.tsx"
@@ -116,7 +117,9 @@ export function CharacterEditor({
 				</div>
 			</div>
 
-			<ToggleSection title="Actions">todo</ToggleSection>
+			<ToggleSection title="Actions">
+				<ActionsList />
+			</ToggleSection>
 
 			<ToggleSection title="Lineage">
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
