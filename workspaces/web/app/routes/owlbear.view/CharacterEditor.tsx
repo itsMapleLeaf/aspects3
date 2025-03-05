@@ -1,8 +1,9 @@
+import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
 import { InputField } from "./InputField.tsx"
 import { OptionCard } from "./OptionCard.tsx"
 import { StatField } from "./StatField.tsx"
 import { ToggleSection } from "./ToggleSection.tsx"
-import { Character } from "./character.ts"
+import { Character, getComputedCharacter } from "./character.ts"
 import { drives, experiences, lineages, roles } from "./data.ts"
 
 export function CharacterEditor({
@@ -12,58 +13,7 @@ export function CharacterEditor({
 	character: Character
 	onUpdate: (patch: Partial<Character>) => void
 }) {
-	const stats = {
-		strength: 1,
-		sense: 1,
-		dexterity: 1,
-		presence: 1,
-
-		fire: 0,
-		water: 0,
-		wind: 0,
-		light: 0,
-		darkness: 0,
-	}
-
-	if (character.lineage) {
-		const selectedLineage = lineages.find((l) => l.name === character.lineage)
-		if (selectedLineage) {
-			for (const attr of selectedLineage.attributes) {
-				stats[attr.name.toLowerCase() as keyof typeof stats] += 1
-			}
-		}
-	}
-
-	if (character.role) {
-		const selectedRole = roles[character.role as keyof typeof roles]
-		if (selectedRole) {
-			const attrName = selectedRole.attribute.name.toLowerCase()
-			stats[attrName as keyof typeof stats] += 3
-		}
-	}
-
-	if (character.experiences) {
-		for (const expId of character.experiences) {
-			const exp = experiences[expId as keyof typeof experiences]
-			if (exp) {
-				const attrName = exp.attribute.name.toLowerCase()
-				stats[attrName as keyof typeof stats] += 2
-
-				if (exp.aspects.length === 1) {
-					const aspectName = exp.aspects[0]!.name.toLowerCase()
-					stats[aspectName as keyof typeof stats] += 2
-				} else if (exp.aspects.length === 2) {
-					for (const aspect of exp.aspects) {
-						const aspectName = aspect.name.toLowerCase()
-						stats[aspectName as keyof typeof stats] += 1
-					}
-				}
-			}
-		}
-	}
-
-	const maxHits = stats.strength + stats.dexterity + 3
-	const maxFatigue = stats.sense + stats.presence
+	const stats = getComputedCharacter(character)
 
 	return (
 		<main className="grid gap-6 p-3">
@@ -92,44 +42,7 @@ export function CharacterEditor({
 					/>
 				</div>
 
-				<div className="flex gap-3">
-					<InputField
-						label={`Hits / ${maxHits}`}
-						type="number"
-						className="min-w-0 flex-1"
-						min={0}
-						value={character.hits}
-						onSubmitValue={(event) =>
-							onUpdate({
-								hits: Number(event) || 0,
-							})
-						}
-					/>
-					<InputField
-						label={`Fatigue / ${maxFatigue}`}
-						type="number"
-						className="min-w-0 flex-1"
-						min={0}
-						value={character.fatigue}
-						onSubmitValue={(event) =>
-							onUpdate({
-								fatigue: Number(event) || 0,
-							})
-						}
-					/>
-					<InputField
-						label="Comeback"
-						type="number"
-						className="min-w-0 flex-1"
-						min={0}
-						value={character.comeback}
-						onSubmitValue={(event) =>
-							onUpdate({
-								comeback: Number(event) || 0,
-							})
-						}
-					/>
-				</div>
+				<CharacterResourceFields character={character} onUpdate={onUpdate} />
 
 				<div className="grid grid-cols-2 gap-4">
 					<div className="grid content-start gap-3">

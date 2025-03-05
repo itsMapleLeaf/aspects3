@@ -1,24 +1,46 @@
+import {
+	Disclosure,
+	DisclosureContent,
+	DisclosureProvider,
+} from "@ariakit/react"
 import { type ComponentProps, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
 import type { Except } from "type-fest"
 import { Icon } from "~/components/ui/Icon.tsx"
+import { useLocalStorage } from "~/hooks/useLocalStorage"
 
 export function ToggleSection({
 	title,
+	storageKey,
 	className,
 	children,
+	titlePostfix,
 	...props
-}: Except<ComponentProps<"details">, "title"> & { title: ReactNode }) {
+}: Except<ComponentProps<"details">, "title"> & {
+	title: ReactNode
+	storageKey?: string
+	titlePostfix?: ReactNode
+}) {
+	const [open, setOpen] = useLocalStorage(
+		`ToggleSection:${storageKey ?? title}`,
+		false,
+		Boolean,
+	)
 	return (
-		<details className={twMerge("group", className)} {...props}>
-			<summary className="heading-2xl hover:text-primary-200 flex cursor-default list-none items-center justify-between gap-1 transition select-none">
-				{title}
-				<Icon
-					icon="mingcute:left-fill"
-					className="size-6 transition group-open:-rotate-90"
-				/>
-			</summary>
-			{children}
-		</details>
+		<section className={twMerge("", className)} {...props}>
+			<DisclosureProvider open={open} setOpen={setOpen}>
+				<header className="grid grid-cols-[1fr_auto]">
+					<Disclosure className="heading-2xl group hover:text-primary-200 flex cursor-default list-none items-center gap-1 transition select-none">
+						<Icon
+							icon="mingcute:right-fill"
+							className="size-6 transition group-aria-expanded:rotate-90"
+						/>
+						{title}
+					</Disclosure>
+					<div className="">{titlePostfix}</div>
+				</header>
+				<DisclosureContent className="">{children}</DisclosureContent>
+			</DisclosureProvider>
+		</section>
 	)
 }

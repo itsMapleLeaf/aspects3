@@ -1,4 +1,5 @@
 import { type } from "arktype"
+import { experiences, lineages, roles } from "./data.ts"
 
 /*
 materials needed as player:
@@ -82,4 +83,74 @@ export function createCharacter(name: string): Character {
 		lightBonus: 0,
 		darknessBonus: 0,
 	}
+}
+
+export interface ComputedCharacter {
+	strength: number
+	sense: number
+	dexterity: number
+	presence: number
+	fire: number
+	water: number
+	wind: number
+	light: number
+	darkness: number
+	maxHits: number
+	maxFatigue: number
+}
+
+export function getComputedCharacter(character: Character): ComputedCharacter {
+	const stats = {
+		strength: 1,
+		sense: 1,
+		dexterity: 1,
+		presence: 1,
+		fire: 0,
+		water: 0,
+		wind: 0,
+		light: 0,
+		darkness: 0,
+	}
+
+	if (character.lineage) {
+		const selectedLineage = lineages.find((l) => l.name === character.lineage)
+		if (selectedLineage) {
+			for (const attr of selectedLineage.attributes) {
+				stats[attr.name.toLowerCase() as keyof typeof stats] += 1
+			}
+		}
+	}
+
+	if (character.role) {
+		const selectedRole = roles[character.role as keyof typeof roles]
+		if (selectedRole) {
+			const attrName = selectedRole.attribute.name.toLowerCase()
+			stats[attrName as keyof typeof stats] += 3
+		}
+	}
+
+	if (character.experiences) {
+		for (const expId of character.experiences) {
+			const exp = experiences[expId as keyof typeof experiences]
+			if (exp) {
+				const attrName = exp.attribute.name.toLowerCase()
+				stats[attrName as keyof typeof stats] += 2
+
+				if (exp.aspects.length === 1) {
+					const aspectName = exp.aspects[0]!.name.toLowerCase()
+					stats[aspectName as keyof typeof stats] += 2
+				} else if (exp.aspects.length === 2) {
+					for (const aspect of exp.aspects) {
+						const aspectName = aspect.name.toLowerCase()
+						stats[aspectName as keyof typeof stats] += 1
+					}
+				}
+			}
+		}
+	}
+
+	const maxHits = stats.strength + stats.dexterity + 3
+	const maxFatigue = stats.sense + stats.presence
+
+	return { ...stats, maxHits, maxFatigue }
 }

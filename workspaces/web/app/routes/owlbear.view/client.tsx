@@ -4,7 +4,10 @@ import { startTransition, useEffect, useState, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
 import { ContentState } from "~/components/ui/ContentState.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
+import { SquareIconButton } from "~/components/ui/SquareIconButton.tsx"
 import { CharacterEditor } from "./CharacterEditor.tsx"
+import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
+import { ToggleSection } from "./ToggleSection.tsx"
 import { Character, createCharacter } from "./character.ts"
 
 const metadataCharactersKey = "dev.mapleleaf.aspects/characters"
@@ -103,29 +106,48 @@ function ExtensionClientView() {
 	return (
 		<>
 			{view.name === "characterList" && (
-				<main className="grid gap-3 p-3">
-					{[...characters.values()].map((character) => (
+				<main className="flex min-h-dvh flex-col gap-3 overflow-clip p-3">
+					<ul className="flex min-h-0 flex-1 flex-col gap-3">
+						{[...characters.values()].map((character) => (
+							<li key={character.id}>
+								<ToggleSection
+									title={character.name}
+									titlePostfix={
+										<SquareIconButton
+											icon={
+												<Icon icon="mingcute:edit-2-fill" className="size-5" />
+											}
+											onClick={() =>
+												setView({ name: "character", id: character.id })
+											}
+										>
+											Edit
+										</SquareIconButton>
+									}
+								>
+									<div className="mt-3 flex flex-col gap-3">
+										<CharacterResourceFields
+											character={character}
+											onUpdate={(patch) => updateCharacter(character.id, patch)}
+										/>
+									</div>
+								</ToggleSection>
+							</li>
+						))}
+					</ul>
+					<footer className="sticky bottom-0 -m-3 bg-gray-950 p-3">
 						<button
 							type="button"
-							key={character.id}
 							className={cardButtonStyle}
-							onClick={() => setView({ name: "character", id: character.id })}
+							onClick={() => {
+								const character = addNewCharacter()
+								setView({ name: "character", id: character.id })
+							}}
 						>
-							<Icon icon="mingcute:right-fill" className="size-6" />
-							<h2 className="heading-xl">{character.name}</h2>
+							<Icon icon="mingcute:user-add-2-fill" className="size-6" /> New
+							Character
 						</button>
-					))}
-					<button
-						type="button"
-						className={cardButtonStyle}
-						onClick={() => {
-							const character = addNewCharacter()
-							setView({ name: "character", id: character.id })
-						}}
-					>
-						<Icon icon="mingcute:user-add-2-fill" className="size-6" />
-						<h2 className="heading-xl">New Character</h2>
-					</button>
+					</footer>
 				</main>
 			)}
 
