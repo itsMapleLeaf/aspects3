@@ -1,4 +1,4 @@
-import { lazy, useEffect, useState, type ReactNode } from "react"
+import { lazy, useSyncExternalStore } from "react"
 import { ContentState } from "~/components/ui/ContentState.tsx"
 
 // register this early so it can catch the ready iframe message event
@@ -12,21 +12,10 @@ const OwlbearExtensionClient = lazy(async () => {
 })
 
 export default function OwlbearExtensionRoute() {
-	return (
-		<ClientOnly fallback={<ContentState.Loading />}>
-			<OwlbearExtensionClient />
-		</ClientOnly>
+	const isClient = useSyncExternalStore(
+		() => () => {},
+		() => true,
+		() => false,
 	)
-}
-
-function ClientOnly({
-	children,
-	fallback,
-}: {
-	children: ReactNode
-	fallback: ReactNode
-}) {
-	const [isClient, setIsClient] = useState(false)
-	useEffect(() => setIsClient(true), [])
-	return isClient ? children : fallback
+	return isClient ? <OwlbearExtensionClient /> : <ContentState.Loading />
 }
