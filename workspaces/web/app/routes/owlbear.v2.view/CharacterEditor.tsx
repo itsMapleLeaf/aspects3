@@ -156,23 +156,39 @@ export function CharacterEditor({
 				<ActionsList character={character} onRollAction={onRollAction} />
 			</ToggleSection>
 
-			<ToggleSection title="Lineage">
+			<ToggleSection
+				title={`Experiences (${getCharacterExperienceCount(character)}/3)`}
+			>
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-					Choose your lineage, which determines your physical appearance and
-					traits. Hover over each one for examples.
+					Choose three experiences from your character's past. Each experience
+					adds +2 to the named attribute and increases your aspect attunement.
 				</p>
-				<div className="grid grid-cols-2 gap-3">
-					{lineages.map((lineage) => (
+
+				<div className="grid gap-3">
+					{Object.entries(experiences).map(([id, exp]) => (
 						<OptionCard
-							type="radio"
-							key={lineage.name}
-							label={lineage.name}
-							description={lineage.attributes
-								.map((it) => `+1 ${it.name}`)
-								.join(", ")}
-							title={lineage.example}
-							checked={character.lineage === lineage.name}
-							onChange={() => onUpdate({ lineage: lineage.name })}
+							type="checkbox"
+							key={id}
+							label={exp.description}
+							description={[
+								`${exp.attribute.name} +2`,
+								exp.aspects.length === 1
+									? exp.aspects.map((it) => it.name).join("") + " +2"
+									: exp.aspects.map((it) => it.name + " +1").join(", "),
+							]}
+							checked={character.experiences?.includes(id) ?? false}
+							onChange={() => {
+								const currentExperiences = character.experiences || []
+								if (currentExperiences.includes(id)) {
+									onUpdate({
+										experiences: currentExperiences.filter((exp) => exp !== id),
+									})
+								} else {
+									onUpdate({
+										experiences: [...currentExperiences, id],
+									})
+								}
+							}}
 						/>
 					))}
 				</div>
@@ -254,39 +270,23 @@ export function CharacterEditor({
 				</div>
 			</ToggleSection>
 
-			<ToggleSection
-				title={`Experiences (${getCharacterExperienceCount(character)}/3)`}
-			>
+			<ToggleSection title="Lineage">
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-					Choose three experiences from your character's past. Each experience
-					adds +2 to the named attribute and increases your aspect attunement.
+					Choose your lineage, which determines your physical appearance and
+					traits. Hover over each one for examples.
 				</p>
-
-				<div className="grid gap-3">
-					{Object.entries(experiences).map(([id, exp]) => (
+				<div className="grid grid-cols-2 gap-3">
+					{lineages.map((lineage) => (
 						<OptionCard
-							type="checkbox"
-							key={id}
-							label={exp.description}
-							description={[
-								`${exp.attribute.name} +2`,
-								exp.aspects.length === 1
-									? exp.aspects.map((it) => it.name).join("") + " +2"
-									: exp.aspects.map((it) => it.name + " +1").join(", "),
-							]}
-							checked={character.experiences?.includes(id) ?? false}
-							onChange={() => {
-								const currentExperiences = character.experiences || []
-								if (currentExperiences.includes(id)) {
-									onUpdate({
-										experiences: currentExperiences.filter((exp) => exp !== id),
-									})
-								} else {
-									onUpdate({
-										experiences: [...currentExperiences, id],
-									})
-								}
-							}}
+							type="radio"
+							key={lineage.name}
+							label={lineage.name}
+							description={lineage.attributes
+								.map((it) => `+1 ${it.name}`)
+								.join(", ")}
+							title={lineage.example}
+							checked={character.lineage === lineage.name}
+							onChange={() => onUpdate({ lineage: lineage.name })}
 						/>
 					))}
 				</div>
