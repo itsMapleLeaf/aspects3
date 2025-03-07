@@ -9,7 +9,7 @@ export function loader() {
 				icon: "/favicon.svg",
 				popover: "/character-builder",
 				height: 900,
-				width: 500,
+				width: 600,
 			},
 		},
 		{

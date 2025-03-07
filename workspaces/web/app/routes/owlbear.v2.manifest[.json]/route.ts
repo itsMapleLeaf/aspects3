@@ -10,7 +10,7 @@ export function loader() {
 				icon: "/favicon.svg",
 				popover: "/owlbear/v2/view",
 				height: 900,
-				width: 500,
+				width: 600,
 			},
 		},
 		{
