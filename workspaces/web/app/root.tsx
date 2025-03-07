@@ -4,17 +4,25 @@ import { ConvexQueryCacheProvider } from "convex-helpers/react/cache"
 import { ConvexReactClient } from "convex/react"
 import { useEffect, useState, type ReactNode } from "react"
 import {
-	isRouteErrorResponse,
 	Links,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	isRouteErrorResponse,
 } from "react-router"
 import type { Route } from "./+types/root.ts"
 import { ToastProvider, useToastContext } from "./components/toasts.tsx"
 import { getPageMeta } from "./meta.ts"
 import styles from "./styles/index.css?url"
+
+// register this early so it can catch the ready iframe message event
+if (
+	typeof document !== "undefined" &&
+	window.location.pathname.startsWith("/owlbear")
+) {
+	import("@owlbear-rodeo/sdk")
+}
 
 export const meta: Route.MetaFunction = () => getPageMeta()
 
