@@ -15,7 +15,7 @@ export function ToggleSection({
 	className,
 	children,
 	titlePostfix,
-	defaultOpen = true,
+	defaultOpen = false,
 	...props
 }: Except<ComponentProps<"details">, "title"> & {
 	title: ReactNode
