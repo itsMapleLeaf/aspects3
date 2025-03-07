@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useValueRef } from "./common.ts"
 
 type JsonValue =
@@ -18,8 +18,7 @@ export function useLocalStorage<T>(
 	const [loaded, setLoaded] = useState(false)
 	const loadRef = useValueRef(load)
 
-	useLayoutEffect(() => {
-		if (loaded) return
+	if (!loaded) {
 		try {
 			const saved = window.localStorage.getItem(key)
 			if (saved) {
@@ -29,7 +28,7 @@ export function useLocalStorage<T>(
 		} catch (error) {
 			console.warn("failed to parse", error)
 		}
-	}, [loaded, key, loadRef])
+	}
 
 	useEffect(() => {
 		if (!loaded) return
