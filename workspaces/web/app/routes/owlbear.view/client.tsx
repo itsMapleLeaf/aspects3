@@ -4,10 +4,11 @@ import { startTransition, useEffect, useState, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
 import { ContentState } from "~/components/ui/ContentState.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
-import { SquareIconButton } from "~/components/ui/SquareIconButton.tsx"
 import { ActionsList } from "./ActionsList.tsx"
 import { CharacterEditor } from "./CharacterEditor.tsx"
+import { CharacterListActions } from "./CharacterListActions.tsx"
 import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
+import { DicePanel } from "./DicePanel.tsx"
 import { ToggleSection } from "./ToggleSection.tsx"
 import { Character, createCharacter } from "./character.ts"
 
@@ -46,6 +47,9 @@ function OwlbearReadyGuard({ children }: { children: ReactNode }) {
 
 function ExtensionClientView() {
 	const [characters, setCharacters] = useState(new Map<string, Character>())
+	const [isDicePanelOpen, setIsDicePanelOpen] = useState(false)
+	const [diceCount, setDiceCount] = useState(1)
+	const [diceLabel, setDiceLabel] = useState("")
 
 	function handleMetadataChange(metadataRaw: unknown) {
 		const metadata = RoomMetadata(metadataRaw)
@@ -57,7 +61,6 @@ function ExtensionClientView() {
 	}
 
 	useEffect(() => {
-		// set characters from metadata
 		OBR.room.getMetadata().then(handleMetadataChange)
 	}, [])
 
@@ -84,6 +87,35 @@ function ExtensionClientView() {
 		return character
 	}
 
+	function cloneCharacter(characterToClone: Character) {
+		const clone = {
+			...characterToClone,
+			id: crypto.randomUUID(),
+			name: `${characterToClone.name} (Copy)`,
+		}
+		const newCharacters = new Map(characters).set(clone.id, clone)
+		saveCharacters(newCharacters)
+		return clone
+	}
+
+	function deleteCharacter(id: string) {
+		const character = characters.get(id)
+
+		if (!character) return
+
+		const confirmMessage = `Are you sure you want to delete "${character.name}"? This cannot be undone.`
+
+		if (confirm(confirmMessage)) {
+			const newCharacters = new Map(characters)
+			newCharacters.delete(id)
+			saveCharacters(newCharacters)
+
+			if (view.name === "character" && view.id === id) {
+				setView({ name: "characterList" })
+			}
+		}
+	}
+
 	function updateCharacter(id: string, patch: Partial<Character>) {
 		const currentCharacter =
 			characters.get(id) ?? createCharacter("Unknown Character")
@@ -104,6 +136,16 @@ function ExtensionClientView() {
 		"flex items-center gap-2 rounded-lg border border-gray-800 bg-gray-900 py-2 px-3 text-start hover:border-gray-700 hover:text-primary-200 transition",
 	)
 
+	function handleActionRoll(actionName: string, diceCount: number) {
+		setDiceLabel(actionName)
+		setDiceCount(diceCount)
+		setIsDicePanelOpen(true)
+	}
+
+	function openDicePanel() {
+		setIsDicePanelOpen(true)
+	}
+
 	return (
 		<>
 			{view.name === "characterList" && (
@@ -114,16 +156,12 @@ function ExtensionClientView() {
 								<ToggleSection
 									title={character.name}
 									titlePostfix={
-										<SquareIconButton
-											icon={
-												<Icon icon="mingcute:edit-2-fill" className="size-5" />
-											}
-											onClick={() =>
-												setView({ name: "character", id: character.id })
-											}
-										>
-											Edit
-										</SquareIconButton>
+										<CharacterListActions
+											character={character}
+											onEdit={(id) => setView({ name: "character", id })}
+											onClone={cloneCharacter}
+											onDelete={deleteCharacter}
+										/>
 									}
 								>
 									<div className="mt-3 flex flex-col gap-3">
@@ -131,7 +169,10 @@ function ExtensionClientView() {
 											character={character}
 											onUpdate={(patch) => updateCharacter(character.id, patch)}
 										/>
-										<ActionsList character={character} />
+										<ActionsList
+											character={character}
+											onRollAction={handleActionRoll}
+										/>
 									</div>
 								</ToggleSection>
 							</li>
@@ -173,9 +214,28 @@ function ExtensionClientView() {
 							characters.get(view.id) ?? createCharacter("New Character")
 						}
 						onUpdate={(patch) => updateCharacter(view.id, patch)}
+						onRollAction={handleActionRoll}
 					/>
 				</>
 			)}
+
+			<button
+				type="button"
+				onClick={openDicePanel}
+				className="hover:text-primary-300 fixed right-4 bottom-4 flex size-14 items-center justify-center rounded-full border border-gray-800 bg-gray-900 shadow-lg transition hover:border-gray-700"
+				title="Show dice roller"
+			>
+				<Icon icon="mingcute:box-3-fill" className="size-8" />
+			</button>
+
+			<DicePanel
+				isOpen={isDicePanelOpen}
+				onClose={() => setIsDicePanelOpen(false)}
+				diceCount={diceCount}
+				setDiceCount={setDiceCount}
+				label={diceLabel}
+				setLabel={setDiceLabel}
+			/>
 		</>
 	)
 }

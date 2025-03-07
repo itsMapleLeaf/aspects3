@@ -49,11 +49,10 @@
 }
 
 @layer base {
-	html,
-	body {
+	:root {
 		@apply selection:bg-primary-950 overflow-x-clip bg-gray-950;
 		scrollbar-color: var(--color-gray-700) var(--color-gray-950);
-		scrollbar-gutter: stable;
+		/* scrollbar-gutter: stable; */
 		color-scheme: dark;
 	}
 

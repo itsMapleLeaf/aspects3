@@ -11,9 +11,11 @@ import { drives, experiences, lineages, roles } from "./data.ts"
 export function CharacterEditor({
 	character,
 	onUpdate,
+	onRollAction,
 }: {
 	character: Character
 	onUpdate: (patch: Partial<Character>) => void
+	onRollAction: (actionName: string, diceCount: number) => void
 }) {
 	const stats = getComputedCharacter(character)
 
@@ -119,7 +121,7 @@ export function CharacterEditor({
 			</div>
 
 			<ToggleSection title="Actions">
-				<ActionsList character={character} />
+				<ActionsList character={character} onRollAction={onRollAction} />
 			</ToggleSection>
 
 			<ToggleSection title="Lineage">
