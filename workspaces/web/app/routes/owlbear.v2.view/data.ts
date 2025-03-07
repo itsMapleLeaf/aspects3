@@ -48,33 +48,39 @@ export const aspects = {
 export const lineages = [
 	{
 		name: "Furbearers",
-		attributes: [attributes.strength, attributes.presence],
+		// attributes: [attributes.strength, attributes.presence],
+		aspects: [aspects.fire],
 		example: "dogs, foxes, wolves, cats, rabbits, mice, bears, raccoons",
 	},
 	{
 		name: "Scalebearers",
-		attributes: [attributes.strength, attributes.dexterity],
+		// attributes: [attributes.strength, attributes.dexterity],
+		aspects: [aspects.fire],
 		example: "snake, lizard, alligator, crocodile, dragons",
 	},
 	{
 		name: "Aquatics",
-		attributes: [attributes.sense, attributes.dexterity],
+		// attributes: [attributes.sense, attributes.dexterity],
+		aspects: [aspects.water],
 		example: "fish, dolphins, other water-bound creatures",
 	},
 	{
 		name: "Avians",
-		attributes: [attributes.sense, attributes.presence],
+		// attributes: [attributes.sense, attributes.presence],
+		aspects: [aspects.wind],
 		example: "eagles, ravens, penguins, flamingo, all other birds",
 	},
 	{
-		name: "Devils",
-		attributes: [attributes.strength, attributes.presence],
-		example: "demons, devils, succubus/incubus, vampires",
+		name: "Arthropods",
+		// attributes: [attributes.sense, attributes.dexterity],
+		aspects: [aspects.light],
+		example: "insects, arachnids, bugs, most creatures with exoskeletons",
 	},
 	{
-		name: "Arthropods",
-		attributes: [attributes.sense, attributes.dexterity],
-		example: "insects, arachnids, bugs, most creatures with exoskeletons",
+		name: "Devils",
+		// attributes: [attributes.strength, attributes.presence],
+		aspects: [aspects.darkness],
+		example: "demons, devils, succubus/incubus, vampires",
 	},
 ]
 

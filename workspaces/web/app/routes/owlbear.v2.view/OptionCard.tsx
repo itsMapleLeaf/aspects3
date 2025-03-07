@@ -14,7 +14,7 @@ export function OptionCard({
 	type: "checkbox" | "radio"
 	label: ReactNode
 	description: string | string[]
-	checked: boolean
+	checked: boolean | undefined
 	onChange: () => void
 }) {
 	return (

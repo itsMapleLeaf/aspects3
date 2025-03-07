@@ -14,6 +14,15 @@ import {
 	roles,
 } from "./data.ts"
 
+function getCharacterExperienceCount(character: Character) {
+	return intersection(Object.keys(experiences), character.experiences ?? [])
+		.length
+}
+
+function getCharacterLineages(character: Character) {
+	return lineages.filter((l) => character.lineages?.includes(l.name))
+}
+
 export function CharacterEditor({
 	character,
 	onUpdate,
@@ -43,6 +52,8 @@ export function CharacterEditor({
 		character.darknessBonus
 
 	const availableAspectBonuses = 5 + (level?.aspectPoints ?? 0)
+
+	const characterLineages = getCharacterLineages(character)
 
 	return (
 		<main className="grid gap-6 p-3">
@@ -204,7 +215,7 @@ export function CharacterEditor({
 							type="radio"
 							key={roleId}
 							label={role.name}
-							description={`+3 ${role.attribute.name}`}
+							description={`+2 ${role.attribute.name}`}
 							checked={character.role === roleId}
 							onChange={() => onUpdate({ role: roleId })}
 							// show name on title in case it gets truncated
@@ -272,30 +283,40 @@ export function CharacterEditor({
 
 			<ToggleSection title="Lineage">
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-					Choose your lineage, which determines your physical appearance and
-					traits. Hover over each one for examples.
+					Your lineage(s) determine your physical appearance and traits. Hover
+					over each one for examples.
 				</p>
+
+				{(characterLineages.length === 0 || characterLineages.length > 2) && (
+					<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
+						Choose one or two lineages.
+					</p>
+				)}
+
 				<div className="grid grid-cols-2 gap-3">
 					{lineages.map((lineage) => (
 						<OptionCard
-							type="radio"
+							type="checkbox"
 							key={lineage.name}
 							label={lineage.name}
-							description={lineage.attributes
-								.map((it) => `+1 ${it.name}`)
+							description={lineage.aspects
+								.map((it) => `+2 ${it.name}`)
 								.join(", ")}
 							title={lineage.example}
-							checked={character.lineage === lineage.name}
-							onChange={() => onUpdate({ lineage: lineage.name })}
+							checked={character.lineages?.includes(lineage.name)}
+							onChange={() => {
+								const lineages = new Set(character.lineages)
+								if (lineages.has(lineage.name)) {
+									lineages.delete(lineage.name)
+								} else {
+									lineages.add(lineage.name)
+								}
+								onUpdate({ lineages: [...lineages] })
+							}}
 						/>
 					))}
 				</div>
 			</ToggleSection>
 		</main>
 	)
-}
-
-function getCharacterExperienceCount(character: Character) {
-	return intersection(Object.keys(experiences), character.experiences ?? [])
-		.length
 }

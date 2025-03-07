@@ -50,7 +50,7 @@ export const Character = type({
 	"hits": "number = 0",
 	"fatigue": "number = 0",
 	"comeback": "number = 0",
-	"lineage?": "string | null",
+	"lineages?": "string[]",
 	"role?": "string | null",
 	"drive?": "string | null",
 	"experiences?": "string[]",
@@ -112,11 +112,13 @@ export function getComputedCharacter(character: Character): ComputedCharacter {
 		darkness: 0 + character.darknessBonus,
 	}
 
-	if (character.lineage) {
-		const selectedLineage = lineages.find((l) => l.name === character.lineage)
-		if (selectedLineage) {
-			for (const attr of selectedLineage.attributes) {
-				stats[attr.name.toLowerCase() as keyof typeof stats] += 1
+	const characterLineages = character.lineages ?? []
+	for (const lineageName of characterLineages) {
+		const lineage = lineages.find((l) => l.name === lineageName)
+		if (lineage) {
+			for (const aspect of lineage.aspects) {
+				stats[aspect.name.toLowerCase() as keyof typeof stats] +=
+					2 / characterLineages.length
 			}
 		}
 	}
@@ -125,7 +127,7 @@ export function getComputedCharacter(character: Character): ComputedCharacter {
 		const selectedRole = roles[character.role as keyof typeof roles]
 		if (selectedRole) {
 			const attrName = selectedRole.attribute.name.toLowerCase()
-			stats[attrName as keyof typeof stats] += 3
+			stats[attrName as keyof typeof stats] += 2
 		}
 	}
 
