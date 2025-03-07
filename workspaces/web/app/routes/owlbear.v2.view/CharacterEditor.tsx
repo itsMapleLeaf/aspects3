@@ -13,6 +13,7 @@ import {
 	lineages,
 	roles,
 } from "./data.ts"
+import { usePartyPlayers, usePlayer } from "./hooks.tsx"
 
 function getCharacterExperienceCount(character: Character) {
 	return intersection(Object.keys(experiences), character.experiences ?? [])
@@ -88,6 +89,11 @@ export function CharacterEditor({
 				</div>
 
 				<CharacterResourceFields character={character} onUpdate={onUpdate} />
+
+				<PlayerSelect
+					playerId={character.ownerId}
+					onChange={(ownerId) => onUpdate({ ownerId })}
+				/>
 
 				<div className="grid grid-cols-2 gap-4">
 					<div className="grid content-start gap-3">
@@ -323,5 +329,37 @@ export function CharacterEditor({
 				</div>
 			</ToggleSection>
 		</main>
+	)
+}
+
+function PlayerSelect({
+	playerId,
+	onChange,
+}: {
+	playerId: string | undefined
+	onChange: (playerId: string | undefined) => void
+}) {
+	const players = usePartyPlayers()
+	const self = usePlayer()
+	const allPlayers = self ? [self, ...players] : players
+
+	return (
+		<div>
+			<label className="block text-sm font-medium">Player</label>
+			<select
+				value={playerId ?? ""}
+				onChange={(event) => {
+					onChange(event.currentTarget.value || undefined)
+				}}
+				className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
+			>
+				<option value="">None</option>
+				{allPlayers.map((player) => (
+					<option key={player.id} value={player.id}>
+						{player.name}
+					</option>
+				))}
+			</select>
+		</div>
 	)
 }

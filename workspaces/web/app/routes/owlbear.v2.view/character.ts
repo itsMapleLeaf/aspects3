@@ -22,6 +22,7 @@ export const Character = type({
 	"windBonus": "number = 0",
 	"lightBonus": "number = 0",
 	"darknessBonus": "number = 0",
+	"ownerId?": "string",
 })
 
 export function createCharacter(name: string): Character {

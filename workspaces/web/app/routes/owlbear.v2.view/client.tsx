@@ -17,6 +17,7 @@ import {
 import { ToggleSection } from "./ToggleSection.tsx"
 import { Character, createCharacter } from "./character.ts"
 import { owlbearExtensionNamespace } from "./extension.ts"
+import { usePlayer } from "./hooks.tsx"
 import { broadcastNotification } from "./notifications.ts"
 
 const metadataCharactersKey = `${owlbearExtensionNamespace}/characters`
@@ -61,6 +62,7 @@ function ExtensionClientView() {
 	const [diceRolls, setDiceRolls] = useState<DiceRoll[]>([])
 	const [isDicePanelOpen, setIsDicePanelOpen] = useState(false)
 	const dicePanelStore = useDicePanelStore()
+	const player = usePlayer()
 
 	const [view, setView] = useState<
 		{ name: "characterList" } | { name: "character"; id: string }
@@ -107,7 +109,10 @@ function ExtensionClientView() {
 	}
 
 	async function addNewCharacter() {
-		const character = createCharacter("New Character")
+		const character = {
+			...createCharacter("New Character"),
+			ownerId: player?.id,
+		}
 		const newCharacters = new Map(characters).set(character.id, character)
 		await saveMetadata({ characters: newCharacters })
 		return character
@@ -244,33 +249,43 @@ function ExtensionClientView() {
 			{view.name === "characterList" && (
 				<main className="flex min-h-dvh flex-col gap-3 overflow-clip p-3">
 					<ul className="flex min-h-0 flex-1 flex-col gap-3">
-						{[...characters.values()].map((character) => (
-							<li key={character.id}>
-								<ToggleSection
-									title={character.name}
-									titlePostfix={
-										<CharacterListActions
-											character={character}
-											onEdit={(id) => setView({ name: "character", id })}
-											onClone={cloneCharacter}
-											onDelete={deleteCharacter}
-										/>
-									}
-								>
-									<div className="mt-3 flex flex-col gap-3">
-										<CharacterResourceFields
-											character={character}
-											onUpdate={(patch) => updateCharacter(character.id, patch)}
-										/>
-										<ActionsList
-											character={character}
-											onRollAction={handleActionRoll}
-										/>
-									</div>
-								</ToggleSection>
-							</li>
-						))}
+						{[...characters.values()]
+							.filter(
+								(character) =>
+									player?.role === "GM" ||
+									(character.ownerId != null &&
+										character.ownerId === player?.id),
+							)
+							.map((character) => (
+								<li key={character.id}>
+									<ToggleSection
+										title={character.name}
+										titlePostfix={
+											<CharacterListActions
+												character={character}
+												onEdit={(id) => setView({ name: "character", id })}
+												onClone={cloneCharacter}
+												onDelete={deleteCharacter}
+											/>
+										}
+									>
+										<div className="mt-3 flex flex-col gap-3">
+											<CharacterResourceFields
+												character={character}
+												onUpdate={(patch) =>
+													updateCharacter(character.id, patch)
+												}
+											/>
+											<ActionsList
+												character={character}
+												onRollAction={handleActionRoll}
+											/>
+										</div>
+									</ToggleSection>
+								</li>
+							))}
 					</ul>
+
 					<footer className="sticky bottom-0 -m-3 bg-gray-950 p-3">
 						<div className="flex gap-2">
 							<button
@@ -307,6 +322,7 @@ function ExtensionClientView() {
 											const imported: Character = {
 												...validationResult,
 												id: crypto.randomUUID(),
+												ownerId: player?.id,
 											}
 
 											const newCharacters = new Map(characters).set(
