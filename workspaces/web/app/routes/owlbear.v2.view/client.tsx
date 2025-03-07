@@ -272,17 +272,64 @@ function ExtensionClientView() {
 						))}
 					</ul>
 					<footer className="sticky bottom-0 -m-3 bg-gray-950 p-3">
-						<button
-							type="button"
-							className={cardButtonStyle}
-							onClick={async () => {
-								const character = await addNewCharacter()
-								setView({ name: "character", id: character.id })
-							}}
-						>
-							<Icon icon="mingcute:user-add-2-fill" className="size-6" /> New
-							Character
-						</button>
+						<div className="flex gap-2">
+							<button
+								type="button"
+								className={cardButtonStyle}
+								onClick={async () => {
+									const character = await addNewCharacter()
+									setView({ name: "character", id: character.id })
+								}}
+							>
+								<Icon icon="mingcute:user-add-2-fill" className="size-6" /> New
+								Character
+							</button>
+							<button
+								type="button"
+								className={cardButtonStyle}
+								onClick={async () => {
+									const input = document.createElement("input")
+									input.type = "file"
+									input.accept = "application/json"
+									input.onchange = async (event) => {
+										const file = (event.target as HTMLInputElement).files?.[0]
+										if (!file) return
+
+										try {
+											const text = await file.text()
+											const importedData = JSON.parse(text)
+
+											const validationResult = Character(importedData)
+											if (validationResult instanceof ArkErrors) {
+												throw new Error("Invalid character format")
+											}
+
+											const imported: Character = {
+												...validationResult,
+												id: crypto.randomUUID(),
+											}
+
+											const newCharacters = new Map(characters).set(
+												imported.id,
+												imported,
+											)
+											await saveMetadata({ characters: newCharacters })
+
+											setView({ name: "character", id: imported.id })
+										} catch (error) {
+											console.error("Failed to import character:", error)
+											alert(
+												"Failed to import character. The file may be corrupted or in an invalid format.",
+											)
+										}
+									}
+									input.click()
+								}}
+							>
+								<Icon icon="mingcute:upload-2-fill" className="size-6" /> Import
+								Character
+							</button>
+						</div>
 					</footer>
 				</main>
 			)}
