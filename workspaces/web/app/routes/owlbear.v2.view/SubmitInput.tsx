@@ -1,10 +1,10 @@
-import { useState, type ComponentProps } from "react"
+import { startTransition, useState, type ComponentProps } from "react"
 
 export function SubmitInput({
 	onSubmitValue,
 	...props
 }: ComponentProps<"input"> & {
-	onSubmitValue: (value: string) => void
+	onSubmitValue: (value: string) => unknown
 }) {
 	const [tempValue, setTempValue] = useState<string>()
 	return (
@@ -16,15 +16,19 @@ export function SubmitInput({
 			}}
 			onBlur={() => {
 				if (tempValue) {
-					setTempValue(undefined)
-					onSubmitValue(tempValue)
+					startTransition(async () => {
+						await onSubmitValue(tempValue)
+						setTempValue(undefined)
+					})
 				}
 			}}
 			onKeyDown={(event) => {
 				if (event.key === "Enter" && tempValue) {
 					event.preventDefault()
-					setTempValue(undefined)
-					onSubmitValue(tempValue)
+					startTransition(async () => {
+						await onSubmitValue(tempValue)
+						setTempValue(undefined)
+					})
 					event.currentTarget.blur()
 				}
 			}}

@@ -33,7 +33,7 @@ export function StatField({
 				type="number"
 				min={0}
 				onSubmitValue={(value) => {
-					onSubmitValue(Number(value) || 0)
+					return onSubmitValue(Number(value) || 0)
 				}}
 				{...props}
 				className="w-14 min-w-0 rounded border border-gray-800 bg-gray-900 px-2 py-1 transition focus:border-gray-700 focus:outline-none"

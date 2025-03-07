@@ -1,16 +1,13 @@
 import * as Ariakit from "@ariakit/react"
-import OBR, { type Metadata as RoomMetadata } from "@owlbear-rodeo/sdk"
-import { ArkErrors, type } from "arktype"
-import { useEffect, useState } from "react"
+import { type } from "arktype"
+import { useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { Character } from "./character.ts"
-import { owlbearExtensionNamespace } from "./extension.ts"
-import { broadcastNotification } from "./notifications.ts"
 
-type DiceRoll = typeof DiceRoll.inferOut
-const DiceRoll = type({
+export type DiceRoll = typeof DiceRoll.inferOut
+export const DiceRoll = type({
 	"id": "string",
 	"label": "string",
 	"diceCount": "number",
@@ -19,13 +16,6 @@ const DiceRoll = type({
 	"fatigueCost?": "number",
 	"characterName?": "string | null",
 	"comebackUsed?": "number",
-})
-
-const metadataDiceRollsKey = `${owlbearExtensionNamespace}/diceRolls`
-
-type DiceRollsRoomMetadata = typeof DiceRollsRoomMetadata.inferOut
-const DiceRollsRoomMetadata = type({
-	[metadataDiceRollsKey]: DiceRoll.array().default(() => []),
 })
 
 function calculateSuccesses(value: number): number {
@@ -76,7 +66,6 @@ export function useDicePanelStore() {
 		setLabel("")
 		setFatigue(0)
 		setComeback(0)
-		// We intentionally don't reset selectedCharacterId to maintain context between rolls
 	}
 
 	return {
@@ -97,13 +86,15 @@ export function useDicePanelStore() {
 interface DicePanelProps {
 	store: DicePanelStore
 	isOpen: boolean
-	onClose: () => void
+	setOpen: (open: boolean) => void
+	diceRolls: DiceRoll[]
 	onRoll: (params: {
 		characterId: string
 		fatigue: number
 		results: number[]
 		isSuccess: boolean
 		comebackSpent: number
+		label: string
 	}) => void
 	characters: Map<string, Character>
 }
@@ -111,50 +102,13 @@ interface DicePanelProps {
 export function DicePanel({
 	store,
 	isOpen,
-	onClose,
+	setOpen,
+	diceRolls,
 	onRoll,
 	characters,
 }: DicePanelProps) {
-	const [diceRolls, setDiceRolls] = useState<DiceRoll[]>([])
-
-	useEffect(() => {
-		async function loadDiceRolls(metadata: RoomMetadata) {
-			const parsed = DiceRollsRoomMetadata(metadata)
-			if (parsed instanceof ArkErrors) {
-				console.error(
-					"failed to parse dice rolls from room metadata:",
-					parsed.summary,
-				)
-				return
-			}
-			setDiceRolls(parsed[metadataDiceRollsKey])
-		}
-
-		OBR.room.getMetadata().then(loadDiceRolls)
-		return OBR.room.onMetadataChange(loadDiceRolls)
-	}, [])
-
-	async function saveDiceRolls(rolls: DiceRoll[]) {
-		try {
-			const recentRolls = [...rolls]
-				.sort((a, b) => b.timestamp - a.timestamp)
-				.slice(0, 20)
-
-			const metadata: DiceRollsRoomMetadata = {
-				[metadataDiceRollsKey]: recentRolls,
-			}
-			await OBR.room.setMetadata(metadata)
-		} catch (error) {
-			console.error(error)
-		}
-	}
-
 	function rollDice() {
 		if (store.count < 1) return
-
-		const selectedCharacter = store.selectedCharacterId
-			? characters.get(store.selectedCharacterId)
-			: null
 
 		const totalDiceCount = store.count + store.comeback
 
@@ -162,19 +116,6 @@ export function DicePanel({
 			{ length: totalDiceCount },
 			() => Math.floor(Math.random() * 12) + 1,
 		)
-
-		saveDiceRolls([
-			{
-				id: crypto.randomUUID(),
-				label: store.label,
-				diceCount: totalDiceCount,
-				results,
-				timestamp: Date.now(),
-				characterName: selectedCharacter?.name || null,
-				comebackUsed: store.comeback > 0 ? store.comeback : undefined,
-			},
-			...diceRolls,
-		])
 
 		const successes = countSuccesses(results)
 		const isSuccess = successes > 0
@@ -186,21 +127,9 @@ export function DicePanel({
 				results,
 				isSuccess,
 				comebackSpent: store.comeback,
+				label: store.label,
 			})
 		}
-
-		const successText = isSuccess
-			? `${successes} ${successes === 1 ? "success" : "successes"}`
-			: "failed"
-
-		const characterText = selectedCharacter
-			? `${selectedCharacter.name} rolled `
-			: ""
-
-		broadcastNotification({
-			text: `${characterText}${store.label || "Dice Roll"} — ${successText}`,
-			variant: isSuccess ? "SUCCESS" : "DEFAULT",
-		})
 	}
 
 	function countSuccesses(results: number[]): number {
@@ -208,16 +137,22 @@ export function DicePanel({
 	}
 
 	return (
-		<Ariakit.DialogProvider>
+		<Ariakit.DialogProvider open={isOpen} setOpen={setOpen}>
+			<Ariakit.DialogDisclosure
+				type="button"
+				className="hover:text-primary-300 fixed right-4 bottom-4 flex size-14 items-center justify-center rounded-full border border-gray-800 bg-gray-900 shadow-lg transition hover:border-gray-700"
+				title="Show dice roller"
+			>
+				<Icon icon="mingcute:box-3-fill" className="size-8" />
+			</Ariakit.DialogDisclosure>
+
 			<Ariakit.Dialog
-				open={isOpen}
-				onClose={onClose}
 				portal
 				unmountOnHide
 				backdrop={
 					<div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
 				}
-				className="fixed top-1/2 left-1/2 flex h-dvh max-h-[720px] w-dvw max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-lg border border-gray-800 bg-gray-950 p-4 shadow-lg"
+				className="fixed top-1/2 left-1/2 flex h-dvh max-h-[720px] w-dvw max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-lg border border-gray-800 bg-gray-950 p-4 shadow-lg"
 			>
 				<header className="flex items-center justify-between">
 					<Ariakit.DialogHeading className="heading-2xl">
@@ -233,7 +168,7 @@ export function DicePanel({
 					action={() => {
 						rollDice()
 						store.reset()
-						onClose()
+						setOpen(false)
 					}}
 				>
 					<div className="flex gap-2">
@@ -249,7 +184,7 @@ export function DicePanel({
 						</div>
 					</div>
 
-					<div className="flex-1">
+					<div>
 						<label className="mb-1 block text-sm font-medium">Character</label>
 						<select
 							value={store.selectedCharacterId ?? ""}
@@ -295,10 +230,11 @@ export function DicePanel({
 										className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
 									/>
 								</div>
-
 								<div className="flex-1">
 									<label className="mb-1 block text-sm font-medium">
-										{`Comeback / ${characters.get(store.selectedCharacterId)?.comeback || 0}`}
+										{store.selectedCharacterId
+											? `Comeback / ${characters.get(store.selectedCharacterId)?.comeback || 0}`
+											: "Comeback"}
 									</label>
 									<input
 										type="number"
@@ -324,7 +260,7 @@ export function DicePanel({
 
 						<div className="flex-1">
 							<label className="mb-1 block text-sm font-medium">
-								Base dice count
+								# of dice
 							</label>
 							<input
 								type="number"
