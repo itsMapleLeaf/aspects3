@@ -30,7 +30,12 @@ export function CharacterEditor({
 }: {
 	character: Character
 	onUpdate: (patch: Partial<Character>) => void
-	onRollAction: (actionName: string, diceCount: number) => void
+	onRollAction: (
+		label: string,
+		diceCount: number,
+		fatigue: number,
+		characterId: string,
+	) => void
 }) {
 	const stats = getComputedCharacter(character)
 

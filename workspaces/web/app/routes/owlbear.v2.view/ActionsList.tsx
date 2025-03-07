@@ -8,7 +8,12 @@ import { actions, aspectSkills, aspects, attributes } from "./data.ts"
 interface ActionsListProps {
 	character: Character
 	className?: string
-	onRollAction: (actionName: string, diceCount: number) => void
+	onRollAction: (
+		label: string,
+		diceCount: number,
+		fatigue: number,
+		characterId: string,
+	) => void
 }
 
 export function ActionsList({
@@ -35,8 +40,10 @@ export function ActionsList({
 
 		if (onRollAction) {
 			onRollAction(
-				`${character.name || "Unknown Character"}: ${actionName} (${attributeName})`,
+				`${actionName} (${attributeName})`,
 				diceCount,
+				0,
+				character.id,
 			)
 		}
 	}
@@ -46,10 +53,7 @@ export function ActionsList({
 		const diceCount = characterStats[aspectKey] || 1
 
 		if (onRollAction) {
-			onRollAction(
-				`${character.name || "Unknown Character"}: ${skillName} (${aspectName})`,
-				diceCount,
-			)
+			onRollAction(`${skillName} (${aspectName})`, diceCount, 1, character.id)
 		}
 	}
 

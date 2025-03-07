@@ -8,7 +8,7 @@ import { ActionsList } from "./ActionsList.tsx"
 import { CharacterEditor } from "./CharacterEditor.tsx"
 import { CharacterListActions } from "./CharacterListActions.tsx"
 import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
-import { DicePanel } from "./DicePanel.tsx"
+import { DicePanel, useDicePanelStore } from "./DicePanel.tsx"
 import { ToggleSection } from "./ToggleSection.tsx"
 import { Character, createCharacter } from "./character.ts"
 
@@ -48,8 +48,7 @@ function OwlbearReadyGuard({ children }: { children: ReactNode }) {
 function ExtensionClientView() {
 	const [characters, setCharacters] = useState(new Map<string, Character>())
 	const [isDicePanelOpen, setIsDicePanelOpen] = useState(false)
-	const [diceCount, setDiceCount] = useState(1)
-	const [diceLabel, setDiceLabel] = useState("")
+	const dicePanelStore = useDicePanelStore()
 
 	function handleMetadataChange(metadataRaw: unknown) {
 		const metadata = RoomMetadata(metadataRaw)
@@ -136,9 +135,16 @@ function ExtensionClientView() {
 		"flex items-center gap-2 rounded-lg border border-gray-800 bg-gray-900 py-2 px-3 text-start hover:border-gray-700 hover:text-primary-200 transition",
 	)
 
-	function handleActionRoll(actionName: string, diceCount: number) {
-		setDiceLabel(actionName)
-		setDiceCount(diceCount)
+	function handleActionRoll(
+		actionName: string,
+		diceCount: number,
+		fatigue: number,
+		characterId: string,
+	) {
+		dicePanelStore.setLabel(actionName)
+		dicePanelStore.setCount(diceCount)
+		dicePanelStore.setFatigue(fatigue)
+		dicePanelStore.setSelectedCharacterId(characterId)
 		setIsDicePanelOpen(true)
 	}
 
@@ -229,12 +235,28 @@ function ExtensionClientView() {
 			</button>
 
 			<DicePanel
+				store={dicePanelStore}
 				isOpen={isDicePanelOpen}
 				onClose={() => setIsDicePanelOpen(false)}
-				diceCount={diceCount}
-				setDiceCount={setDiceCount}
-				label={diceLabel}
-				setLabel={setDiceLabel}
+				onRoll={({ characterId, fatigue, isSuccess }) => {
+					const character = characters.get(characterId)
+					if (!character) return
+
+					const updates: Partial<Character> = {}
+
+					// Apply fatigue cost if applicable
+					if (fatigue > 0) {
+						updates.fatigue = character.fatigue + fatigue
+					}
+
+					// Add comeback point if roll failed
+					if (!isSuccess) {
+						updates.comeback = character.comeback + 1
+					}
+
+					updateCharacter(characterId, updates)
+				}}
+				characters={characters}
 			/>
 		</>
 	)

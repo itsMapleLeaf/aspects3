@@ -4,16 +4,20 @@ import { ArkErrors, type } from "arktype"
 import { useEffect, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "~/components/ui/Icon.tsx"
+import { Tooltip } from "~/components/ui/Tooltip.tsx"
+import { Character } from "./character.ts"
 import { owlbearExtensionNamespace } from "./extension.ts"
 import { broadcastNotification } from "./notifications.ts"
 
 type DiceRoll = typeof DiceRoll.inferOut
 const DiceRoll = type({
-	id: "string",
-	label: "string",
-	diceCount: "number",
-	results: "number[]",
-	timestamp: "number",
+	"id": "string",
+	"label": "string",
+	"diceCount": "number",
+	"results": "number[]",
+	"timestamp": "number",
+	"fatigueCost?": "number",
+	"characterName?": "string | null",
 })
 
 const metadataDiceRollsKey = `${owlbearExtensionNamespace}/diceRolls`
@@ -56,22 +60,54 @@ function getDieIcon(value: number): React.ReactNode {
 	}
 }
 
+export type DicePanelStore = ReturnType<typeof useDicePanelStore>
+export function useDicePanelStore() {
+	const [count, setCount] = useState(1)
+	const [label, setLabel] = useState("")
+	const [fatigue, setFatigue] = useState(0)
+	const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
+		null,
+	)
+
+	function reset() {
+		setCount(1)
+		setLabel("")
+		setFatigue(0)
+		// We intentionally don't reset selectedCharacterId to maintain context between rolls
+	}
+
+	return {
+		count,
+		setCount,
+		label,
+		setLabel,
+		fatigue,
+		setFatigue,
+		selectedCharacterId,
+		setSelectedCharacterId,
+		reset,
+	}
+}
+
 interface DicePanelProps {
+	store: DicePanelStore
 	isOpen: boolean
 	onClose: () => void
-	diceCount: number
-	setDiceCount: (count: number) => void
-	label: string
-	setLabel: (label: string) => void
+	onRoll: (params: {
+		characterId: string
+		fatigue: number
+		results: number[]
+		isSuccess: boolean
+	}) => void
+	characters: Map<string, Character>
 }
 
 export function DicePanel({
+	store,
 	isOpen,
 	onClose,
-	diceCount,
-	setDiceCount,
-	label,
-	setLabel,
+	onRoll,
+	characters,
 }: DicePanelProps) {
 	const [diceRolls, setDiceRolls] = useState<DiceRoll[]>([])
 
@@ -108,36 +144,51 @@ export function DicePanel({
 	}
 
 	function rollDice() {
-		if (diceCount < 1) return
+		if (store.count < 1) return
 
 		const results = Array.from(
-			{ length: diceCount },
+			{ length: store.count },
 			() => Math.floor(Math.random() * 12) + 1,
 		)
+
+		const selectedCharacter = store.selectedCharacterId
+			? characters.get(store.selectedCharacterId)
+			: null
 
 		saveDiceRolls([
 			{
 				id: crypto.randomUUID(),
-				label,
-				diceCount,
+				label: store.label,
+				diceCount: store.count,
 				results,
 				timestamp: Date.now(),
+				characterName: selectedCharacter?.name || null,
 			},
 			...diceRolls,
 		])
 
-		setDiceCount(1)
-		setLabel("")
-		onClose()
-
 		const successes = countSuccesses(results)
 		const isSuccess = successes > 0
+
+		if (store.selectedCharacterId !== null) {
+			onRoll({
+				characterId: store.selectedCharacterId,
+				fatigue: store.fatigue,
+				results,
+				isSuccess,
+			})
+		}
+
 		const successText = isSuccess
 			? `${successes} ${successes === 1 ? "success" : "successes"}`
 			: "failed"
 
+		const characterText = selectedCharacter
+			? `${selectedCharacter.name} rolled `
+			: ""
+
 		broadcastNotification({
-			text: `${label || "Dice Roll"} — ${successText}`,
+			text: `${characterText}${store.label || "Dice Roll"} — ${successText}`,
 			variant: isSuccess ? "SUCCESS" : "DEFAULT",
 		})
 	}
@@ -167,40 +218,95 @@ export function DicePanel({
 					</Ariakit.DialogDismiss>
 				</header>
 
-				<form className="flex flex-col gap-2" action={rollDice}>
+				<form
+					className="flex flex-col gap-2"
+					action={() => {
+						rollDice()
+						store.reset()
+						onClose()
+					}}
+				>
 					<div className="flex gap-2">
 						<div className="flex-1">
 							<label className="mb-1 block text-sm font-medium">Label</label>
 							<input
 								type="text"
-								value={label}
-								onChange={(e) => setLabel(e.target.value)}
-								className="w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 py-2 transition focus:border-gray-700 focus:outline-none"
+								value={store.label}
+								onChange={(e) => store.setLabel(e.target.value)}
+								className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
 								placeholder="Strength Check, Attack Roll, etc."
 							/>
 						</div>
-						<div className="w-24">
+						<div className="w-16">
 							<label className="mb-1 block text-sm font-medium">
 								# of dice
 							</label>
 							<input
 								type="number"
 								min="1"
-								value={diceCount}
+								value={store.count}
 								onChange={(e) =>
-									setDiceCount(Math.max(1, parseInt(e.target.value) || 1))
+									store.setCount(Math.max(1, parseInt(e.target.value) || 1))
 								}
-								className="w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 py-2 transition focus:border-gray-700 focus:outline-none"
+								className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
+							/>
+						</div>
+						<div className="w-16">
+							<label className="mb-1 block text-sm font-medium">Fatigue</label>
+							<input
+								type="number"
+								min="0"
+								value={store.fatigue}
+								onChange={(e) =>
+									store.setFatigue(Math.max(0, parseInt(e.target.value) || 1))
+								}
+								className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
 							/>
 						</div>
 					</div>
-					<button
-						type="submit"
-						className="hover:text-primary-300 flex items-center justify-center gap-2 rounded border border-gray-800 bg-gray-900 px-3 py-2 transition"
-					>
-						<Icon icon="mingcute:box-3-fill" className="size-5" />
-						<span>Roll Dice</span>
-					</button>
+
+					<div className="flex items-end gap-2">
+						<div className="flex-1">
+							<label className="mb-1 block text-sm font-medium">
+								Character
+							</label>
+							<select
+								value={store.selectedCharacterId ?? ""}
+								onChange={(e) => {
+									const value = e.target.value
+									store.setSelectedCharacterId(value === "" ? null : value)
+								}}
+								className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
+							>
+								<option value="">None</option>
+								{Array.from(characters.values()).map((character) => (
+									<option key={character.id} value={character.id}>
+										{character.name}
+									</option>
+								))}
+							</select>
+						</div>
+						<Ariakit.Button
+							type="submit"
+							className="hover:text-primary-300 flex h-10 items-center justify-center gap-2 rounded border border-gray-800 bg-gray-900 px-3 transition"
+							autoFocus
+						>
+							<Icon icon="mingcute:box-3-fill" className="size-5" />
+							<span>Roll Dice</span>
+						</Ariakit.Button>
+						<Tooltip content="Roll and preserve settings">
+							<button
+								type="button"
+								className="hover:text-primary-300 flex aspect-square h-10 items-center justify-center gap-2 rounded opacity-75 transition hover:opacity-100"
+								onClick={rollDice}
+							>
+								<Icon
+									icon="mingcute:history-anticlockwise-line"
+									className="size-5"
+								/>
+							</button>
+						</Tooltip>
+					</div>
 				</form>
 
 				<section
@@ -242,17 +348,24 @@ export function DicePanel({
 											))}
 										</ul>
 
-										<p
-											className={twMerge(
-												"text-sm font-semibold tracking-wide",
-												isSuccess ? "text-green-400" : "text-gray-400",
+										<p className="text-sm font-semibold tracking-wide text-gray-400">
+											{roll.characterName ? (
+												<>
+													Rolled by{" "}
+													<strong className="font-bold">
+														{roll.characterName}
+													</strong>{" "}
+													•{" "}
+												</>
+											) : null}
+											{isSuccess ? (
+												<strong className="text-green-300">
+													{successes}{" "}
+													{successes === 1 ? "success" : "successes"}
+												</strong>
+											) : (
+												<strong>failed</strong>
 											)}
-										>
-											{isSuccess
-												? `${successes} ${
-														successes === 1 ? "success" : "successes"
-													}`
-												: "no successes"}
 										</p>
 									</li>
 								)
