@@ -6,7 +6,13 @@ import { OptionCard } from "./OptionCard.tsx"
 import { StatField } from "./StatField.tsx"
 import { ToggleSection } from "./ToggleSection.tsx"
 import { Character, getComputedCharacter } from "./character.ts"
-import { drives, experiences, lineages, roles } from "./data.ts"
+import {
+	characterLevels,
+	drives,
+	experiences,
+	lineages,
+	roles,
+} from "./data.ts"
 
 export function CharacterEditor({
 	character,
@@ -18,6 +24,25 @@ export function CharacterEditor({
 	onRollAction: (actionName: string, diceCount: number) => void
 }) {
 	const stats = getComputedCharacter(character)
+
+	const level = characterLevels[character.level - 1]
+
+	const currentAttributeBonuses =
+		character.strengthBonus +
+		character.senseBonus +
+		character.dexterityBonus +
+		character.presenceBonus
+
+	const availableAttributeBonuses = 3 + (level?.attributePoints ?? 0)
+
+	const currentAspectBonuses =
+		character.fireBonus +
+		character.waterBonus +
+		character.windBonus +
+		character.lightBonus +
+		character.darknessBonus
+
+	const availableAspectBonuses = 5 + (level?.aspectPoints ?? 0)
 
 	return (
 		<main className="grid gap-6 p-3">
@@ -36,7 +61,7 @@ export function CharacterEditor({
 						type="number"
 						className="w-16"
 						min={1}
-						max={13}
+						max={characterLevels.length}
 						value={character.level}
 						onSubmitValue={(event) =>
 							onUpdate({
@@ -50,70 +75,77 @@ export function CharacterEditor({
 
 				<div className="grid grid-cols-2 gap-4">
 					<div className="grid content-start gap-3">
+						<h2 className="heading-xl text-center">
+							Attributes ({currentAttributeBonuses}/{availableAttributeBonuses})
+						</h2>
+
 						<StatField
 							label="Strength"
 							className="min-w-0 flex-1"
 							value={character.strengthBonus || 0}
-							addition={stats.strength}
+							addition={stats.strength - character.strengthBonus}
 							onSubmitValue={(value) => onUpdate({ strengthBonus: value })}
 						/>
 						<StatField
 							label="Sense"
 							className="min-w-0 flex-1"
 							value={character.senseBonus || 0}
-							addition={stats.sense}
+							addition={stats.sense - character.senseBonus}
 							onSubmitValue={(value) => onUpdate({ senseBonus: value })}
 						/>
 						<StatField
 							label="Dexterity"
 							className="min-w-0 flex-1"
 							value={character.dexterityBonus || 0}
-							addition={stats.dexterity}
+							addition={stats.dexterity - character.dexterityBonus}
 							onSubmitValue={(value) => onUpdate({ dexterityBonus: value })}
 						/>
 						<StatField
 							label="Presence"
 							className="min-w-0 flex-1"
 							value={character.presenceBonus || 0}
-							addition={stats.presence}
+							addition={stats.presence - character.presenceBonus}
 							onSubmitValue={(value) => onUpdate({ presenceBonus: value })}
 						/>
 					</div>
 
 					<div className="grid content-start gap-3">
+						<h2 className="heading-xl text-center">
+							Aspects ({currentAspectBonuses}/{availableAspectBonuses})
+						</h2>
 						<StatField
 							label="Fire"
 							className="min-w-0 flex-1"
 							value={character.fireBonus || 0}
-							addition={stats.fire}
+							addition={stats.fire - character.fireBonus}
 							onSubmitValue={(value) => onUpdate({ fireBonus: value })}
 						/>
 						<StatField
 							label="Water"
 							className="min-w-0 flex-1"
 							value={character.waterBonus || 0}
-							addition={stats.water}
+							addition={stats.water - character.waterBonus}
 							onSubmitValue={(value) => onUpdate({ waterBonus: value })}
 						/>
 						<StatField
 							label="Wind"
 							className="min-w-0 flex-1"
 							value={character.windBonus || 0}
-							addition={stats.wind}
+							addition={stats.wind - character.windBonus}
 							onSubmitValue={(value) => onUpdate({ windBonus: value })}
 						/>
 						<StatField
 							label="Light"
 							className="min-w-0 flex-1"
 							value={character.lightBonus || 0}
-							addition={stats.light}
+							addition={stats.light - character.lightBonus}
 							onSubmitValue={(value) => onUpdate({ lightBonus: value })}
 						/>
 						<StatField
 							label="Darkness"
 							className="min-w-0 flex-1"
 							value={character.darknessBonus || 0}
-							addition={stats.darkness}
+							addition={stats.darkness - character.darknessBonus}
 							onSubmitValue={(value) => onUpdate({ darknessBonus: value })}
 						/>
 					</div>

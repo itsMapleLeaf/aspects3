@@ -101,15 +101,15 @@ export interface ComputedCharacter {
 
 export function getComputedCharacter(character: Character): ComputedCharacter {
 	const stats = {
-		strength: 1,
-		sense: 1,
-		dexterity: 1,
-		presence: 1,
-		fire: 0,
-		water: 0,
-		wind: 0,
-		light: 0,
-		darkness: 0,
+		strength: 1 + character.strengthBonus,
+		sense: 1 + character.senseBonus,
+		dexterity: 1 + character.dexterityBonus,
+		presence: 1 + character.presenceBonus,
+		fire: 0 + character.fireBonus,
+		water: 0 + character.waterBonus,
+		wind: 0 + character.windBonus,
+		light: 0 + character.lightBonus,
+		darkness: 0 + character.darknessBonus,
 	}
 
 	if (character.lineage) {

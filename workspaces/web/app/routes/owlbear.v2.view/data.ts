@@ -47,64 +47,34 @@ export const aspects = {
 
 export const lineages = [
 	{
-		name: "Canine",
+		name: "Furbearers",
 		attributes: [attributes.strength, attributes.presence],
-		example: "domestic dogs, foxes, wolves, coyotes, jackals",
+		example: "dogs, foxes, wolves, cats, rabbits, mice, bears, raccoons",
 	},
 	{
-		name: "Feline",
-		attributes: [attributes.sense, attributes.dexterity],
-		example: "domestic cats, lions, tigers, panthers",
-	},
-	{
-		name: "Aquatic",
-		attributes: [attributes.dexterity, attributes.presence],
-		example: "fish, dolphins, other water-bound creatures",
-	},
-	{
-		name: "Reptilian",
-		attributes: [attributes.strength, attributes.presence],
+		name: "Scalebearers",
+		attributes: [attributes.strength, attributes.dexterity],
 		example: "snake, lizard, alligator, crocodile, dragons",
 	},
 	{
-		name: "Avian",
-		attributes: [attributes.dexterity, attributes.presence],
+		name: "Aquatics",
+		attributes: [attributes.sense, attributes.dexterity],
+		example: "fish, dolphins, other water-bound creatures",
+	},
+	{
+		name: "Avians",
+		attributes: [attributes.sense, attributes.presence],
 		example: "eagles, ravens, penguins, flamingo, all other birds",
 	},
 	{
-		name: "Musteloidea",
-		attributes: [attributes.dexterity, attributes.presence],
-		example: "panda, skunk, weasel, raccoon",
-	},
-	{
-		name: "Noctillionine",
-		attributes: [attributes.sense, attributes.dexterity],
-		example: "bats",
-	},
-	{
-		name: "Ursine",
-		attributes: [attributes.strength, attributes.sense],
-		example: "bears",
-	},
-	{
-		name: "Muridae",
-		attributes: [attributes.sense, attributes.dexterity],
-		example: "mice, rats, other rodents",
-	},
-	{
-		name: "Arthropoda",
-		attributes: [attributes.sense, attributes.dexterity],
-		example: "insects, arachnids, bugs, most creatures with exoskeletons",
-	},
-	{
-		name: "Leporine",
-		attributes: [attributes.strength, attributes.dexterity],
-		example: "rabbits and hares",
-	},
-	{
-		name: "Demonic",
+		name: "Devils",
 		attributes: [attributes.strength, attributes.presence],
 		example: "demons, devils, succubus/incubus, vampires",
+	},
+	{
+		name: "Arthropods",
+		attributes: [attributes.sense, attributes.dexterity],
+		example: "insects, arachnids, bugs, most creatures with exoskeletons",
 	},
 ]
 
@@ -638,4 +608,20 @@ export const aspectSkills = [
 		effect:
 			"Choose a zone at a range of #. Deal # * 2 hits (on failure: 1 hit) to every character in that zone",
 	},
+]
+
+export const characterLevels = [
+	{ level: 1, attributePoints: 0, aspectPoints: 0 },
+	{ level: 2, attributePoints: 0, aspectPoints: 1 },
+	{ level: 3, attributePoints: 1, aspectPoints: 1 },
+	{ level: 4, attributePoints: 1, aspectPoints: 2 },
+	{ level: 5, attributePoints: 2, aspectPoints: 2 },
+	{ level: 6, attributePoints: 2, aspectPoints: 3 },
+	{ level: 7, attributePoints: 3, aspectPoints: 3 },
+	{ level: 8, attributePoints: 3, aspectPoints: 4 },
+	{ level: 9, attributePoints: 4, aspectPoints: 4 },
+	{ level: 10, attributePoints: 4, aspectPoints: 5 },
+	{ level: 11, attributePoints: 5, aspectPoints: 5 },
+	{ level: 12, attributePoints: 5, aspectPoints: 6 },
+	{ level: 13, attributePoints: 6, aspectPoints: 6 },
 ]
