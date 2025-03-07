@@ -50,22 +50,19 @@ function ExtensionClientView() {
 	const [isDicePanelOpen, setIsDicePanelOpen] = useState(false)
 	const dicePanelStore = useDicePanelStore()
 
-	function handleMetadataChange(metadataRaw: unknown) {
-		const metadata = RoomMetadata(metadataRaw)
-		if (metadata instanceof ArkErrors) {
-			console.error(metadata)
-			return
+	useEffect(() => {
+		function handleMetadataChange(metadataRaw: unknown) {
+			const metadata = RoomMetadata(metadataRaw)
+			if (metadata instanceof ArkErrors) {
+				console.error(metadata)
+				return
+			}
+			setCharacters(new Map(Object.entries(metadata[metadataCharactersKey])))
 		}
-		setCharacters(new Map(Object.entries(metadata[metadataCharactersKey])))
-	}
 
-	useEffect(() => {
 		OBR.room.getMetadata().then(handleMetadataChange)
-	}, [])
-
-	useEffect(() => {
 		return OBR.room.onMetadataChange(handleMetadataChange)
-	}, [handleMetadataChange])
+	}, [])
 
 	function saveCharacters(newCharacters: Map<string, Character>) {
 		startTransition(async () => {
@@ -238,23 +235,27 @@ function ExtensionClientView() {
 				store={dicePanelStore}
 				isOpen={isDicePanelOpen}
 				onClose={() => setIsDicePanelOpen(false)}
-				onRoll={({ characterId, fatigue, isSuccess }) => {
+				onRoll={({ characterId, fatigue, isSuccess, comebackSpent }) => {
 					const character = characters.get(characterId)
-					if (!character) return
+					if (character) {
+						const updates: Partial<Character> = {}
 
-					const updates: Partial<Character> = {}
+						// Apply fatigue cost if applicable
+						if (fatigue > 0) {
+							updates.fatigue = character.fatigue + fatigue
+						}
 
-					// Apply fatigue cost if applicable
-					if (fatigue > 0) {
-						updates.fatigue = character.fatigue + fatigue
+						// Deduct comeback points if spent
+						if (comebackSpent > 0) {
+							updates.comeback = Math.max(0, character.comeback - comebackSpent)
+						}
+						// Add comeback point if roll failed
+						else if (!isSuccess) {
+							updates.comeback = character.comeback + 1
+						}
+
+						updateCharacter(characterId, updates)
 					}
-
-					// Add comeback point if roll failed
-					if (!isSuccess) {
-						updates.comeback = character.comeback + 1
-					}
-
-					updateCharacter(characterId, updates)
 				}}
 				characters={characters}
 			/>

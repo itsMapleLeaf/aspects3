@@ -18,6 +18,7 @@ const DiceRoll = type({
 	"timestamp": "number",
 	"fatigueCost?": "number",
 	"characterName?": "string | null",
+	"comebackUsed?": "number",
 })
 
 const metadataDiceRollsKey = `${owlbearExtensionNamespace}/diceRolls`
@@ -65,6 +66,7 @@ export function useDicePanelStore() {
 	const [count, setCount] = useState(1)
 	const [label, setLabel] = useState("")
 	const [fatigue, setFatigue] = useState(0)
+	const [comeback, setComeback] = useState(0)
 	const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
 		null,
 	)
@@ -73,6 +75,7 @@ export function useDicePanelStore() {
 		setCount(1)
 		setLabel("")
 		setFatigue(0)
+		setComeback(0)
 		// We intentionally don't reset selectedCharacterId to maintain context between rolls
 	}
 
@@ -83,6 +86,8 @@ export function useDicePanelStore() {
 		setLabel,
 		fatigue,
 		setFatigue,
+		comeback,
+		setComeback,
 		selectedCharacterId,
 		setSelectedCharacterId,
 		reset,
@@ -98,6 +103,7 @@ interface DicePanelProps {
 		fatigue: number
 		results: number[]
 		isSuccess: boolean
+		comebackSpent: number
 	}) => void
 	characters: Map<string, Character>
 }
@@ -146,23 +152,26 @@ export function DicePanel({
 	function rollDice() {
 		if (store.count < 1) return
 
-		const results = Array.from(
-			{ length: store.count },
-			() => Math.floor(Math.random() * 12) + 1,
-		)
-
 		const selectedCharacter = store.selectedCharacterId
 			? characters.get(store.selectedCharacterId)
 			: null
+
+		const totalDiceCount = store.count + store.comeback
+
+		const results = Array.from(
+			{ length: totalDiceCount },
+			() => Math.floor(Math.random() * 12) + 1,
+		)
 
 		saveDiceRolls([
 			{
 				id: crypto.randomUUID(),
 				label: store.label,
-				diceCount: store.count,
+				diceCount: totalDiceCount,
 				results,
 				timestamp: Date.now(),
 				characterName: selectedCharacter?.name || null,
+				comebackUsed: store.comeback > 0 ? store.comeback : undefined,
 			},
 			...diceRolls,
 		])
@@ -176,6 +185,7 @@ export function DicePanel({
 				fatigue: store.fatigue,
 				results,
 				isSuccess,
+				comebackSpent: store.comeback,
 			})
 		}
 
@@ -237,9 +247,84 @@ export function DicePanel({
 								placeholder="Strength Check, Attack Roll, etc."
 							/>
 						</div>
-						<div className="w-16">
+					</div>
+
+					<div className="flex-1">
+						<label className="mb-1 block text-sm font-medium">Character</label>
+						<select
+							value={store.selectedCharacterId ?? ""}
+							onChange={(e) => {
+								const value = e.target.value
+								store.setSelectedCharacterId(value === "" ? null : value)
+								if (value === "") {
+									store.setComeback(0)
+								} else {
+									const character = characters.get(value)
+									if (character && store.comeback > character.comeback) {
+										store.setComeback(character.comeback)
+									}
+								}
+							}}
+							className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
+						>
+							<option value="">None</option>
+							{Array.from(characters.values()).map((character) => (
+								<option key={character.id} value={character.id}>
+									{character.name}
+								</option>
+							))}
+						</select>
+					</div>
+
+					<div className="flex items-end gap-2">
+						{store.selectedCharacterId && (
+							<>
+								<div className="flex-1">
+									<label className="mb-1 block text-sm font-medium">
+										Fatigue
+									</label>
+									<input
+										type="number"
+										min="0"
+										value={store.fatigue}
+										onChange={(e) =>
+											store.setFatigue(
+												Math.max(0, parseInt(e.target.value) || 0),
+											)
+										}
+										className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
+									/>
+								</div>
+
+								<div className="flex-1">
+									<label className="mb-1 block text-sm font-medium">
+										{`Comeback / ${characters.get(store.selectedCharacterId)?.comeback || 0}`}
+									</label>
+									<input
+										type="number"
+										min="0"
+										value={store.comeback}
+										onChange={(e) => {
+											const selectedCharacter = store.selectedCharacterId
+												? characters.get(store.selectedCharacterId)
+												: null
+											const maxComeback = selectedCharacter?.comeback || 0
+											store.setComeback(
+												Math.min(
+													maxComeback,
+													Math.max(0, parseInt(e.target.value) || 0),
+												),
+											)
+										}}
+										className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
+									/>
+								</div>
+							</>
+						)}
+
+						<div className="flex-1">
 							<label className="mb-1 block text-sm font-medium">
-								# of dice
+								Base dice count
 							</label>
 							<input
 								type="number"
@@ -251,48 +336,16 @@ export function DicePanel({
 								className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
 							/>
 						</div>
-						<div className="w-16">
-							<label className="mb-1 block text-sm font-medium">Fatigue</label>
-							<input
-								type="number"
-								min="0"
-								value={store.fatigue}
-								onChange={(e) =>
-									store.setFatigue(Math.max(0, parseInt(e.target.value) || 1))
-								}
-								className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
-							/>
-						</div>
 					</div>
 
-					<div className="flex items-end gap-2">
-						<div className="flex-1">
-							<label className="mb-1 block text-sm font-medium">
-								Character
-							</label>
-							<select
-								value={store.selectedCharacterId ?? ""}
-								onChange={(e) => {
-									const value = e.target.value
-									store.setSelectedCharacterId(value === "" ? null : value)
-								}}
-								className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
-							>
-								<option value="">None</option>
-								{Array.from(characters.values()).map((character) => (
-									<option key={character.id} value={character.id}>
-										{character.name}
-									</option>
-								))}
-							</select>
-						</div>
+					<div className="flex items-center gap-2">
 						<Ariakit.Button
 							type="submit"
-							className="hover:text-primary-300 flex h-10 items-center justify-center gap-2 rounded border border-gray-800 bg-gray-900 px-3 transition"
+							className="hover:text-primary-300 flex h-10 flex-1 items-center justify-center gap-2 rounded border border-gray-800 bg-gray-900 px-3 transition"
 							autoFocus
 						>
 							<Icon icon="mingcute:box-3-fill" className="size-5" />
-							<span>Roll Dice</span>
+							<span>Roll {store.count + store.comeback} dice</span>
 						</Ariakit.Button>
 						<Tooltip content="Roll and preserve settings">
 							<button
@@ -357,6 +410,11 @@ export function DicePanel({
 													</strong>{" "}
 													•{" "}
 												</>
+											) : null}
+											{roll.comebackUsed ? (
+												<span className="text-blue-400">
+													Used {roll.comebackUsed} comeback •{" "}
+												</span>
 											) : null}
 											{isSuccess ? (
 												<strong className="text-green-300">
