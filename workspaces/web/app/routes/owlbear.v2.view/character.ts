@@ -1,47 +1,6 @@
 import { type } from "arktype"
 import { experiences, lineages, roles } from "./data.ts"
 
-/*
-materials needed as player:
-- At least one character sheet (may play multiple characters or have versions of one, they should be switchable)
-- Dice
-
-materials needed as DM:
-- Maps (covered by owlbear)
-- Several character sheets
-- NPC sheets (like character sheets, but token resources (hits/fatigue) are unique)
-- Dice
-
-feature set:
-- Character browser
-	 - For GM: List all characters in room
-	 - For Player: only show their own character(s)
-- Character sheet viewer
-	 - Header
-		  - "Back to Character List" button
-		  - Quick dropdown character switcher
-	 - Name
-	 - Level
-	 - Image
-	 - Settings
-		  - NPC?
-				- if false (default), tokens are synced with the sheet resources
-				- if true, tokens track own resources
-	 - Stats
-		  - Attribute Scores
-		  - Aspect scores
-		  - Aspect skills
-	 - Resources
-		  - Hits / Max
-		  - Fatigue / Max
-		  - Comeback
-	 - Lore
-		  - Lineage
-		  - Role
-		  - Experiences
-- Dice roller + history
-*/
-
 export type Character = typeof Character.inferOut
 export const Character = type({
 	"id": "string = ''",
