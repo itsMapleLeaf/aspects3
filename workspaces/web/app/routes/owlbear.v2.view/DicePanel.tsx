@@ -1,9 +1,11 @@
 import * as Ariakit from "@ariakit/react"
 import OBR, { type Metadata as RoomMetadata } from "@owlbear-rodeo/sdk"
 import { ArkErrors, type } from "arktype"
-import { startTransition, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "~/components/ui/Icon.tsx"
+import { owlbearExtensionNamespace } from "./extension.ts"
+import { broadcastNotification } from "./notifications.ts"
 
 type DiceRoll = typeof DiceRoll.inferOut
 const DiceRoll = type({
@@ -14,7 +16,7 @@ const DiceRoll = type({
 	timestamp: "number",
 })
 
-const metadataDiceRollsKey = "dev.mapleleaf.aspects/diceRolls"
+const metadataDiceRollsKey = `${owlbearExtensionNamespace}/diceRolls`
 
 type DiceRollsRoomMetadata = typeof DiceRollsRoomMetadata.inferOut
 const DiceRollsRoomMetadata = type({
@@ -77,7 +79,10 @@ export function DicePanel({
 		async function loadDiceRolls(metadata: RoomMetadata) {
 			const parsed = DiceRollsRoomMetadata(metadata)
 			if (parsed instanceof ArkErrors) {
-				console.error(parsed.summary)
+				console.error(
+					"failed to parse dice rolls from room metadata:",
+					parsed.summary,
+				)
 				return
 			}
 			setDiceRolls(parsed[metadataDiceRollsKey])
@@ -87,19 +92,19 @@ export function DicePanel({
 		return OBR.room.onMetadataChange(loadDiceRolls)
 	}, [])
 
-	function saveDiceRolls(rolls: DiceRoll[]) {
-		startTransition(async () => {
-			try {
-				const recentRolls = [...rolls]
-					.sort((a, b) => b.timestamp - a.timestamp)
-					.slice(0, 20)
-				await OBR.room.setMetadata({
-					[metadataDiceRollsKey]: recentRolls,
-				})
-			} catch (error) {
-				console.error(error)
+	async function saveDiceRolls(rolls: DiceRoll[]) {
+		try {
+			const recentRolls = [...rolls]
+				.sort((a, b) => b.timestamp - a.timestamp)
+				.slice(0, 20)
+
+			const metadata: DiceRollsRoomMetadata = {
+				[metadataDiceRollsKey]: recentRolls,
 			}
-		})
+			await OBR.room.setMetadata(metadata)
+		} catch (error) {
+			console.error(error)
+		}
 	}
 
 	function rollDice() {
@@ -110,18 +115,31 @@ export function DicePanel({
 			() => Math.floor(Math.random() * 12) + 1,
 		)
 
-		const newRoll: DiceRoll = {
-			id: crypto.randomUUID(),
-			label,
-			diceCount,
-			results,
-			timestamp: Date.now(),
-		}
+		saveDiceRolls([
+			{
+				id: crypto.randomUUID(),
+				label,
+				diceCount,
+				results,
+				timestamp: Date.now(),
+			},
+			...diceRolls,
+		])
 
-		const updatedRolls = [newRoll, ...diceRolls]
-		saveDiceRolls(updatedRolls)
 		setDiceCount(1)
 		setLabel("")
+		onClose()
+
+		const successes = countSuccesses(results)
+		const isSuccess = successes > 0
+		const successText = isSuccess
+			? `${successes} ${successes === 1 ? "success" : "successes"}`
+			: "failed"
+
+		broadcastNotification({
+			text: `${label || "Dice Roll"} — ${successText}`,
+			variant: isSuccess ? "SUCCESS" : "DEFAULT",
+		})
 	}
 
 	function countSuccesses(results: number[]): number {
