@@ -26,14 +26,11 @@ export function ActionsList({
 		(skill) => skill.aspect.name,
 	)
 
-	// Get computed character stats
 	const characterStats = getComputedCharacter(character)
 
 	function handleActionClick(actionName: string, attributeName: string) {
-		// Calculate dice count based on attribute
 		const attributeKey =
 			attributeName.toLowerCase() as keyof typeof characterStats
-		// Base dice count on the related attribute's value
 		const diceCount = characterStats[attributeKey] || 1
 
 		if (onRollAction) {
@@ -45,9 +42,7 @@ export function ActionsList({
 	}
 
 	function handleAspectSkillClick(skillName: string, aspectName: string) {
-		// Calculate dice count based on aspect
 		const aspectKey = aspectName.toLowerCase() as keyof typeof characterStats
-		// Base dice count on the related aspect's value
 		const diceCount = characterStats[aspectKey] || 1
 
 		if (onRollAction) {
